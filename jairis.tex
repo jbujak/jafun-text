@@ -73,10 +73,12 @@
 \usepackage{amsmath}
 \let\lll\undefined
 \usepackage{amssymb}
-
+\usepackage{bussproofs}
+% 
 \newcommand \wand {\mathrel{-\mkern-6mu*}}
 \newcommand \outerP {\mathbf{P}}
-\newcommand \hoare [5] {\{#1\}#2\{#3,#4.#5\}}
+\newcommand \hoare [5] {\{#1\}#2\{#4.#5\}_#3}
+\newcommand \prooflabel [1] {\LeftLabel{\scriptsize{\textsc{#1}}}}
 \renewcommand \| {\hspace{0.75em} | \hspace{0.75em} }
 \renewcommand \[ {[\![}
 \renewcommand \] {]\!]}
@@ -106,6 +108,11 @@
 
 \chapter{Jafun}
 
+Jafun to~zorientowany obiektowo język programowania podobny do Javy.
+Jego szczegółowy opis znajduje się w pracy \cite{jafun-def}.
+Poniżej przedstawiam te aspekty języka, które są istotne dla prezentowanej logiki.
+
+
 \section{Składnia i semantyka}
 
 \section{Ewaluacja}
@@ -117,20 +124,21 @@ Ewaluacją wyrażenia $e$ na stercie $h$ będziemy nazywać taką ewaluację kon
 $(h, e) \leadsto (h_n, A, l)$
 
 \chapter{Składnia i semantyka}
-Prezentowana logika separacji dla języka Jafun jest logiką z~kwantyfikatorami egzystencjalnymi pierwszego rzędu, trójkami Hoare'a, operatorem
+Prezentowana logika separacji dla języka Jafun jest logiką z~kwantyfikatorami egzystencjalnymi pierwszego rzędu, trójkami Hoare'a, operatorem $\hookrightarrow$,
 pozwalającym na opisywanie zawartości sterty i~operatorami separacji $*$ i $\wand$.
 
 Iris, na~którym wzorowana jest niniejsza logika, jest afiniczną logiką separacyjną, to~znaczy
 własność spełniania termu przez stertę jest domknięta ze względu na rozszerzanie sterty.
-W celu zachowania zarówno afiniczność, jak i~poprawności względem semantyki
-języka, logika nie zawiera kwantyfikatora ogólnego, a kwantyfikator egzystencjalny jest ograniczony
+W celu zachowania zarówno afiniczności, jak i~poprawności względem semantyki
+języka, prezentowana logika nie zawiera kwantyfikatora ogólnego,
+a kwantyfikator egzystencjalny jest ograniczony
 do~termów najwyższego poziomu (Rysunek \ref{fig:syntax}).
 
 \begin{figure}[h]
 \begin{align*}
  \outerP ::= & \ \exists x : C.\outerP \| \outerP \wedge \outerP \| \outerP \vee \outerP \| P \\
  P ::= & \ \mathtt{True} \| \mathtt{False} \| P \wedge P \| P \vee P \| P \Rightarrow P \| v = v \| \\
-     & \  v.x = v \| \hoare{P}{e}{A}{x}{P} \|  P * P \| P \wand P \\
+     & \  v \hookrightarrow x = v \| \hoare{P}{e}{A}{x}{P} \|  P * P \| P \wand P \\
  v ::= & \  x \| \mathtt{null} \| \mathtt{this} \\
  A ::= & \ C \| \phi \\
  x ::= & \ \langle\mathit{identifier}\rangle \ (\mathit{variable / field\ name}) \\
@@ -144,20 +152,17 @@ do~termów najwyższego poziomu (Rysunek \ref{fig:syntax}).
 Środowisko to~funkcja częściowa przypisująca identyfikatorom lokacje na stercie lub \texttt{null}.
 Semantyka logiki (Rysunek \ref{fig:sematics}) jest standardowa dla kwantyfikatora i operatorów logicznych.
 Dla uproszczenia zapisu notacja $\[ \cdot \]$ została użyta do~opisu semantyki obu poziomów termów
-($\outerP$ i $P$). To, do którego poziomu się odnosi wynika z kontekstu.
+($\outerP$ i $P$). To, do którego poziomu się odnosi, wynika z kontekstu.
 
 Sterta spełnia trójkę Hoare'a $\hoare{P}{e}{A}{x}{Q}$, jeśli dla~każdej sterty spełniającej
-$P$, wyrażenie $e$ zostanie obliczone bez błędu, zwróci wyjątek typu $A$,
+$P$, wyrażenie $e$ zostanie obliczone bez błędu, zwróci wyjątek typu $A$ (czyli być może żaden),
 a~wynikowa sterta będzie
 spełniała $Q$, w którym za~$x$~podstawiony zostanie wynik obliczenia.
 
 Sterta spełnia term $P * Q$, jeśli można ją podzielić na dwa rozłączne fragmenty, z których
 jeden spełnia $P$, a drugi $Q$.
 Operator $\wand$ to pewnego rodzaju odwrotność operatora $*$ -- sterta spełnia $P \wand Q$, jeśli
-po połączeniu jej z dowolną rozłączną stertą spełniającą $P$, otrzymana stera spełnia $Q$.
-
-Sterta \textit{h} spełnia term $\outerP$ w~środowisku \textit{env} (zapis $h, env \models \outerP $),
-jeśli $\[ \outerP \]_{h, env} = \top$.
+po połączeniu jej z dowolną rozłączną stertą spełniającą $P$, otrzymana sterta spełnia $Q$.
 
 \begin{figure}
 \begin{align*}
@@ -168,8 +173,9 @@ jeśli $\[ \outerP \]_{h, env} = \top$.
  \[ P \wedge Q \]_{h, env} \triangleq & \ \[ P \]_{h, env} \wedge \[ Q \]_{h, env} \\
  \[ P \vee Q \]_{h, env} \triangleq & \ \[ P \]_{h, env} \vee \[ Q \]_{h, env} \\
  \[ P \Rightarrow Q \]_{h, env} \triangleq & \ \[ P \]_{h, env} \Rightarrow \[ Q \]_{h, env} \\
+ % TODO this
  \[ x = y \]_{h, env} \triangleq & \ env(x) = env(y) \\
- \[ x.f = y \]_{h, env} \triangleq & \ h(env(x))(f) = env(y) \\
+ \[ x \hookrightarrow f = y \]_{h, env} \triangleq & \ h(env(x))(f) = env(y) \\
  \[ \hoare{P}{e}{A}{x}{Q} \]_{h, env} \triangleq & \forall h : Heap \ . \ \[ P \]_{h, env} \Rightarrow \\
       & \ \  \exists h' : Heap, l : Loc \ . \ (h, e[/env]) \leadsto (h', A, l) \wedge
       \[ Q \]_{h', env[x \mapsto l]}  \\
@@ -186,6 +192,223 @@ wolnej $x$ w~$e$.
 \end{figure}
 
 \chapter{Reguły wnioskowania}
+Osądy w prezentowanej logice są postaci $\Gamma | P \vdash Q$, gdzie $\Gamma$ to środowisko typów,
+przypisujące zmiennym odpowiadające im typy (czyli nazwy klas), a $P$ i $Q$ to termy logiki.
+Intuicyjnie, osąd $\Gamma | P \vdash Q$ oznacza że $Q$ wynika z $P$, a więc że każda sterta spełniająca
+$P$ spełnia też $Q$.
+
+Dla poprawienia czytelności, jeśli $\Gamma$ jest wspólne dla wszystkich osądów występujących
+w danej regule, to jest ono pomijane.
+
+% TODO założenie o otypowaniu P i Q
+
+
+\begin{figure}[h]
+\begin{center}
+\AxiomC{\phantom{$Q$}}
+\prooflabel{Asm}
+\UnaryInfC{$P \vdash P$}
+\DisplayProof
+\hskip 2em
+\AxiomC{$P \vdash Q$}
+\AxiomC{$Q \vdash R$}
+\prooflabel{Trans}
+\BinaryInfC{$P \vdash R$}
+\DisplayProof
+\hskip 2em
+\AxiomC{\phantom{$Q$}}
+\prooflabel{Eq-refl}
+\UnaryInfC{$P \vdash v = v$}
+\DisplayProof
+\hskip 2em
+\AxiomC{$P \vdash v = w$}
+\prooflabel{Eq-sym}
+\UnaryInfC{$P \vdash w = v$}
+\DisplayProof
+
+\vskip 2em
+
+\AxiomC{$P \vdash \mathtt{False}$}
+\prooflabel{$\bot$E}
+\UnaryInfC{$P \vdash Q$}
+\DisplayProof
+\hskip 2em
+\AxiomC{\phantom{$Q$}}
+\prooflabel{$\top$I}
+\UnaryInfC{$P \vdash \mathtt{True}$}
+\DisplayProof
+\hskip 2em
+\AxiomC{$R \vdash P$}
+\AxiomC{$R \vdash Q$}
+\prooflabel{$\wedge$I}
+\BinaryInfC{$R \vdash P \wedge Q$}
+\DisplayProof
+\hskip 2em
+\AxiomC{$R \vdash P \wedge Q$}
+\prooflabel{$\wedge$EL}
+\UnaryInfC{$R \vdash P$}
+\DisplayProof
+
+\vskip 2em
+
+\AxiomC{$R \vdash P \wedge Q$}
+\prooflabel{$\wedge$ER}
+\UnaryInfC{$R \vdash Q$}
+\DisplayProof
+\hskip 2em
+\AxiomC{$R \vdash P$}
+\prooflabel{$\vee$IL}
+\UnaryInfC{$R \vdash P \vee Q$}
+\DisplayProof
+\hskip 2em
+\AxiomC{$R \vdash Q$}
+\prooflabel{$\vee$IR}
+\UnaryInfC{$R \vdash P \vee Q$}
+\DisplayProof
+
+\vskip 2em
+
+\AxiomC{$S \vdash P \vee Q$}
+\AxiomC{$P \vdash R$}
+\AxiomC{$Q \vdash R$}
+\prooflabel{$\vee$E}
+\TrinaryInfC{$S \vdash R$}
+\DisplayProof
+\hskip 2em
+\AxiomC{$R \wedge P \vdash Q$}
+\prooflabel{$\Rightarrow$I}
+\UnaryInfC{$R \vdash P \Rightarrow Q$}
+\DisplayProof
+\hskip 2em
+\AxiomC{$R \vdash P \Rightarrow Q$}
+\AxiomC{$R \vdash P$}
+\prooflabel{$\Rightarrow$E}
+\BinaryInfC{$R \vdash P \Rightarrow Q$}
+\DisplayProof
+
+\vskip 2em
+
+\AxiomC{$\Gamma, x : C | Q \vdash P[t / x]$}
+\prooflabel{$\exists$I}
+\UnaryInfC{$Q \vdash \exists x : C . P$}
+\DisplayProof
+\hskip 2em
+\AxiomC{$\Gamma | R \vdash \exists x : C .  P$}
+\AxiomC{$\Gamma, x : C | R \wedge P \vdash Q$}
+\prooflabel{$\exists$E}
+\BinaryInfC{$\Gamma  | R \vdash Q$}
+\DisplayProof
+\end{center}
+\caption{Reguły wnioskowania dla tradycyjnych operatorów logicznych}
+\end{figure}
+
+\begin{figure}[h]
+\begin{center}
+\AxiomC{\phantom{$Q$}}
+\prooflabel{Weak}
+\UnaryInfC{$P * Q \vdash P$}
+\DisplayProof
+\hskip 2em
+\AxiomC{\phantom{$Q$}}
+\prooflabel{Sep-assoc}
+\UnaryInfC{$P * (Q * R) \dashv\vdash (P * Q) * R$}
+\DisplayProof
+\hskip 2em
+\AxiomC{\phantom{$Q$}}
+\prooflabel{Sep-sym}
+\UnaryInfC{$P * Q \vdash Q * P$}
+\DisplayProof
+
+\vskip 2em
+
+\AxiomC{$P_1 \vdash Q_1$}
+\AxiomC{$P_2 \vdash Q_2$}
+\prooflabel{$*$I}
+\BinaryInfC{$P_1 * Q_1 \vdash P_2 * Q_2$}
+\DisplayProof
+\hskip 2em
+\AxiomC{$R * P \vdash Q$}
+\prooflabel{$\wand$I}
+\UnaryInfC{$R \vdash P \wand Q$}
+\DisplayProof
+\hskip 2em
+\AxiomC{$R_1 \vdash P \wand Q$}
+\AxiomC{$R_2 \vdash P$}
+\prooflabel{$\wand$E}
+\BinaryInfC{$R_1 * R_2 \vdash Q$}
+\DisplayProof
+\end{center}
+\caption{Reguły wnioskowania dla operatorów separacyjnych}
+\end{figure}
+
+
+\begin{figure}
+\begin{center}
+\textbf{Reguły strukturalne dla trójek Hoare'a}
+
+\vskip 2em
+
+\AxiomC{$S \vdash \hoare{P}{e}{A}{v}{Q}$}
+\AxiomC{$S$ jest trwały}
+\prooflabel{Ht-frame}
+\BinaryInfC{$S \vdash \hoare{P * R}{e}{A}{v}{Q * R}$}
+\DisplayProof
+\hskip 2em
+\AxiomC{\phantom{$Q$}}
+\prooflabel{Ht-ret}
+\UnaryInfC{$S \vdash \hoare{\mathtt{True}}{w}{\phi}{v}{v = w}$}
+\DisplayProof
+
+\vskip 2em
+
+\AxiomC{$\Gamma | S \vdash P \Rightarrow P'$}
+\AxiomC{$\Gamma | S \vdash \hoare{P'}{e}{A}{v}{Q'}$}
+\AxiomC{$\Gamma, v : C | S \vdash Q' \Rightarrow Q$}
+\AxiomC{$S$ jest trwały}
+\prooflabel{Ht-csq}
+\QuaternaryInfC{$S \vdash \hoare{P}{e}{A}{v}{Q}$}
+\DisplayProof
+
+\vskip 2em
+
+\AxiomC{$S \vdash \hoare{P}{e}{A}{v}{Q}$}
+\AxiomC{$S \vdash \hoare{Q}{e}{A}{v}{Q}$}
+\prooflabel{Ht-disj}
+\BinaryInfC{$S \vdash \hoare{P \vee Q}{e}{A}{v}{Q}$}
+\DisplayProof
+
+\vskip 2em
+
+\AxiomC{$S \wedge R \vdash \hoare{Q}{e}{A}{v}{Q}$}
+\prooflabel{Ht-pers}
+\RightLabel{jeśli R trwały}
+\doubleLine
+\UnaryInfC{$S \vdash \hoare{Q \wedge R}{e}{A}{v}{Q}$}
+\DisplayProof
+
+\vskip 2em
+
+\textbf{Reguły dla trójek Hoare'a opisujących konstrukcje języka}
+
+\vskip 2em
+
+\AxiomC{\phantom{$Q$}}
+\prooflabel{Ht-new-null}
+\UnaryInfC{$S \vdash \hoare{\mathtt{True}}{\mathbf{new} \ C(\overline{v})}{\phi}{w}{w \neq \mathbf{null}}$}
+\DisplayProof
+
+\vskip 2em
+
+\AxiomC{$\mathrm{flds}(C) = f_1, \ldots, f_n$}
+\prooflabel{Ht-new-field}
+\UnaryInfC{$S \vdash \hoare{\mathtt{True}}{\mathbf{new} \ C(v_1, \ldots, v_n)}{\phi}{w}{w \hookrightarrow f_i = v_i}$}
+\DisplayProof
+
+\end{center}
+\caption{Reguły wnioskowania dla trójek Hoare'a}
+\end{figure}
+
+
 
 \chapter{Własności ewaluacji}
 
@@ -199,8 +422,11 @@ wolnej $x$ w~$e$.
 \begin{thebibliography}{99}
 \addcontentsline{toc}{chapter}{Bibliografia}
 
-\bibitem[Bea65]{beaman} Juliusz Beaman, \textit{Morbidity of the Jolly
-    function}, Mathematica Absurdica, 117 (1965) 338--9.
+\bibitem {jafun-def} J. Chrząszcz and A. Schubert. Function definitions for compound values in object-
+oriented languages. In \textit{Proc. of the 19th International Symposium on Principles
+and Practice of Declarative Programming}, PPDP ’17, pp. 61–72. ACM, 2017.
+
+\bibitem {jafun-sem} J. Chrząszcz and A.Schubert. Formalisation of a frame stack semantics for a Java-like language. 2018
 
 \end{thebibliography}
 
