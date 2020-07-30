@@ -134,6 +134,8 @@ języka, prezentowana logika nie zawiera kwantyfikatora ogólnego,
 a kwantyfikator egzystencjalny jest ograniczony
 do~termów najwyższego poziomu (Rysunek \ref{fig:syntax}).
 
+Używane będzie także oznaczenie $v_1 \neq v_2$ jako skrót dla $v_1 = v_2 \Rightarrow \mathtt{False}$.
+
 \begin{figure}[h]
 \begin{align*}
  \outerP ::= & \ \exists x : C.\outerP \| \outerP \wedge \outerP \| \outerP \vee \outerP \| P \\
@@ -404,8 +406,123 @@ w danej regule, to jest ono pomijane.
 \UnaryInfC{$S \vdash \hoare{\mathtt{True}}{\mathbf{new} \ C(v_1, \ldots, v_n)}{\phi}{w}{w \hookrightarrow f_i = v_i}$}
 \DisplayProof
 
+\vskip 2em
+
+\AxiomC{$\Gamma | S \vdash \hoare{P}{E_1}{\phi}{x}{Q}$}
+\AxiomC{$\Gamma, x : C | S \vdash \hoare{Q}{E_2}{A}{w}{R}$}
+\prooflabel{Ht-let}
+\RightLabel{jeśli S trwały}
+\BinaryInfC{$\Gamma | S \vdash \hoare{P}{\mathbf{let} \ C \ x = E_1 \ \mathbf{in} \ E_2}{A}{w}{R}$}
+\DisplayProof
+
+\vskip 2em
+
+\AxiomC{$S \vdash \hoare{P}{E_1}{A}{w}{Q}$}
+\AxiomC{$A \neq \phi$}
+\prooflabel{Ht-let-ex}
+\BinaryInfC{$\Gamma | S \vdash \hoare{P}{\mathbf{let} \ C \ x = E_1 \ \mathbf{in} \ E_2}{A}{w}{Q}$}
+\DisplayProof
+
+\vskip 2em
+
+\AxiomC{\phantom{$Q$}}
+\prooflabel{Ht-field-set}
+\UnaryInfC{$S \vdash \hoare{x \neq \mathtt{null}}{x.f = v}{\phi}{\_}{x \hookrightarrow f = v}$}
+\DisplayProof
+
+\vskip 2em
+
+\AxiomC{\phantom{$Q$}}
+\prooflabel{Ht-null-set}
+\UnaryInfC{$S \vdash \hoare{x = \mathtt{null}}{x.f = v}{\mathtt{NPE}}{w}{w = \mathtt{npe}}$}
+\DisplayProof
+
+\vskip 2em
+
+\AxiomC{\phantom{$Q$}}
+\prooflabel{Ht-field-get}
+\UnaryInfC{$S \vdash \hoare{x \hookrightarrow f = v}{x.f}{\phi}{w}{w = v}$}
+\DisplayProof
+
+\vskip 2em
+
+\AxiomC{\phantom{$Q$}}
+\prooflabel{Ht-null-get}
+\UnaryInfC{$S \vdash \hoare{x = \mathtt{null}}{x.f}{\mathtt{NPE}}{w}{w = \mathtt{npe}}$}
+\DisplayProof
 \end{center}
 \caption{Reguły wnioskowania dla trójek Hoare'a}
+\end{figure}
+
+
+\begin{figure}
+\begin{center}
+\AxiomC{$S \vdash \hoare{P \wedge v_1 = v_2}{E_1}{A}{w}{Q}$}
+\AxiomC{$S \vdash \hoare{P \wedge v_1 \neq v_2}{E_2}{A}{w}{Q}$}
+\prooflabel{Ht-if}
+\BinaryInfC{$S \vdash \hoare{P}{\mathbf{if} \ v_1 = v_2 \ \mathbf{then} \ E_1 \ \mathbf{else} \ E_2}{A}{w}{Q}$}
+\DisplayProof
+
+\vskip 2em
+
+\AxiomC{$\Gamma \vdash x : C$}
+\AxiomC{$\hoare{P'}{\cdot}{A}{w}{Q'} \in \mathtt{invariants}(C, m)$}
+\noLine
+\UnaryInfC{$S \wedge \hoare{P'}{x.m(\overline{v})}{A}{w}{Q'} \vdash \hoare{P}{x.m(\overline{v})}{A}{w}{Q}$}
+\prooflabel{Ht-invoke}
+\BinaryInfC{$S \vdash \hoare{P}{x.m(\overline{v})}{A}{w}{Q}$}
+\DisplayProof
+
+\vskip 2em
+
+
+\AxiomC{\phantom{$Q$}}
+\prooflabel{Ht-null-invoke}
+\UnaryInfC{$S \vdash \hoare{x = \mathtt{null}}{x.m(\overline{v})}{\mathtt{NPE}}{w}{w = \mathtt{npe}}$}
+\DisplayProof
+
+\vskip 2em
+
+\AxiomC{$\Gamma \vdash x : C$}
+\prooflabel{Ht-throw}
+\UnaryInfC{$S \vdash \hoare{x \neq \mathtt{null}}{\mathbf{throw} \ x}{C}{w}{w = x}$}
+\DisplayProof
+
+\vskip 2em
+
+\AxiomC{\phantom{$Q$}}
+\prooflabel{Ht-null-throw}
+\UnaryInfC{$S \vdash \hoare{x = \mathtt{null}}{\mathbf{throw} \ x}{\mathtt{NPE}}{w}{w = \mathtt{npe}}$}
+\DisplayProof
+
+\vskip 2em
+
+\AxiomC{$S \vdash \hoare{P}{E_1}{\phi}{w}{Q}$}
+\prooflabel{Ht-catch-normal}
+\UnaryInfC{$S \vdash \hoare{P}{\mathbf{try} \ E_1 \ \mathbf{catch} \ (C \ x) \ E_2}{\phi}{w}{Q}$}
+\DisplayProof
+
+\vskip 2em
+
+\AxiomC{$\Gamma | S \vdash \hoare{P}{E_1}{C'}{x}{Q}$}
+\AxiomC{$\Gamma, x : C' | S \vdash \hoare{Q}{E_2}{A}{w}{R}$}
+\AxiomC{$C' \leq C$}
+\prooflabel{Ht-catch-ex}
+\RightLabel{jeśli S trwały}
+\TrinaryInfC{$\Gamma | S \vdash \hoare{P}{\mathbf{try} \ E_1 \ \mathbf{catch} \ (C \ x) \ E_2}{A}{w}{R}$}
+\DisplayProof
+
+\vskip 2em
+
+\AxiomC{$S \vdash \hoare{P}{E_1}{C'}{w}{Q}$}
+\AxiomC{$C' \not\leq C$}
+\prooflabel{Ht-catch-pass}
+\BinaryInfC{$S \vdash \hoare{P}{\mathbf{try} \ E_1 \ \mathbf{catch} \ (C \ x) \ E_2}{C'}{w}{Q}$}
+\DisplayProof
+
+
+\caption{Reguły wnioskowania dla trójek Hoare'a - c.d.}
+\end{center}
 \end{figure}
 
 
