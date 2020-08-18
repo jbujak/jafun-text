@@ -74,6 +74,7 @@
 \let\lll\undefined
 \usepackage{amssymb}
 \usepackage{bussproofs}
+\usepackage{amsthm}
 % 
 \newcommand \wand {\mathrel{-\mkern-6mu*}}
 \newcommand \outerP {\mathbf{P}}
@@ -82,6 +83,13 @@
 \renewcommand \| {\hspace{0.75em} | \hspace{0.75em} }
 \renewcommand \[ {[\![}
 \renewcommand \] {]\!]}
+\newcommand \eval [1] {\overset{#1}{\leadsto}}
+
+\newtheorem{theorem}{Twierdzenie}
+\newtheorem{lemma}{Lemat}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definicja}[section]
 
 % koniec definicji
 
@@ -116,12 +124,12 @@ Poniżej przedstawiam te aspekty języka, które są istotne dla prezentowanej l
 \section{Składnia i semantyka}
 
 \section{Ewaluacja}
-Ewaluacją konfiguracji $(h, st)$ będziemy nazywać dowolny ciąg par $(h_1, st_1), \ldots, (h_n, st_n)$, taki że
+Ewaluacją konfiguracji $(h, st)$ będziemy nazywać dowolny ciąg par $\mathit{confs} = (h_1, st_1), \ldots, (h_n, st_n)$, taki że
 $h_1 = h$, $st_1 = st$ oraz $(h_i, st_i) \rightarrow (h_{i+1}, st_{i+1})$ dla $1 \leq i < n$.
 
 Ewaluacją wyrażenia $e$ na stercie $h$ będziemy nazywać taką ewaluację konfiguracji $(h, \[ e \]_\phi)$,
 że $st_n = \[ l \]_A$ dla pewnych $l, A$. Jeśli taka ewaluacja istnieje, będziemy to oznaczać jako
-$(h, e) \leadsto (h_n, A, l)$
+$(h, e) \eval{confs} (h_n, A, l)$
 
 \chapter{Składnia i semantyka}
 Prezentowana logika separacji dla języka Jafun jest logiką z~kwantyfikatorami egzystencjalnymi pierwszego rzędu, trójkami Hoare'a, operatorem $\hookrightarrow$,
@@ -528,6 +536,60 @@ w danej regule, to jest ono pomijane.
 
 
 \chapter{Własności ewaluacji}
+Pokażę teraz twierdzenia o własności ewaluacji, które będą później użyte do udowodnienia poprawności reguł dla trójek Hoare'a.
+\section{Łączenie ewaluacji}
+Podatwowym twierdzeniem, pozwalającym mówić o ewaluacji złożonych wyrażeń, jest twierdzenie o łączeniu ewaluacji.
+\begin{theorem}[O łączeniu ewaluacji]
+Niech $(h, st), (h', st'), (h'', st'')$ będą konfiguracjami, a $confs$ i $confs'$ -- ciągami konfiguracji,
+takimi że $(h, st) \eval{confs} (h', st')$ i $(h', st') \eval{confs'} (h'', st'')$.
+Wtedy $(h, st) \eval{confs ++ confs'} (h'', st'')$.
+\end{theorem}
+\begin{proof}
+TODO
+\end{proof}
+
+\section{Ewaluacja przy rozszerzonym stosie i kontekście}
+
+\section{Ewaluacja zależy tylko od zmiennych wolnych}
+Twierdzenie o zależności ewaluacji od zmiennych wolnych jest kluczowe w dowodzie poprawności dla
+reguł \textsc{Weak} i \textsc{Ht-frame}.
+Mówi ono, że jeśli dwie sterty zgadzają się na lokacjach odpowiadających zmiennym wolnym w pewnym wyrażeniu $E$,
+to ewaluacje wyrażenia $E$ na tych dwóch stertach będą w pewnym sensie równoważne.
+
+Równoważnośc ta nie będzie niestety trywialna, bo nowo zaalokowane lokacje na obu sterach mogą się różnić.
+Zgodnie z semantyką języka, lokacja zwracana przez operator \textbf{new} to (maximum z lokacji na stercie) + 1.
+Stąd, ponieważ nie zakładamy niczego o lokacjach innych niż te odpowiadające zmiennym wolnym,
+wartość zwracana przez operator \textbf{new} może się różnić pomiędzy stertami.
+Nowo zaalokowane lokacje mogą następnie zostać zapisane w polach obiektów znajdujących się pod lokacjami
+odpowiadającymi zmiennym wolnym, co oznacza że nawet te obiekty, początkowo równe na obu stertach,
+mogą zacząć się różnić w czasie ewaluacji.
+
+Żeby obejść ten problem, zdefiniujemy \textit{izomorfizm stert} jako bijekcję między lokacjami
+na tych stertach,
+zachowującą \texttt{null} i kompozycję.
+
+\begin{definition}[izomorfizm stert] {\ } \\
+Niech $h_1, h_2 : \mathsf{Heap}$.
+Funkcję $f : \mathrm{Dom}(h_1) \cup \{\mathtt{null}\} \to \mathrm{Dom}(h_2) \cup \{\mathtt{null}\}$
+nazwiemy izomorfizmem między tymi stertami, jeśli:
+\begin{enumerate}
+ \item $f$ jest bijekcją
+ \item $f(\mathtt{null}) = \mathtt{null}$
+ \item $f$ zachowuje kompozycję, to znaczy dla dowolnych lokacji $l_1, l_2$ i pola $x$ zachodzi
+    $$h_1(l_1) \hookrightarrow x = l_2 \iff h_2(f(l_2)) \hookrightarrow x = f(l_2)$$
+\end{enumerate}
+Jeśli taka funkcja $f$ istnieje, powiemy że sterty $h_1$ i $h_2$ są izomorficzne.
+\qed
+\end{definition}
+
+Ostatecznie będziemy chcieli pokazać, że jeśli wyrażenie $E$ nie zawiera zmiennych wolnych,
+a sterty $h_1, h_2$ są równe na wszystkich lokacjach występujących w $E$, to
+ewaluacje $E$ na stertach $h_1$ i $h_2$ są równoważne z dokładnością do izomorfizmu.
+
+To oznacza, że potrzebujemy mówić o izomorfizmach konfiguracji (czyli ciągów par (sterta, stos wywołań)),
+a zatem należy zdefiniować także izomorfizmy między stosami wywołań.
+Służy temu kolejnych kilka definicji.
+
 
 \chapter{Poprawność}
 
