@@ -71,6 +71,7 @@
 \newtheorem{defi}{Definicja}[section]
 
 \usepackage{amsmath}
+\usepackage{float}
 \let\lll\undefined
 \usepackage{amssymb}
 \usepackage{bussproofs}
@@ -591,10 +592,10 @@ w którym aktualnie ewaluowane wyrażenie (redeks) jest oznaczone specjalnym sym
 Indeks $A$ opisuje, czy program wykonuje się w sposób normalny ($A=\emptyset$),
 czy był rzucony jakiś niezłapany jeszcze wyjątek ($A\in \overline{\mathbf{C}}$).
 
-Dla wygody każda ramka stosu jest podzielona na kontekst $C_i \in \BCtxt$ i redeks $E_i$.
-Kontekst $C_i$ opisuje wszystkie zagnieżdżone bloki $\jlet$ i $\jcatch$, wewnątrz którch znajduje się $E_i$.
+Dla wygody każda ramka stosu jest podzielona na kontekst $\ctxt_i \in \BCtxt$ i redeks $E_i$.
+Kontekst $\ctxt_i$ opisuje wszystkie zagnieżdżone bloki $\jlet$ i $\jcatch$, wewnątrz którch znajduje się $E_i$.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \begin{tabular}{@{}ll@{}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \dsrul{newk}
@@ -1235,6 +1236,28 @@ w danej regule, to jest ono pomijane.
 \end{center}
 \end{figure}
 
+\chapter{Własności stert}
+
+\section{Definicje}
+\begin{definition}[Spójność sterty]{\ } \\
+Niech $h$ będzie stertą.
+Powiemy, że $h$ jest spójna, jeśli każda lokacja będąca wartością pola w pewnym obiekcie na $h$
+również jest na $h$.
+To znaczy, dla każdego $x, l_1, l_2$, jeśli $h(l_1)(x) = l_2$, to $l_2 \in \dom{h}$.
+\qed
+\end{definition}
+
+\begin{definition}[Suma rozłączna stert]{\ } \\
+Niech $h, h_1, h_2$ będą stertami.
+Powiemy, że $h$ jest sumą rozłączną stert $h_1$ i $h_2$ (zapisywane $h = h_1 \oplus h_2$),
+jeśli
+\begin{enumerate}
+ \item Dla każdej lokacji $l$, $l \in h$ wtedy i tylko wtedy gdy $l \in h_1$ lub $l \in h_2$
+ \item Nie istnieje lokacja $l$, taka że $l \in h_1$ i $l \in h_2$
+\end{enumerate}
+
+\qed
+\end{definition}
 
 
 \chapter{Własności ewaluacji}
@@ -1266,6 +1289,8 @@ Nowo zaalokowane lokacje mogą następnie zostać zapisane w polach obiektów zn
 odpowiadającymi zmiennym wolnym, co oznacza że nawet te obiekty, początkowo równe na obu stertach,
 mogą zacząć się różnić w czasie ewaluacji.
 
+\subsection{Izomorfizmy}
+
 Żeby obejść ten problem, zdefiniujemy \textit{izomorfizm stert} jako bijekcję między lokacjami
 na tych stertach,
 zachowującą \texttt{null} i kompozycję.
@@ -1288,9 +1313,88 @@ Ostatecznie będziemy chcieli pokazać, że jeśli wyrażenie $E$ nie zawiera zm
 a sterty $h_1, h_2$ są równe na wszystkich lokacjach występujących w $E$, to
 ewaluacje $E$ na stertach $h_1$ i $h_2$ są równoważne z dokładnością do izomorfizmu.
 
-To oznacza, że potrzebujemy mówić o izomorfizmach konfiguracji (czyli ciągów par (sterta, stos wywołań)),
+To oznacza, że potrzebujemy mówić o izomorfizmach ewaluacji (czyli ciągów par (sterta, stos wywołań)),
 a zatem należy zdefiniować także izomorfizmy między stosami wywołań.
 Służy temu kolejnych kilka definicji.
+
+\begin{definition}[izomorfizm wyrażeń] {\ } \\
+Intuicyjnie, dwa wyrażenia są izomorficzne, jeśli różnią się tylko lokacjami w nich występującymi i istnieje
+izomorfizm stert, mapujący lokacje z pierwszego z wyrażeń na odpowiadające im lokacje w drugim.
+Formalnie zdefiniujemy ten izomorfizm przez indukcję po budowie wyrażeń.
+
+Niech $f$ będzie izomorfizmem między dwiema stertami i niech $E_1, E_2$ będą wyrażeniami Jafun.
+Powiemy, że $f$ jest izomorfizmem między tymi wyrażeniami, jeśli
+\begin{enumerate}
+ \item $E_1$ i $E_2$ są wyrażeniami tego samego rodzaju (np. oba są wyrażeniami $\jnew$)
+ \item $f$ jest izomorfizmem między odpowiadającymi sobie podwyrażeniami $E_1$ i $E_2$
+ \item Dla każdego $\jthis$ występującego w $E_1$, na odpowiadającej mu pozycji w $E_2$ też jest $\jthis$
+ \item Dla każdego identyfikatora występującego w $E_1$, na odpowiadającej mu pozycji w $E_2$ jest taki sam identyfikator
+ \item Dla każdej lokacji $l$ w $E_1$, na odpowiadającej mu pozycji w $E_2$ jest $f(l)$
+\end{enumerate}
+\qed
+\end{definition}
+
+\begin{definition}[izomorfizm kontekstów] {\ } \\
+Podobnie jak wyżej, definiujemy izomorfizm kontekstów przez indukcję po budowie kontekstu.
+
+Niech $f$ będzie izomorfizmem między dwiema stertami i niech $\ctxt_1, \ctxt_2$ będą kontekstami ewaluacji Jafun.
+Powiemy, że $f$ jest izomorfizmem między tymi kontekstami, jeśli
+\begin{itemize}
+ \item $\ctxt_1 = \ctxt_2 =  \[ ~\]_A$
+ \item[] lub
+ \item $\ctxt_1 = \letin{C}{x}{\ctxt_1'}{E_1}, \quad
+        \ctxt_2 = \letin{C}{x}{\ctxt_2'}{E_2}$, \\
+    gdzie $f$ jest izomorfizmem między $\ctxt_1'$ i $\ctxt_2'$ oraz między $E_1$ i $E_2$
+ \item[] lub
+ \item $\ctxt_1 = \tcatch{\ctxt_1'}{\mmod\; C}{x}{E_1},\quad
+        \ctxt_2 = \tcatch{\ctxt_2'}{\mmod\; C}{x}{E_2}$, \\
+    gdzie $f$ jest izomorfizmem między $\ctxt_1'$ i $\ctxt_2'$ oraz między $E_1$ i $E_2$
+\end{itemize}
+\qed
+\end{definition}
+
+\begin{definition}[izomorfizm stosów wywołań] {\ } \\
+$f$ jest izomorfizmem między dwoma stosami wywołań, jeśli są one równej długości
+i $f$ jest izomorfizmem między każdą parą odpowiadających sobie kontekstów i redeksów z tych stosów.
+\qed
+\end{definition}
+
+\newcommand{\hrest}{h^{rest}}
+\newcommand{\hbase}{h^{base}}
+
+\subsection{Zależność ewaluacji od zmiennych wolnych}
+Sformułuję teraz twierdzenie o zależności ewaluacji od zmiennych wolnych,
+a następnie udowodnię kilka lematów pomocnych w jego dowodzie.
+\begin{theorem}[O zależności ewaluacji od zmiennych wolnych]{\ } \\
+    Niech $h$ będzie spójną stertą, $env$ środowiskiem,
+    a $E$ wyrażeniem Jafun, w którym nie występują konkretne lokacje, a wszystkie zmienne wolne są przez $env$ mapowane
+    na lokacje w $h$.
+    Niech $h_1, h_2, \hrest_1, \hrest_2$ będą stertami takimi, że
+    $h_1 = h \oplus \hrest_1$ i $h_2 = h \oplus \hrest_2$.
+    Wreszcie, niech $\mathit{confs_1}, h_{1,n}, A, l_1$ będą takie, że $(h_1, E[/env]) \eval{confs_1} (h_{1,n}, A, l_1)$.
+    
+    Wtedy istnieją  $\hbase_{1, n}, \hbase_{2, n}, \mathit{confs}_2, h_{2, n}, l_2, f$, takie że
+    \begin{enumerate}
+     \item $h_{1, n} = \hbase_{1, n} \oplus \hrest_1$
+     \item $h_{2, n} = \hbase_{2, n} \oplus \hrest_2$
+     \item $f$ jest izomorfizmem między $\hbase_{1, n}$ i $\hbase_{2, n}$
+     \item $f$ jest identycznością na lokacjach w $env$
+     \item $f(l_1) = l_2$
+     \item $(h_2, E[/env]) \eval{confs_2} (h_{2,n}, A, l_2)$.
+    \end{enumerate}
+    \qed
+\end{theorem}
+Sterty $h_1$ i $h_2$ w powyższym twierdzeniu to dwie sterty, o których wiemy, że zgadzają się
+na wszystkich lokacjach odpowiadających zmiennym wolnym w $E$ (wszystkie one zawierają się w podstercie $h$).
+O ich pozostałych fragmentach (odpowiednio $\hrest_1$ i $\hrest_2$) nie zakładamy nic.
+Twierdzenie mówi, że jeśli mamy ewaluację wyrażenia $E$ w środowisku $env$ na stercie $h_1$,
+to istnieje też jego analogiczna ewaluacja na stercie $h_2$,
+taka że sterty docelowe oraz wyniki ewaluacji są izomorficzne, a fragmenty stert nie mające związu ze zmiennymi wolnymi
+pozostają niezmienione.
+
+W praktyce oznacza to, że jedynie fragmenty stert odpowiadające zmiennym wolnym w wyrażeniu
+mają znaczenie dla ewaluacji tego wyrażenia.
+
 
 
 \chapter{Poprawność}
