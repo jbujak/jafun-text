@@ -83,6 +83,8 @@
 \renewcommand \| {\hspace{0.75em} | \hspace{0.75em} }
 \renewcommand \[ {[\![}
 \renewcommand \] {]\!]}
+\newcommand \llbracket {[\![}
+\newcommand \rrbracket {]\!]}
 \newcommand \eval [1] {\overset{#1}{\leadsto}}
 
 \newtheorem{theorem}{Twierdzenie}
@@ -454,10 +456,17 @@ d,Analyze,struct,Ltac,%
 
 Jafun to~zorientowany obiektowo język programowania podobny do Javy.
 Jego szczegółowy opis znajduje się w pracy \cite{jafun-def}.
-Poniżej przedstawiam te aspekty języka, które są istotne dla prezentowanej logiki.
-
+Poniżej przytaczam te aspekty języka, które są istotne dla prezentowanej logiki.
 
 \section{Składnia i semantyka}
+
+Program w języku jafun jest listą definicji klas.
+Definicja klasy składa się z listy pól i listy metod.
+Metody mogą przyjmować dowolną liczbę argumentów i rzucać dowolną liczbę wyjątków,
+deklarowanych przez słowo kluczowe $\throws$, podobnie jak w Javie.
+
+Modyfikatory dostępu $\fmodifier$ i $\mmod$ nie mają znaczenia w prezentowanej logice, ale zostały uwzględnione
+w składni dla kompletności opisu.
 
 \begin{figure}[h]
 $$
@@ -502,6 +511,30 @@ $$
 \label{fig:jafun_syntax}
 \end{figure}
 
+Semantyka małych kroków języka Jafun jest zdefiniowana przez relację $\rightarrow$ na rysunku \ref{fig:jafun_semantics},
+dla ustalonego programu $\overline{\mathbf{}}$.
+Relacja $\rightarrow$ jest relacją binarną na parach (sterta, stos wywołań).
+W ogólności ma ona postać 
+$$
+  \begin{array}{l@{\;}l}
+  \overline{\mathbf{C}},\ \ h,\,  \ctxt_1\llbracket E_1\rrbracket _{A_1}::\cdots:: & \ctxt_n\llbracket E_n\rrbracket _{A_n}\to
+      h', \ctxt'_1\llbracket E_1\rrbracket _{A'_1}::\cdots:: \ctxt'_m\llbracket E_m\rrbracket _{A'_m}.
+  \end{array}
+$$
+
+\emph{Stos wywołań}
+$\ctxt_1\llbracket E_1\rrbracket _{A_1}::\cdots:: \ctxt_n\llbracket E_n\rrbracket _{A_n}$,
+albo w skrócie \( \overline{\ctxt} \), to ciąg wyrażeń z~rysunku~\ref{fig:jafun_syntax},
+w którym aktualnie ewaluowane wyrażenie (redeks) jest oznaczone specjalnym symbolem $\llbracket \,\rrbracket _A$.
+Indeks $A$ opisuje, czy program wykonuje się w sposób normalny ($A=\emptyset$),
+czy był rzucony jakiś niezłapany jeszcze wyjątek ($A\in \overline{\mathbf{C}}$).
+
+Dla wygody każda ramka stosu jest podzielona na kontekst $C_i \in \BCtxt$ i redeks $E_i$.
+Kontekst $C_i$ opisuje wszystkie zagnieżdżone bloki $\jlet$ i $\jcatch$, wewnątrz którch znajduje się $E_i$.
+
+\vspace{2em}
+
+
 \begin{figure}[h]
 \begin{tabular}{@{}ll@{}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -521,9 +554,13 @@ $%
 %
 \alloc(h, \overline{\ctxt}, C)=(l_0, h'),\;
 \fields(C) = x_1, \dots, x_k,\;
-o=\emptyclass{C}\{x_1 \mapsto  l_1,\ldots,x_k \mapsto  l_k\}, \;$} \\
+$} \\
 
-\multicolumn{2}{l}{\qquad \phantom{gdzie} $h'' = h'\{l_0 \mapsto  o\}$}\\[2ex]
+\multicolumn{2}{l}{
+\qquad \phantom{gdzie}
+$o=\emptyclass{C}\{x_1 \mapsto  l_1,\ldots,x_k \mapsto  l_k\}, \;
+h'' = h'\{l_0 \mapsto  o\}$
+}\\[2ex]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \dsrul{letin}
 &
@@ -604,11 +641,11 @@ $%
 %
 %
  \overline{\mathbf{C}}, h, \overline{\ctxt}:: \ctxt\[ l_1.x = l\] _\emptyset \rightarrow h', \overline{\ctxt}:: \ctxt\[ l\] _\emptyset$
-%\\
-%\multicolumn{2}{l}{
+\\
+\multicolumn{2}{l}{
 \qquad gdzie
 $ l_1 \neq \jnull, o = h(l_1)\{x \mapsto  l\}, h' = h\{l_1 \mapsto  o\} $
-%}
+}
 \\[2ex]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \dsrul{varnpe}
@@ -654,8 +691,10 @@ $%
 %
 %
 %
- \overline{\mathbf{C}}, h, \overline{\ctxt}:: \ctxt\[ \tcatch{E_1}{\mmod\; C}{x}{E_2}\] _\emptyset \rightarrow  
-h, \overline{\ctxt}:: \ctxt[\tcatch{\[ E_1\] _\emptyset}{\mmod\; C}{x}{E_2}] $
+ \overline{\mathbf{C}}, h, \overline{\ctxt}:: \ctxt\[ \tcatch{E_1}{\mmod\; C}{x}{E_2}\] _\emptyset \rightarrow$
+\\
+& \qquad
+$h, \overline{\ctxt}:: \ctxt[\tcatch{\[ E_1\] _\emptyset}{\mmod\; C}{x}{E_2}] $
 \\
 \dsrul{ctchnrml}
 &
@@ -672,9 +711,11 @@ $%
 %
 %
  \overline{\mathbf{C}}, h, \overline{\ctxt}:: \ctxt[\tcatch{\[ l\] _{C'}}{\mmod\; C}{x}{E_2}] \rightarrow h, \overline{\ctxt}:: \ctxt\[ E_2'\] _\emptyset$
+\\
+\multicolumn{2}{l}{
 \qquad gdzie
 $E_2' = E_2\{l/x\}, C' \leq:  C $
-%}
+}
 \\[2ex]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \dsrul{letex}
@@ -704,15 +745,27 @@ $%
 %
 %
  \overline{\mathbf{C}}, h, \overline{\ctxt}:: \ctxt[\tcatch{\[ l\] _{C'}}{\mmod\; C}{x}{E_2}] \rightarrow h, \overline{\ctxt}:: \ctxt\[ l\] _{C'}$
+\\
+\multicolumn{2}{l}{
 \qquad gdzie
 $C'\not=\emptyset, C' \not\!\leq:  C $  
-%}
+}
 \\[3ex]
 \end{tabular}
 \caption{Semantyka języka Jafun}
-\label{fig:jafun_syntax}
+\label{fig:jafun_semantics}
 \end{figure}
 
+Ewaluacja programu zaczyna się od stanu
+$ \overline{\mathbf{C}}, h, \llbracket E'\rrbracket _\emptyset$
+gdzie $h\in\Heap$, $E'=E\{l_o/\jthis\}$,
+$\classof(h,l_o)=C$, a
+$C'\; m()\;\throws\; \npetype\; \boldsymbol\{E\boldsymbol\}$
+jest metodą nieprzyjmującą argumentów w klasie $C$.
+Metoda $m$ odpowiada funkcji \texttt{main} w zwykłej Javie.
+
+Dodatkowo zakładamy, że na stercie $h$, pod pewną lokacją $\npe$ istnieje object klasy $\npetype$
+(``null pointer exception``).
 
 \section{Ewaluacja}
 Ewaluacją konfiguracji $(h, st)$ będziemy nazywać dowolny ciąg par $\mathit{confs} = (h_1, st_1), \ldots, (h_n, st_n)$, taki że
