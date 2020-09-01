@@ -511,6 +511,68 @@ $$
 \label{fig:jafun_syntax}
 \end{figure}
 
+\begin{figure}[h]
+\begin{center}
+  {\bf Notacje pomocnicze dla deklaracji w $ \overline{\mathbf{C}} $}\\[2ex]
+\end{center}
+\begin{minipage}{0.95\textwidth}
+Niech \(\jclass \;C_1\; \jext\; C_2\; \boldsymbol\{ \overline{\mathbf{F}}~ \overline{\mathbf{M}} \boldsymbol\}\)
+będzie deklaracją klasy w \(\overline{\mathbf{C}}\). 
+Niech \(\fmodifier\;C_3\; x\) będzie deklaracją pola w \(\overline{\mathbf{F}}\).
+Niech \(\mmod_r\; C_4\; \mmod_o\; m(\args)\; \throws\; \Exc\; \boldsymbol\{E_1\boldsymbol\}\)
+będzie deklaracją metody w \(\overline{\mathbf{M}}\),
+gdzie $\args = \mmod'_1\; C'_1\;x_1,\ldots,\mmod'_n\; C'_n\;x_n$,
+$\Exc = \mmod''_1\; C''_1,\ldots, \mmod''_k\; C''_k$, and
+$\mmod_r,\mmod_o,\mmod'_i, \mmod''_j\in\Lannot$ for all possible $i,j$.
+Ustalając
+\(\overline{\mathbf{M}}_1 \dotcup \overline{\mathbf{M}}_2 = 
+ \overline{\mathbf{M}}_1 \cup \{ \mathbf{M} \in \overline{\mathbf{M}}_2\;|\; \name(\mathbf{M}) \not \in \overline{\mathbf{M}}_1 \}\), 
+możemy zdefiniować następujące pomocnicze notacje:
+\end{minipage}
+
+\medskip
+
+  \centering
+\noindent
+\begin{tabular}{@{}lp{220pt}@{}}
+  $C_1\in \overline{\mathbf{C}}$  & kiedy w deklaracja
+    $C_1$ istnieje w $ \overline{\mathbf{C}},$\\ 
+  $\objecttype\in \overline{\mathbf{C}},$
+  $\npetype\in \overline{\mathbf{C}}$ & \draft{trzeba rozróżnić między Object a objecttype}
+\\[0.5ex]
+  \hline\\[-2ex]
+  $\fields(C_1) = \{ x\in\Ident\;|\; \fmodifier\, D_1\, x \in \overline{\mathbf{F}}\} \cup \fields(C_2)$ & 
+  $\fields(\Object) =\emptyset$
+                                             \\
+  $\overline{\fields}(C_1) = \overline{\mathbf{F}},\overline{\fields}(C_2) $ 
+                                             & 
+  $\overline{\fields}(\Object) = \emptyset $ 
+                                              \\ 
+  $\methods(C_1) = \overline{\mathbf{M}}\dotcup \methods(C_2)$  &
+  $\methods(\Object) = \emptyset$ \\
+  $\extends(C_1) = C_2$  & 
+  $\extends(\Object) = \emptyset$  \\[0.5ex]
+\hline\\[-2ex]
+  $x\in C_1$               & kiedy deklaracja $x$ istnieje w~$ \overline{\mathbf{F}},$ \\
+  $\typeof(C_1, x ) = C_3$     & dla $x\in C_1$\\[0.5ex]
+\hline\\[-2ex]
+  $m\in C_1 $  & kiedy deklaracja $m$ istnieje w~$ \overline{\mathbf{M}},$ \\
+  $\body(C_1, m) = E_1,$ & 
+    dla $m\in C_1,$\\
+  $\params(C_1, m) = \args$ &
+    dla $m\in C_1,$\\
+  $\paramNames(C_1, m) = x_1,\ldots,x_n$ &
+    dla $m\in C_1,$\\
+  $\classof(h, l)$ & klasa obiektu znajdującego się pod lokacją $l~\in~\Loc$ na stercie $h\in\Heap$\\
+  $\classof(h, \jnull) = \bot$ & dla każdej sterty $h$\\
+  $\alloc:\Heap\times\Prog\times\Cname \to \Loc\times\Heap$  & funkcja alokacji\\
+  $\emptyclass{C} (x) = \jnull $  & dla $x\in\fields(C)$\\
+\end{tabular}
+\caption{Notacje pomocnicze}
+\end{figure}
+
+
+
 Semantyka małych kroków języka Jafun jest zdefiniowana przez relację $\rightarrow$ na rysunku \ref{fig:jafun_semantics},
 dla ustalonego programu $\overline{\mathbf{}}$.
 Relacja $\rightarrow$ jest relacją binarną na parach (sterta, stos wywołań).
@@ -531,9 +593,6 @@ czy był rzucony jakiś niezłapany jeszcze wyjątek ($A\in \overline{\mathbf{C}
 
 Dla wygody każda ramka stosu jest podzielona na kontekst $C_i \in \BCtxt$ i redeks $E_i$.
 Kontekst $C_i$ opisuje wszystkie zagnieżdżone bloki $\jlet$ i $\jcatch$, wewnątrz którch znajduje się $E_i$.
-
-\vspace{2em}
-
 
 \begin{figure}[h]
 \begin{tabular}{@{}ll@{}}
@@ -763,7 +822,6 @@ $\classof(h,l_o)=C$, a
 $C'\; m()\;\throws\; \npetype\; \boldsymbol\{E\boldsymbol\}$
 jest metodą nieprzyjmującą argumentów w klasie $C$.
 Metoda $m$ odpowiada funkcji \texttt{main} w zwykłej Javie.
-
 Dodatkowo zakładamy, że na stercie $h$, pod pewną lokacją $\npe$ istnieje object klasy $\npetype$
 (``null pointer exception``).
 
