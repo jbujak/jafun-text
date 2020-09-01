@@ -91,6 +91,342 @@
 \theoremstyle{definition}
 \newtheorem{definition}{Definicja}[section]
 
+
+\usepackage[lighttt]{lmodern}
+\usepackage{amssymb}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+%\usepackage{amssymb}
+%\usepackage{alltt}
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{graphicx}
+%\usepackage{caption,subcaption}
+\usepackage{fancyvrb}
+%\usepackage{graphicx}
+\usepackage{longtable}
+%\usepackage{fancyhdr}
+\usepackage{comment}
+\usepackage{xspace}
+\usepackage{url}
+\usepackage{ifdraft}
+\usepackage[final]{listings}
+\usepackage{enumerate}
+\usepackage{endnotes}
+\usepackage[pdftex,bookmarks=true]{hyperref}
+\usepackage{wrapfig}
+%\ifdraft{\usepackage[right]{showlabels}}{} %works only after hyperref
+% powyzsze musi byc w \ifdraft, bo wpp nie znikaja label'e przy
+% equation :) - taki bug
+
+%%%%%%% generic definitions
+\newcommand{\draft}[1]{\ifdraft{{\color{red} [[[#1]]]}}{} }
+\newcommand{\draftmargin}[1]{\ifdraft{\marginpar{\parbox{2cm}{\color{red}\raggedright\small
+        #1}}}{\ignorespaces}}
+\newcommand{\alxnote}[1]{\ifdraft{\marginpar{\parbox{2cm}{\color{red}\raggedright\small alx: #1}}}{\ignorespaces}}
+\newcommand{\infomargin}[1]{\ifdraft{\marginpar{\parbox{2cm}{\color{blue}\raggedright\small #1}}}{\ignorespaces}}
+\ifdraft{\DefineVerbatimEnvironment{draftverbatim}{Verbatim}{formatcom=\color{red}}}{\specialcomment{draftverbatim}{}{}\excludecomment{draftverbatim}}
+\newcommand{\dremph}[1]{\ifdraft{{\color{red}#1}\xspace}{#1\xspace}}
+\newcommand{\draddbookmark}[1]{\ifdraft{\phantomsection\addcontentsline{toc}{subsubsection}{#1}}{\ignorespaces}}
+
+%%%%%%% definitions specific for the paper
+\newcommand{\mint}{\textsf{int}}
+\newcommand{\mboolean}{\textsf{boolean}}
+\newcommand{\float}{\textsf{float}}
+\newcommand{\byte}{\textsf{byte}}
+\newcommand{\mchar}{\textsf{char}}
+\newcommand{\mlong}{\textsf{long}}
+\newcommand{\double}{\textsf{double}}
+\newcommand{\OurArray}{\textsf{OurArray}}
+\newcommand{\String}{\textsf{String}}
+\newcommand{\Char}{\textsf{Char}}
+\newcommand{\ar}{\mathit{ar}\xspace}
+\newcommand{\jpublic}{\mathsf{public}\xspace}
+\newcommand{\jprotected}{\mathsf{protected}\xspace}
+\newcommand{\jprivate}{\mathsf{private}\xspace}
+\newcommand{\jfinal}{\mathsf{final}\xspace}
+\newcommand{\Jafun}{\textsl{Jafun}\xspace}
+\newcommand{\Jimuva}{\textsl{Jimuva}\xspace}
+\newcommand{\ls}{\mathtt{rwr}\xspace}
+\newcommand{\lenv}{\mathtt{rd}\xspace}
+\newcommand{\bb}{\mathtt{atm}\xspace}
+
+% \makeatletter
+% \newtheorem{df@}{Definition}
+% %\newtheorem{theorem@}{Theorem}
+% \newtheorem{lemma@}[theorem@]{Lemma}
+% \newenvironment{theorem}[1]%
+%   {\begin{theorem@}{\tt (#1)}\mbox{}\\}%
+%   {\end{theorem@}}
+% \newtheorem{prop@}[theorem@]{Proposition}
+% \newenvironment{proposition}[1]%
+%   {\begin{prop@}{\tt (#1)}\mbox{}\\}%
+%   {\end{prop@}}
+% \newenvironment{lemma}[1]%
+%   {\begin{lemma@}{\tt (#1)}\mbox{}\\}%
+%   {\end{lemma@}}
+% \newtheorem{example@}{Example}%
+% \newenvironment{example}%
+%   {\begin{example@}\upshape}%
+%   {\end{example@}}
+% 
+% \newenvironment{df}[1]%
+%   {\begin{df@}{\tt (#1)}\rm\mbox{}\\}%
+%   {\end{df@}}
+% \newtheorem{fact@}{Fact}[section]
+% \newtheorem{col@}[fact@]{Corollary}
+% \newenvironment{co}[1]%
+%   {\begin{col@}{\tt (#1)}\mbox{}\\}%
+%   {\end{col@}}
+\newcommand{\world}{\mathsf{world}}
+\newcommand{\rawty}{\mathsf{rawty}}
+\newcommand{\state}{\mathsf{state}}
+% \def\sqr#1#2{\vbox%{\vcenter{\vbox%
+%  {\hrule height#2
+%   \hbox{\vrule width#2 height#1 \kern#1 \vrule width#2}%
+%   \hrule height#2}}%}}
+% \def\squarek{\sqr{1.5ex}{.4pt}}
+% \def\koniec{\mbox{}%\hspace{20pt}
+% \nolinebreak[4]{\mbox{}\hspace*{20pt}\hfill\squarek}}
+% \newenvironment{proof}{\vspace*{-0.8em}\noindent{\bf
+%     Proof:\\}}{\koniec\par\vspace*{-\parskip}}
+% \newenvironment{proofof}[1]{\noindent{\bf
+%     Proof` #1:\\}}{\koniec}
+\newcommand{\ClassId}{\mathsf{ClassId}\xspace}
+\newcommand{\FieldId}{\mathsf{FieldId}\xspace}
+\newcommand{\MethId}{\mathsf{MethId}\xspace}
+\newcommand{\ConsId}{\mathsf{ConsId}\xspace}
+\newcommand{\ObjId}{\mathsf{ObjId}\xspace}
+\newcommand{\Var}{\mathsf{Var}\xspace}
+\newcommand{\immutable}{\mathbb{I}\xspace}
+\newcommand{\func}{\mathbb{F}\xspace}
+\newcommand{\fresh}{\mathbb{H}\xspace}
+
+\newcommand{\ThrOK}{\mathsf{ThrOK}\xspace}
+
+% \newcommand{\void}{\mathsf{void}\xspace}
+% \newcommand{\class}{\mathsf{class}\xspace}
+% \newcommand{\ext}{\mathsf{ext}\xspace}
+% \newcommand{\myowner}{\mathsf{myowner}\xspace}
+% \newcommand{\Val}{\mathsf{Val}\xspace}
+% \newcommand{\ValTy}{\mathsf{ValTy}\xspace}
+\newcommand{\Object}{\mathsf{Object}\xspace}
+\newcommand{\new}{\mathsf{new}\xspace}
+% \newcommand{\mlet}{\mathsf{let}\xspace}
+% \newcommand{\myin}{\mathsf{in}\xspace}
+% \newcommand{\Nianio}{\textsf{Nianio}\xspace}
+\newcommand{\Obj}{\textsf{Obj}\xspace}
+% \newcommand{\fd}{\mathsf{fd}\xspace}
+
+\newcommand{\ok}{\mathsf{ok}\xspace}
+
+\newcommand{\pure}{\textsf{pure}\xspace}
+\newcommand{\maybevdash}{\vdash^? }
+\newcommand{\typeof}{\mathsf{typeof}}
+
+\newcommand{\Nat}{\mathsf{Nat}}
+
+\newcommand{\dsrul}[1]{\hypertarget{srul-#1}{\textrm{(#1)}}} %semantic rules, np (ifnpe)
+\newcommand{\srul}[1]{\hyperlink{srul-#1}{\textrm{(#1)}}} %semantic rules, np (ifnpe)
+%\newcommand{\srul}[1]{\textrm{(#1)}\xspace} %semantic rules, np (ifnpe)
+%\newcommand{\trul}[1]{{\rm (#1)}\xspace} %typing rules, np (ifnpe)
+\newcommand{\dtrul}[1]{\hypertarget{trul-#1}{\raisebox{0.2ex}{\rm \scriptsize
+    (}\textsc{#1}\raisebox{0.2ex}{\rm \scriptsize )}}}
+\newcommand{\trul}[1]{\hyperlink{trul-#1}{\raisebox{0.2ex}{\rm \scriptsize
+    (}\textsc{#1}\raisebox{0.2ex}{\rm \scriptsize )}}}
+%\newcommand{\dtrul}[1]{\hypertarget{#1}{\sc #1}}
+%\newcommand{\rtrul}[1]{\hyperlink{#1}{\sc #1}}
+
+\newcommand{\exheap}[2]{\stackrel{#1}{#2}} % #1 - czas, #2 - heap
+\newcommand{\len}[1]{\mathsf{len}(#1)\xspace}
+\newcommand{\abs}[1]{|#1|\xspace}
+\renewcommand{\P}{\mathcal{P}}
+\newcommand{\myparagraph}[1]{\smallskip\noindent\emph{#1\;}}
+
+\newcommand{\class}{\mathrm{class}}
+\newcommand{\meth}{\mathrm{meth}}
+\newcommand{\exc}{\mathrm{exc}}
+\newcommand{\loc}{\mathrm{loc}}
+\newcommand{\expr}{\mathrm{expr}}
+\newcommand{\this}{\mathrm{this}}
+\newcommand{\lexc}{\mathrm{lexc}}
+\newcommand{\type}{\mathrm{type}}
+\renewcommand{\mod}{\mathrm{mod}}
+\newcommand{\ltsub}{<:}
+
+%nonterminals
+\newcommand{\cdecl}{\mathsf{cdecl}\xspace}
+\newcommand{\cmodifier}{\varsigma\xspace}
+\newcommand{\mmod}{\mu\xspace}
+\newcommand{\kmodifier}{\kappa\xspace}
+\newcommand{\fmodifier}{\phi\xspace}
+\newcommand{\argone}{\mathsf{arg}\xspace}
+\newcommand{\argonen}{\mathsf{argn}\xspace}
+\newcommand{\args}{\overline{\mathsf{arg}}\xspace}
+\newcommand{\argns}{\overline{\mathsf{argn}}\xspace}
+\newcommand{\Ex}{\mathsf{Exc}\xspace}
+\newcommand{\Exn}{\mathsf{Excn}\xspace}
+\newcommand{\Exc}{\overline{\mathsf{Exc}}\xspace}
+\newcommand{\Excn}{\overline{\mathsf{Excn}}\xspace}
+\newcommand{\fieldref}{\mathsf{fieldref}\xspace}
+\newcommand{\varref}{\mathsf{v}\xspace}
+\newcommand{\varrefs}{\overline{\varref}}
+
+%terminals
+\newcommand{\jclass}{\mathbf{class}\xspace}
+\newcommand{\jext}{\mathbf{ext}\xspace}
+
+
+\newcommand{\reg}{\emptyset}
+\newcommand{\rep}{\mathtt{rep}\xspace}
+\newcommand{\throws}{\mathbf{throws}\xspace}
+\newcommand{\jlet}{\mathbf{let}\xspace}
+\newcommand{\jin}{\mathbf{in}\xspace}
+\newcommand{\jif}{\mathbf{if}\xspace}
+\newcommand{\jthen}{\mathbf{then}\xspace}
+\newcommand{\jelse}{\mathbf{else}\xspace}
+\newcommand{\jthrow}{\mathbf{throw}\xspace}
+\newcommand{\jtry}{\mathbf{try}\xspace}
+\newcommand{\jcatch}{\mathbf{catch}\xspace}
+\newcommand{\jnull}{\mathbf{null}\xspace}
+\newcommand{\jnew}{\mathbf{new}\xspace}
+\newcommand{\jthis}{\textbf{this}\xspace}
+\newcommand{\letin}[4]{\jlet\; #1\; #2 = #3\; \jin\; #4\xspace}
+\newcommand{\ite}[3]{\jif\; #1\; \jthen\; #2\; \jelse\; #3\xspace}
+\newcommand{\newin}[3]{\jnew\; #1\; #2(#3)\xspace}
+\newcommand{\throwin}[1]{\jthrow\; #1\xspace}
+\newcommand{\tcatch}[4]{\jtry\; \boldsymbol{\{}#1\boldsymbol{\}}\; \jcatch\; (#2\; #3)\; \boldsymbol{\{}#4\boldsymbol{\}}\xspace}
+
+%other definitions
+\newcommand{\Cname}{\mathsf{CId}\xspace}
+\newcommand{\Lannot}{\mathsf{AMod}\xspace}
+\newcommand{\Lannott}{\mathsf{AMod}^\dagger\xspace}
+%\newcommand{\Val}{\mathsf{Val}\xspace}
+\newcommand{\Ident}{\mathsf{Id}\xspace}
+\newcommand{\MIdent}{\mathsf{MId}\xspace}
+%\newcommand{\KIdent}{\mathsf{KId}\xspace}
+%\newcommand{\Obj}{\mathsf{Obj}\xspace}
+\newcommand{\Expr}{\mathsf{Expr}\xspace}
+\newcommand{\BCtxt}{\mathsf{BCtxt}\xspace}
+\newcommand{\Stacks}{\mathsf{Stacks}\xspace}
+
+\newcommand{\Loc}{\mathsf{Loc}\xspace}
+\newcommand{\Heap}{\mathsf{Heap}\xspace}
+\newcommand{\ctxt}{\mathcal{C}\xspace}
+\newcommand{\alloc}{\mathsf{alloc}\xspace}
+\newcommand{\Prog}{\mathsf{Prog}\xspace}
+\newcommand{\body}{\mathsf{body}\xspace}
+\newcommand{\classof}{\mathsf{class}\xspace}
+\newcommand{\specof}{\mathsf{spec}\xspace}
+\newcommand{\methods}{\mathsf{mthds}\xspace}
+\newcommand{\konstructors}{\mathsf{knstr}\xspace}
+\newcommand{\fields}{\mathsf{flds}\xspace}
+\newcommand{\extends}{\mathsf{ext}\xspace}
+\newcommand{\throwsset}{\mathsf{thrs}\xspace}
+\newcommand{\params}{\mathsf{pars}\xspace}
+\newcommand{\paramNames}{\mathsf{parNms}\xspace}
+\newcommand{\paramTypeMod}{\mathsf{parTypM}\xspace}
+\newcommand{\paramMod}{\mathsf{parMod}\xspace}
+\newcommand{\returnTypeM}{\mathsf{retTypM}\xspace}
+\newcommand{\isImmutable}{\mathsf{isImmutable}\xspace}
+\newcommand{\isLocalSensitive}{\mathsf{isLS}\xspace}
+\newcommand{\isFunctional}{\mathsf{isFUN}\xspace}
+\newcommand{\lequpto}[1]{\sqsubseteq_{#1}}
+\newcommand{\Rep}{\mathsf{Rep}\xspace}
+\newcommand{\Repm}{\mathsf{Rep}^-\xspace}
+\newcommand{\annot}[2]{{#1}(#2)\xspace}
+\newcommand{\dotcup}{\hbox{$\cup\hspace{-1.08ex}\cdot\hspace{0.5ex}$}\xspace}
+\newcommand{\name}{\mathsf{name}\xspace}
+
+\newcommand{\parfunc}{\rightharpoonup}
+\newcommand{\emptyclass}[1]{\mathsf{empty}_{#1}\xspace}
+\newcommand{\dom}[1]{\mathsf{Dom}(#1)\xspace}
+% \newcommand{\npetype}{\texttt{NullPointerException}\xspace} % za dluuuugie
+\newcommand{\npetype}{\texttt{NPE}\xspace}
+\newcommand{\exceptiontype}{\texttt{Exception}\xspace}
+\newcommand{\objecttype}{\texttt{Object}\xspace}
+\newcommand{\npe}{\mathsf{npe}\xspace}
+\newcommand{\partoenv}{\mathsf{par2env}\xspace}
+\newcommand{\partoloc}{\mathsf{loc2env}\xspace}
+
+\newcommand{\subok}{\mathsf{subok}\xspace}
+
+%ładny underscore (ukradzione z ocamlweb)
+%\def\_{\kern.08em\vbox{\hrule width.35em height.6pt}\kern.08em}
+% z jakiegoś powodu lst na to nie reaguje :(
+
+
+\lstdefinelanguage{Jafun}{
+  language=Java,
+  basicstyle=\small\ttfamily\upshape,
+  keywordstyle=\bfseries\ttfamily\small,
+morekeywords={rd,rwr,atm,rep,peer,readonly,let,in,Pure,Fresh,accessible,assignable,mutable,polyread,readable,writable,immutable,isolated},
+%  numbers=left,
+%  numberstyle=\tiny\ttfamily,
+  escapeinside=||,
+}
+
+\lstdefinelanguage{Coq}%
+{morekeywords={Variable,Section,Inductive,CoInductive,Fixpoint,CoFixpoint,Declare,%
+    Definition,Lemma,Theorem,Axiom,Local,Save,Grammar,Syntax,intro,Eval,comput
+e,%
+      trivial,Qed,intros,decompose,and,symmetry,admit,simpl,rewrite,Resolve,apply,elim,assumption,%
+      left,cut,case,auto,intuition,forall,fun,unfold,exact,right,Hypothesis,patt
+ern,destruct,eqn,%
+      constructor,Defined,fix,Record,Proof,induction,Hints,exists,let,in,%
+      Parameter,split,reflexivity,transitivity,if,then,else,Opaque,%
+      Transparent,inversion,inversion_clear,absurd,generalize,Mutual,match,of,en
+d,Analyze,struct,Ltac,%
+      with,by,as,Mutual,Rewall,Set,Prop,Type,%
+      Module,Import,End,Time,Require,Open,Scope,Export,repeat,Extraction,Notation,return,%
+      AutoRewrite,Functional,Scheme,params,refine,using,discriminate,try,eapply,assert,case_eq,context},%
+   sensitive,%
+   keywordstyle=\bfseries,
+   basicstyle=\small\slshape,
+   morecomment=[n]{(*}{*)}, %dłuższe muszą być potem
+   literate={:=}{{$:=$}}1 
+{'}{'}0
+{|}{{$\!\vert$}}1 
+{|-}{{$\vdash$}}1 
+{<-}{{$\!\leftarrow\!$}}1 
+{->}{{$\;\rightarrow\;$}}1 
+{=>}{{$\Rightarrow\;$}}1 
+{/\\}{{$\land\;$}}1 
+{\\/}{{$\lor\;$}}1 
+{::}{\,{::}\;}1 
+{<->}{{$\leftrightarrow$}}1
+{[}{{$[$}}1 
+{_}{{\tiny\_}}1
+{_[}{{{\tiny\_}$[\,$}}1 
+{[[}{{$\,[\,[\,$}}1 
+{_[[_}{{{\tiny\_}$[\,[${\tiny\_}}}2 
+{]}{{$]$}}1
+{]_}{{$\;]${\tiny\_}}}1
+{]]}{{$\,]\,]$}}2
+{]]_}{{$\,]\,]${\tiny\_}}}2 
+{_]]_}{{{\tiny\_}$]\,]${\tiny\_\ }}}2
+{__}{{\tiny\_\_}}2,%
+   morestring=[d]",
+   showstringspaces=false,
+   escapeinside=!!,
+  }
+%----------------------------------------------------------------------------------
+%\lstdefinelanguage[domains]{Coq}{
+%  deletekeywords={Axiom},
+%  basicstyle=\small\slshape,
+%}
+%\lstset{language=Coq}
+
+
+\lstnewenvironment{lstcoq}{\lstset{language=Coq}}{}
+\newcommand{\coqinl}[1]{\lstinline[language=Coq]{#1}}
+
+\lstnewenvironment{lstjafun}{\lstset{language=Jafun}}{}
+\newcommand{\jainl}[1]{\lstinline[language=Jafun]{#1}}
+
+
+
 % koniec definicji
 
 \begin{document}
@@ -122,6 +458,261 @@ Poniżej przedstawiam te aspekty języka, które są istotne dla prezentowanej l
 
 
 \section{Składnia i semantyka}
+
+\begin{figure}[h]
+$$
+ \begin{array}{@{}r@{\,}l@{\;\;}c@{\;\;}l@{}}
+    \Prog\owns
+    & \mathbf{C}          & ::= & \jclass\;
+                       C_1\; \jext\; C_2\; \boldsymbol\{ \overline{\mathbf{F}}~ \overline{\mathbf{M}} \boldsymbol\}\\
+    \Cname\owns
+    & C          & ::= & \langle \textit{identifier}\rangle \quad\textit{(class name)}\\
+    & \mathbf{F}         & ::= & \fmodifier\; C\; x\\
+    & \fmodifier & ::= & \rep\;|\; \reg \\
+    \Ident\owns
+    & x          & ::= & \langle \textit{identifier}\rangle \quad\textit{(variable/field name)}\\
+    & \argone    & ::= & \mmod\; C\; x \qquad
+      \argonen   ~\, ::=  \reg\; C\; x\\
+    & \Ex        & ::= & \mmod\; C\qquad\quad
+      \Exn        ::=  \reg\; C\\
+    & \mathbf{M}         & ::= & \mmod\; C\; \mmod\; m(\args)\; \throws\; \Exc\;
+                         \boldsymbol{\{}E\boldsymbol{\}}\;|\; \\
+    &            &     & \reg\; C\; \reg\; m(\argns)\; \throws\; \Excn\; \boldsymbol{\{}E\boldsymbol{\}}\; \\
+    \Lannot\owns
+    & \mmod & ::= & \ls\;|\; \lenv\;|\; \bb\\
+    \MIdent\owns
+    & m          & ::= & \langle \textit{identifier}\rangle \quad\textit{(method name)}\\
+    \Expr\owns 
+    & E          & ::= & \newin{\mmod}{C}{\varrefs}\;|\; \letin{C}{x}{E_1}{E_2} |\\
+    &            &     & \ite{\varref_1 == \varref_2}{E_3}{E_4}\;\;|\;                          \varref.m( \varrefs)\;|\; \\
+    &            &     & \fieldref = \varref\;|\; 
+                         \varref\;\;|\;                          \fieldref\;|\;                          \throwin{\varref}\;|\; \\
+    &            &     & \tcatch{E_1}{\mmod\; C}{x}{E_2} \\
+    \multicolumn{2}{r}{\varref\,}    & ::= & x\;|\; \jthis\;|\; \jnull \\
+    \multicolumn{2}{r}{\fieldref\,}  & ::= & \varref.x 
+    \\[1ex]                                         
+      & A      & ::= & C\;|\; \emptyset\\
+    \BCtxt\owns
+      & \ctxt     & ::= &
+                     \[ ~\] _A\;|\; \letin{C}{x}{\ctxt}{E}\;\;|\; \\
+      &        &     &   \tcatch{\ctxt}{\mmod\; C}{x}{E}
+  \end{array}
+$$
+\caption{Składnia języka Jafun}
+\label{fig:jafun_syntax}
+\end{figure}
+
+\begin{figure}[h]
+\begin{tabular}{@{}ll@{}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\dsrul{newk}
+&
+
+$%
+%
+%
+ \overline{\mathbf{C}}, h,  \overline{\ctxt}:: \ctxt\[ \newin{\mmod}{C}{l_1,\ldots,l_k}\] _\emptyset \rightarrow h'', \overline{\ctxt}:: \ctxt\[ l_0\] _\emptyset$
+\\
+\multicolumn{2}{l}{\qquad gdzie
+$%
+%
+%
+%
+%
+\alloc(h, \overline{\ctxt}, C)=(l_0, h'),\;
+\fields(C) = x_1, \dots, x_k,\;
+o=\emptyclass{C}\{x_1 \mapsto  l_1,\ldots,x_k \mapsto  l_k\}, \;$} \\
+
+\multicolumn{2}{l}{\qquad \phantom{gdzie} $h'' = h'\{l_0 \mapsto  o\}$}\\[2ex]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\dsrul{letin}
+&
+$%
+%
+%
+%
+ \overline{\mathbf{C}}, h, \overline{\ctxt}:: \ctxt\[ \letin{C}{x}{E_1}{E_2}\] _\emptyset\rightarrow h, \overline{\ctxt}:: \ctxt[\letin{C}{x}{\[ E_1\] _\emptyset}{E_2}]$
+\\
+\dsrul{letgo}
+&
+$%
+%
+%
+%
+ \overline{\mathbf{C}}, h, \overline{\ctxt}:: \ctxt[\letin{C}{x}{\[ l\] _\emptyset}{E}]\rightarrow h, \overline{\ctxt}:: \ctxt\[ E\{l/x\}\] _\emptyset$
+\\[2ex]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\dsrul{ifeq} 
+&
+$%
+%
+%
+ \overline{\mathbf{C}}, h, \overline{\ctxt}:: \ctxt\[ \ite{ l_0 == l_1}{E_1}{E_2}\] _\emptyset\! \rightarrow \!h, \overline{\ctxt}:: \ctxt\[ E_1\] _\emptyset$
+\quad gdzie
+$l_0=l_1$
+\\
+\dsrul{ifneq}
+&
+$%
+%
+%
+ \overline{\mathbf{C}}, h, \overline{\ctxt}:: \ctxt\[ \ite{ l_0 == l_1}{E_1}{E_2}\] _\emptyset\! \rightarrow \!h, \overline{\ctxt}:: \ctxt\[ E_2\] _\emptyset$
+\quad gdzie
+$l_0\not=l_1$
+\\[2ex]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\dsrul{mthdnpe}
+&
+$%
+%
+%
+ \overline{\mathbf{C}}, h, \overline{\ctxt}:: \ctxt\[ \jnull.m( \overline{l})\] _\emptyset \rightarrow h, \overline{\ctxt}:: \ctxt\[ \npe\] _\npetype$
+\\
+\dsrul{mthd}
+&
+$%
+%
+%
+ \overline{\mathbf{C}}, h, \overline{\ctxt}:: \ctxt\[ l.m(\overline{l})\] _\emptyset \rightarrow h, \overline{\ctxt}:: \ctxt\[ l.m(\overline{l})\] _\emptyset::\[ E\] _\emptyset$
+\\
+\multicolumn{2}{l}{\qquad gdzie
+$%
+%
+%
+%
+ \classof(h, l)=D, \body(D, m)=E_0, E = E_0\{l/\jthis, \overline{l}/\paramNames(D, m)\} $
+}
+\\[1ex]
+\dsrul{mthdret}
+&
+$%
+%
+%
+ \overline{\mathbf{C}}, h, \overline{\ctxt}:: \ctxt\[ l.m(\overline{l})\] _\emptyset::\[ l'\] _\emptyset \rightarrow h, \overline{\ctxt}:: \ctxt\[ l'\] _\emptyset$
+\\[2ex]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\dsrul{assignnpe}
+&
+$%
+%
+%
+ \overline{\mathbf{C}}, h, \overline{\ctxt}:: \ctxt\[ \jnull.x = l\] _\emptyset \rightarrow h, \overline{\ctxt}:: \ctxt\[ \npe\] _\npetype$
+\\
+\dsrul{assignev}
+&
+$%
+%
+%
+ \overline{\mathbf{C}}, h, \overline{\ctxt}:: \ctxt\[ l_1.x = l\] _\emptyset \rightarrow h', \overline{\ctxt}:: \ctxt\[ l\] _\emptyset$
+%\\
+%\multicolumn{2}{l}{
+\qquad gdzie
+$ l_1 \neq \jnull, o = h(l_1)\{x \mapsto  l\}, h' = h\{l_1 \mapsto  o\} $
+%}
+\\[2ex]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\dsrul{varnpe}
+&
+$%
+%
+%
+ \overline{\mathbf{C}}, h, \overline{\ctxt}:: \ctxt\[ \jnull.x\] _\emptyset \rightarrow h, \overline{\ctxt}:: \ctxt\[ \npe\] _\npetype$
+\\
+\dsrul{var}
+&
+$%
+%
+%
+ \overline{\mathbf{C}}, h, \overline{\ctxt}:: \ctxt\[ l.x\] _\emptyset \rightarrow h, \overline{\ctxt}:: \ctxt\[ l'\] _\emptyset$
+\qquad gdzie
+$ l\not=\jnull,    l'=h(l)(x) $
+\\[2ex]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\dsrul{thrownull}
+&
+$%
+%
+%
+%
+%
+\overline{\mathbf{C}}, h, \overline{\ctxt}:: \ctxt\[ \throwin{\jnull}\] _\emptyset \rightarrow h, \overline{\ctxt}:: \ctxt\[ \npe\] _{\npetype}$
+\\[2ex]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\dsrul{throw}
+&
+$%
+%
+%
+ \overline{\mathbf{C}}, h, \overline{\ctxt}:: \ctxt\[ \throwin{l}\] _\emptyset \rightarrow h, \overline{\ctxt}:: \ctxt\[ l\] _{D}$
+\qquad gdzie
+$l\not=\jnull,    \classof(h, l) = D$
+\\[2ex]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\dsrul{ctchin}
+&
+$%
+%
+%
+%
+ \overline{\mathbf{C}}, h, \overline{\ctxt}:: \ctxt\[ \tcatch{E_1}{\mmod\; C}{x}{E_2}\] _\emptyset \rightarrow  
+h, \overline{\ctxt}:: \ctxt[\tcatch{\[ E_1\] _\emptyset}{\mmod\; C}{x}{E_2}] $
+\\
+\dsrul{ctchnrml}
+&
+$%
+%
+%
+ \overline{\mathbf{C}}, h, \overline{\ctxt}:: \ctxt[\tcatch{\[ l\] _\emptyset}{\mmod\; C}{x}{E_2}] \rightarrow h, \overline{\ctxt}:: \ctxt\[ l\] _\emptyset$
+\\
+\dsrul{ctchexok}
+&
+$%
+%
+%
+%
+%
+ \overline{\mathbf{C}}, h, \overline{\ctxt}:: \ctxt[\tcatch{\[ l\] _{C'}}{\mmod\; C}{x}{E_2}] \rightarrow h, \overline{\ctxt}:: \ctxt\[ E_2'\] _\emptyset$
+\qquad gdzie
+$E_2' = E_2\{l/x\}, C' \leq:  C $
+%}
+\\[2ex]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\dsrul{letex}
+&
+$%
+%
+%
+%
+ \overline{\mathbf{C}}, h, \overline{\ctxt}:: \ctxt[\letin{C}{x}{\[ l\] _{C'}}{E}]\rightarrow h, \overline{\ctxt}:: \ctxt\[ l\] _{C'}$
+\qquad gdzie
+$C'\not=\emptyset$  
+\\
+\dsrul{methodex}
+&
+$%
+%
+%
+ \overline{\mathbf{C}}, h, \overline{\ctxt}:: \ctxt\[ l.m(\overline{l})\] _\emptyset::\[ l'\] _C \rightarrow h, \overline{\ctxt}:: \ctxt\[ l'\] _C$
+\qquad gdzie
+$C\not=\emptyset$  
+\\
+\dsrul{ctchexnok}
+&
+$%
+%
+%
+%
+%
+ \overline{\mathbf{C}}, h, \overline{\ctxt}:: \ctxt[\tcatch{\[ l\] _{C'}}{\mmod\; C}{x}{E_2}] \rightarrow h, \overline{\ctxt}:: \ctxt\[ l\] _{C'}$
+\qquad gdzie
+$C'\not=\emptyset, C' \not\!\leq:  C $  
+%}
+\\[3ex]
+\end{tabular}
+\caption{Semantyka języka Jafun}
+\label{fig:jafun_syntax}
+\end{figure}
+
 
 \section{Ewaluacja}
 Ewaluacją konfiguracji $(h, st)$ będziemy nazywać dowolny ciąg par $\mathit{confs} = (h_1, st_1), \ldots, (h_n, st_n)$, taki że
