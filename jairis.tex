@@ -851,7 +851,7 @@ Używane będzie także oznaczenie $v_1 \neq v_2$ jako skrót dla $v_1 = v_2 \Ri
 \begin{align*}
  \outerP ::= & \ \exists x : C.\outerP \| \outerP \wedge \outerP \| \outerP \vee \outerP \| P \\
  P ::= & \ \mathtt{True} \| \mathtt{False} \| P \wedge P \| P \vee P \| P \Rightarrow P \| v = v \| \\
-     & \  v \hookrightarrow x = v \| \hoare{P}{e}{A}{x}{P} \|  P * P \| P \wand P \\
+     & \  v \hookrightarrow x = v \| \hoare{P}{E}{A}{x}{P} \|  P * P \| P \wand P \\
  v ::= & \  x \| \mathtt{null} \| \mathtt{this} \\
  A ::= & \ C \| \phi \\
  x ::= & \ \langle\mathit{identifier}\rangle \ (\mathit{variable / field\ name}) \\
@@ -867,8 +867,8 @@ Semantyka logiki (Rysunek \ref{fig:sematics}) jest standardowa dla kwantyfikator
 Dla uproszczenia zapisu notacja $\[ \cdot \]$ została użyta do~opisu semantyki obu poziomów termów
 ($\outerP$ i $P$). To, do którego poziomu się odnosi, wynika z kontekstu.
 
-Sterta spełnia trójkę Hoare'a $\hoare{P}{e}{A}{x}{Q}$, jeśli dla~każdej sterty spełniającej
-$P$, wyrażenie $e$ zostanie obliczone bez błędu, zwróci wyjątek typu $A$ (czyli być może żaden),
+Sterta spełnia trójkę Hoare'a $\hoare{P}{E}{A}{x}{Q}$, jeśli dla~każdej sterty spełniającej
+$P$, wyrażenie $E$ zostanie obliczone bez błędu, zwróci wyjątek typu $A$ (czyli być może żaden),
 a~wynikowa sterta będzie
 spełniała $Q$, w którym za~$x$~podstawiony zostanie wynik obliczenia.
 
@@ -889,16 +889,16 @@ po połączeniu jej z dowolną rozłączną stertą spełniającą $P$, otrzyman
  % TODO this
  \[ x = y \]_{h, env} \triangleq & \ env(x) = env(y) \\
  \[ x \hookrightarrow f = y \]_{h, env} \triangleq & \ h(env(x))(f) = env(y) \\
- \[ \hoare{P}{e}{A}{x}{Q} \]_{h, env} \triangleq & \forall h : Heap \ . \ \[ P \]_{h, env} \Rightarrow \\
-      & \ \  \exists h' : Heap, l : Loc \ . \ (h, e[/env]) \leadsto (h', A, l) \wedge
+ \[ \hoare{P}{E}{A}{x}{Q} \]_{h, env} \triangleq & \forall h : Heap \ . \ \[ P \]_{h, env} \Rightarrow \\
+      & \ \  \exists h' : Heap, l : Loc \ . \ (h, E[/env]) \leadsto (h', A, l) \wedge
       \[ Q \]_{h', env[x \mapsto l]}  \\
  \[ P * Q \]_{h, env} \triangleq & \ \exists h_1,h_2 : Heap\ .\ h_1 \oplus h_2 = h \wedge
     \[ P \]_{h_1, env} \wedge \[ Q \]_{h2_, env}  \\
  \[ P \wand Q \]_{h, env} \triangleq & \forall h' : Heap \ . \ \[ P \]_{h', env} \Rightarrow \[ Q \]_{h \oplus h', env}
 \end{align*}
 
-Uwaga: $e[/env]$ oznacza wyrażenie powstałe przez~podstawienie $env[x]$ w~miejsce $x$ dla~każdej zmiennej
-wolnej $x$ w~$e$.
+Uwaga: $E[/env]$ oznacza wyrażenie powstałe przez~podstawienie $env(x)$ w~miejsce $x$ dla~każdej zmiennej
+wolnej $x$ w~$E$.
 
 \caption{Semantyka logiki}
 \label{fig:sematics}
@@ -1061,10 +1061,10 @@ w danej regule, to jest ono pomijane.
 
 \vskip 2em
 
-\AxiomC{$S \vdash \hoare{P}{e}{A}{v}{Q}$}
+\AxiomC{$S \vdash \hoare{P}{E}{A}{v}{Q}$}
 \AxiomC{$S$ jest trwały}
 \prooflabel{Ht-frame}
-\BinaryInfC{$S \vdash \hoare{P * R}{e}{A}{v}{Q * R}$}
+\BinaryInfC{$S \vdash \hoare{P * R}{E}{A}{v}{Q * R}$}
 \DisplayProof
 \hskip 2em
 \AxiomC{\phantom{$Q$}}
@@ -1075,28 +1075,28 @@ w danej regule, to jest ono pomijane.
 \vskip 2em
 
 \AxiomC{$\Gamma | S \vdash P \Rightarrow P'$}
-\AxiomC{$\Gamma | S \vdash \hoare{P'}{e}{A}{v}{Q'}$}
+\AxiomC{$\Gamma | S \vdash \hoare{P'}{E}{A}{v}{Q'}$}
 \AxiomC{$\Gamma, v : C | S \vdash Q' \Rightarrow Q$}
 \AxiomC{$S$ jest trwały}
 \prooflabel{Ht-csq}
-\QuaternaryInfC{$S \vdash \hoare{P}{e}{A}{v}{Q}$}
+\QuaternaryInfC{$S \vdash \hoare{P}{E}{A}{v}{Q}$}
 \DisplayProof
 
 \vskip 2em
 
-\AxiomC{$S \vdash \hoare{P}{e}{A}{v}{Q}$}
-\AxiomC{$S \vdash \hoare{Q}{e}{A}{v}{Q}$}
+\AxiomC{$S \vdash \hoare{P}{E}{A}{v}{Q}$}
+\AxiomC{$S \vdash \hoare{Q}{E}{A}{v}{Q}$}
 \prooflabel{Ht-disj}
-\BinaryInfC{$S \vdash \hoare{P \vee Q}{e}{A}{v}{Q}$}
+\BinaryInfC{$S \vdash \hoare{P \vee Q}{E}{A}{v}{Q}$}
 \DisplayProof
 
 \vskip 2em
 
-\AxiomC{$S \wedge R \vdash \hoare{Q}{e}{A}{v}{Q}$}
+\AxiomC{$S \wedge R \vdash \hoare{Q}{E}{A}{v}{Q}$}
 \prooflabel{Ht-pers}
 \RightLabel{jeśli R trwały}
 \doubleLine
-\UnaryInfC{$S \vdash \hoare{Q \wedge R}{e}{A}{v}{Q}$}
+\UnaryInfC{$S \vdash \hoare{Q \wedge R}{E}{A}{v}{Q}$}
 \DisplayProof
 
 \vskip 2em
