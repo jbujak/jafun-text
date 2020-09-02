@@ -317,6 +317,7 @@
 \newcommand{\Loc}{\mathsf{Loc}\xspace}
 \newcommand{\Heap}{\mathsf{Heap}\xspace}
 \newcommand{\ctxt}{\mathcal{C}\xspace}
+\newcommand{\ctxts}{\overline{\ctxt}}
 \newcommand{\alloc}{\mathsf{alloc}\xspace}
 \newcommand{\Prog}{\mathsf{Prog}\xspace}
 \newcommand{\body}{\mathsf{body}\xspace}
@@ -827,12 +828,13 @@ Dodatkowo zakładamy, że na stercie $h$, pod pewną lokacją $\npe$ istnieje ob
 (``null pointer exception``).
 
 \section{Ewaluacja}
-Ewaluacją konfiguracji $(h, st)$ będziemy nazywać dowolny ciąg par $\mathit{confs} = (h_1, st_1), \ldots, (h_n, st_n)$, taki że
-$h_1 = h$, $st_1 = st$ oraz $(h_i, st_i) \rightarrow (h_{i+1}, st_{i+1})$ dla $1 \leq i < n$.
+Częściową ewaluacją konfiguracji $(h, \ctxts)$ będziemy nazywać dowolny ciąg par
+$\mathit{confs} = (h_1, \ctxts_1), \ldots, (h_n, \ctxts_n)$, taki że $h_1 = h$, $\ctxts_1 = \ctxts$ oraz $(h_i, \ctxts_i) \rightarrow (h_{i+1}, \ctxts_{i+1})$ dla $1 \leq i < n$.
+Częściowe ewaluacje będziemy oznaczać jako $(h_1, \ctxts_1) \eval{confs} (h_n, \ctxts_n)$.
 
 Ewaluacją wyrażenia $e$ na stercie $h$ będziemy nazywać taką ewaluację konfiguracji $(h, \[ e \]_\phi)$,
-że $st_n = \[ l \]_A$ dla pewnych $l, A$. Jeśli taka ewaluacja istnieje, będziemy to oznaczać jako
-$(h, e) \eval{confs} (h_n, A, l)$
+że $\ctxts_n = \[ l \]_A$ dla pewnych $l, A$. Jeśli taka ewaluacja istnieje, będziemy to oznaczać jako
+$(h, e) \eval{confs} (h_n, A, l)$ lub
 
 \chapter{Składnia i semantyka}
 Prezentowana logika separacji dla języka Jafun jest logiką z~kwantyfikatorami egzystencjalnymi pierwszego rzędu, trójkami Hoare'a, operatorem $\hookrightarrow$,
@@ -1265,9 +1267,9 @@ Pokażę teraz twierdzenia o własności ewaluacji, które będą później uży
 \section{Łączenie ewaluacji}
 Podatwowym twierdzeniem, pozwalającym mówić o ewaluacji złożonych wyrażeń, jest twierdzenie o łączeniu ewaluacji.
 \begin{theorem}[O łączeniu ewaluacji]
-Niech $(h, st), (h', st'), (h'', st'')$ będą konfiguracjami, a $confs$ i $confs'$ -- ciągami konfiguracji,
-takimi że $(h, st) \eval{confs} (h', st')$ i $(h', st') \eval{confs'} (h'', st'')$.
-Wtedy $(h, st) \eval{confs ++ confs'} (h'', st'')$.
+Niech $(h, \ctxts), (h', \ctxts'), (h'', \ctxts'')$ będą konfiguracjami, a $confs$ i $confs'$ -- ciągami konfiguracji,
+takimi że $(h, \ctxts) \eval{confs} (h', \ctxts')$ i $(h', \ctxts') \eval{confs'} (h'', \ctxts'')$.
+Wtedy $(h, \ctxts) \eval{confs ++ confs'} (h'', \ctxts'')$.
 \end{theorem}
 \begin{proof}
 TODO
@@ -1293,7 +1295,7 @@ mogą zacząć się różnić w czasie ewaluacji.
 
 Żeby obejść ten problem, zdefiniujemy \textit{izomorfizm stert} jako bijekcję między lokacjami
 na tych stertach,
-zachowującą \texttt{null} i kompozycję.
+zachowującą \texttt{null}, \texttt{npe} i kompozycję.
 
 \begin{definition}[izomorfizm stert] {\ } \\
 Niech $h_1, h_2 : \mathsf{Heap}$.
@@ -1302,6 +1304,7 @@ nazwiemy izomorfizmem między tymi stertami, jeśli:
 \begin{enumerate}
  \item $f$ jest bijekcją
  \item $f(\mathtt{null}) = \mathtt{null}$
+ \item $f(\mathtt{npe}) = \mathtt{npe}$
  \item $f$ zachowuje kompozycję, to znaczy dla dowolnych lokacji $l_1, l_2$ i pola $x$ zachodzi
     $$h_1(l_1) \hookrightarrow x = l_2 \iff h_2(f(l_2)) \hookrightarrow x = f(l_2)$$
 \end{enumerate}
@@ -1344,11 +1347,11 @@ Powiemy, że $f$ jest izomorfizmem między tymi kontekstami, jeśli
  \item[] lub
  \item $\ctxt_1 = \letin{C}{x}{\ctxt_1'}{E_1}, \quad
         \ctxt_2 = \letin{C}{x}{\ctxt_2'}{E_2}$, \\
-    gdzie $f$ jest izomorfizmem między $\ctxt_1'$ i $\ctxt_2'$ oraz między $E_1$ i $E_2$
+    a $f$ jest izomorfizmem między $\ctxt_1'$ i $\ctxt_2'$ oraz między $E_1$ i $E_2$
  \item[] lub
  \item $\ctxt_1 = \tcatch{\ctxt_1'}{\mmod\; C}{x}{E_1},\quad
         \ctxt_2 = \tcatch{\ctxt_2'}{\mmod\; C}{x}{E_2}$, \\
-    gdzie $f$ jest izomorfizmem między $\ctxt_1'$ i $\ctxt_2'$ oraz między $E_1$ i $E_2$
+    a $f$ jest izomorfizmem między $\ctxt_1'$ i $\ctxt_2'$ oraz między $E_1$ i $E_2$
 \end{itemize}
 \qed
 \end{definition}
@@ -1382,19 +1385,94 @@ a następnie udowodnię kilka lematów pomocnych w jego dowodzie.
      \item $f(l_1) = l_2$
      \item $(h_2, E[/env]) \eval{confs_2} (h_{2,n}, A, l_2)$.
     \end{enumerate}
-    \qed
 \end{theorem}
+\begin{proof}
+Na końcu sekcji.
+\end{proof}
+
 Sterty $h_1$ i $h_2$ w powyższym twierdzeniu to dwie sterty, o których wiemy, że zgadzają się
 na wszystkich lokacjach odpowiadających zmiennym wolnym w $E$ (wszystkie one zawierają się w podstercie $h$).
 O ich pozostałych fragmentach (odpowiednio $\hrest_1$ i $\hrest_2$) nie zakładamy nic.
 Twierdzenie mówi, że jeśli mamy ewaluację wyrażenia $E$ w środowisku $env$ na stercie $h_1$,
 to istnieje też jego analogiczna ewaluacja na stercie $h_2$,
 taka że sterty docelowe oraz wyniki ewaluacji są izomorficzne, a fragmenty stert nie mające związu ze zmiennymi wolnymi
-pozostają niezmienione.
+pozostają niezmienione (Rysunek \ref{fig:free_vars_eval}).
+
+
+\begin{figure}[h]
+    \begin{center}
+    \includegraphics[height=.3\textheight]{ewaluacja_zmienne_wolne.png}
+    \end{center}
+    \caption{Wizualizacja twierdzenia o zależności ewaluacji od zmiennych wolnych}
+    \label{fig:free_vars_eval}
+\end{figure}
+
+
 
 W praktyce oznacza to, że jedynie fragmenty stert odpowiadające zmiennym wolnym w wyrażeniu
 mają znaczenie dla ewaluacji tego wyrażenia.
 
+Dowód twierdzenia będzie przebiegał przez indukcję po długości ewaluacji $\mathit{confs_1}$.
+W tym celu jednak musimy sformułować następujący lemat, będący krokiem indukcyjnym w uogólnieniu
+powyższego twierdzenia na częściowe ewaluacje.
+
+\begin{lemma}[O zależności redukcji od zmiennych wolnych]{\ } \\
+Niech $\ctxts_1$ będzie dowolnym stosem wywołań, a $h_1, \hbase_1, \hrest_1$ będą stertami,
+takimi że $\hbase_1$ jest spójna , $h_1 = \hbase_1 \oplus \hrest_1$,
+a wszystkie lokacje występujące w wyrażeniach na stosie $\ctxts_1$ znajdują się na stercie $\hbase_1$.
+Niech teraz $h_{1, n}, \ctxts_{1, n}$ będą takie, że $(h_1, \ctxts_1) \rightarrow (h_{1, n}, \ctxts_{1, n})$.
+
+Weźmy teraz dowolną spójną stertę $\hbase_2$, stos wywołań $\ctxts_2$ oraz izomorfizm $f$,
+takie że $f$ jest izomorfizmem między $\hbase_1$ i $\hbase_2$ oraz między $\ctxts_1$ i $\ctxts_2$,
+zdefiniowanym tylko na lokacjach znajdujących się w $\hbase_1$.
+Jeśli wszystkie lokacje występujące w wyrażeniach na stosie $\ctxts_2$
+znajdują się na stercie $\hbase_2$, to dla dowolnych stert $h_2, \hrest_2$, takich że $h_2 = \hbase_2 \oplus \hrest_2$
+istnieją sterty $\hbase_{1, n}, \hbase_{2, n}, h_{2, n}$, stos $\ctxts_{2, n}$ oraz izomorfizm $f'$, takie że
+\begin{enumerate}
+ \item $f'$ rozszerza $f$
+ \item $f'$ jest zdefiniowane tylko na lokacjach znajdujących się w $\hbase_{1, n}$
+ \item $f'$ jest izomorfizmem między $\hbase_{1,n}$ i $\hbase_{2,n}$ oraz między $\ctxts_{1,n}$ i $\ctxts_{2,n}$
+ \item $h_{1, n} = \hbase_{1, n} \oplus \hrest_1$
+ \item $h_{2, n} = \hbase_{2, n} \oplus \hrest_2$
+ \item wszystkie lokacje występujące w wyrażeniach na stosie $\ctxts_{1, n}$ znajdują się na stercie $\hbase_{1, n}$
+ \item wszystkie lokacje występujące w wyrażeniach na stosie $\ctxts_{2, n}$ znajdują się na stercie $\hbase_{2, n}$
+ \item $(h_2, \ctxts_2) \rightarrow (h_{2, n}, \ctxts_{2, n})$.
+\end{enumerate}
+\begin{proof}
+Ponieważ $(h_1, \ctxts_1) \rightarrow (h_{1, n}, \ctxts_{1, n})$, więc $\ctxts_1$ musi zawierać pewien redeks.
+$\ctxts_1$ jest więc postaci $\ctxts_1'::\ctxt_1 \[ E_1 \]$.
+Co więcej, ponieważ $\ctxts_1$ i $\ctxts_2$ są izomorficzne,
+więc również $\ctxts_2$ jest postaci $\ctxts_2'::\ctxt_2 \[ E_2 \]$.
+Rozpatrzmy wszystkie możliwe postaci $E_1$ i $E_2$.
+\begin{itemize}
+ \item $E_1 = \newin{\mmod}{C}{l_1,\ldots,l_k}$, \;\; $E_2 = \newin{\mmod}{C}{l_1',\ldots,l_k'}$ \\ \\
+ Wtedy redukcja jest postaci
+ $(h_1,  \ctxts_1':: \ctxt_1\[ \newin{\mmod}{C}{l_1,\ldots,l_k}\] _\emptyset) \rightarrow (h_{1, n}, \ctxts_1' :: \ctxt_1\[ l_0\] _\emptyset)$,
+gdzie
+$ \alloc(h_1, \ctxts_1', C)=(l_0, h),\; \fields(C) = x_1, \dots, x_k,\;
+o=\emptyclass{C}\{x_1 \mapsto  l_1,\ldots,x_k \mapsto  l_k\}, \; h_{1,n} = h\{l_0 \mapsto  o\}$.
+Nowa sterta $h_{1,n}$ jest zatem po prostu stertą $h_1$ z dodatkowym nowym obiektem $o$ pod nową lokacją $l_0$.
+Weźmy zatem $\hbase_{1,n} = \hbase_1\{l_0 \mapsto o\}$.
+Spełnia ona warunki 4 i 6, ponieważ jedyną nową lokacją na stosie jest $l_0$, które trafiło właśnie do $\hbase_{1,n}$.
+
+Weźmy teraz $(l_0', h') = \alloc(h_2, \ctxts_2', C),\;
+o'=\emptyclass{C}\{x_1 \mapsto  l_1',\ldots,x_k \mapsto  l_k'\}, \; h_{2,n} = h'\{l_0' \mapsto  o'\}$.
+Mamy wtedy 
+$(h_2, \ctxts_2) \rightarrow (h_{2, n}, \ctxts_2' :: \ctxt_2\[ l_0'\] _\emptyset))$, a zatem biorąc takie $h_{2, n}$
+i $\ctxts_{2,n} = \ctxts_2' :: \ctxt_2\[ l_0'\] _\emptyset$ mamy spełnione też warunki 7 i 8.
+
+Niech teraz $\hbase_{2,n} = \hbase_2\{l_0' \mapsto o'\}$ i $f' = f\{l_0 \mapsto l0'\}$.
+Warunki 1 i 5 są w oczywisty sposób spełnione.
+Warunek 2 jest spełniony, ponieważ z założenia $f$ było zdefiniowane tylko na lokacjach z $\hbase_1$, a $l_0$ trafiło do $\hbase_{1,n}$.
+Wreszcie, warunek 3 jest spełniony, ponieważ z założenia o izomorfizmie $\ctxts_1$ i $\ctxts_2$,
+dla $j = 1, \ldots, k$ mamy $f(l_j) = l_j'$.
+\end{itemize}
+\end{proof}
+
+
+
+
+\end{lemma}
 
 
 \chapter{Poprawność}
