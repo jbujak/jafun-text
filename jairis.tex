@@ -1439,18 +1439,16 @@ istnieją sterty $\hbase_{1, n}, \hbase_{2, n}, h_{2, n}$, stos $\ctxts_{2, n}$ 
  \item $(h_2, \ctxts_2) \rightarrow (h_{2, n}, \ctxts_{2, n})$.
 \end{enumerate}
 \begin{proof}
-Ponieważ $(h_1, \ctxts_1) \rightarrow (h_{1, n}, \ctxts_{1, n})$, więc $\ctxts_1$ musi zawierać pewien redeks.
-$\ctxts_1$ jest więc postaci $\ctxts_1'::\ctxt_1 \[ E_1 \]$.
-Co więcej, ponieważ $\ctxts_1$ i $\ctxts_2$ są izomorficzne,
-więc również $\ctxts_2$ jest postaci $\ctxts_2'::\ctxt_2 \[ E_2 \]$.
-Rozpatrzmy wszystkie możliwe postaci $E_1$ i $E_2$.
+Rozpatrzmy wszystkie możliwe postaci izomorficznych stosów $\ctxts_1, \ctxts_2$, takich że istnieje redukcja 
+$(h_1, \ctxts_1) \rightarrow (h_{1, n}, \ctxts_{1, n})$.
 \begin{itemize}
- \item $E_1 = \newin{\mmod}{C}{l_1,\ldots,l_k}$, \;\; $E_2 = \newin{\mmod}{C}{l_1',\ldots,l_k'}$ \\ \\
- Wtedy redukcja jest postaci
+ \item $\ctxts_1 = \ctxts_1'::\ctxt_1\[ \newin{\mmod}{C}{l_1,\ldots,l_k} \]_\emptyset$, \;\;
+ $\ctxts_2 = \ctxts_2'::\ctxt_2\[ \newin{\mmod}{C}{l_1',\ldots,l_k'}\]_\emptyset$ \\ \\
+ Redukcja $\ctxts_1$ jest postaci
  $(h_1,  \ctxts_1':: \ctxt_1\[ \newin{\mmod}{C}{l_1,\ldots,l_k}\] _\emptyset) \rightarrow (h_{1, n}, \ctxts_1' :: \ctxt_1\[ l_0\] _\emptyset)$,
 gdzie
 $ \alloc(h_1, \ctxts_1', C)=(l_0, h),\; \fields(C) = x_1, \dots, x_k,\;
-o=\emptyclass{C}\{x_1 \mapsto  l_1,\ldots,x_k \mapsto  l_k\}, \; h_{1,n} = h\{l_0 \mapsto  o\}$.
+o=\emptyclass{C}\{x_1 \mapsto  l_1,\ldots,x_k~\mapsto~l_k\}, \; h_{1,n} = h\{l_0 \mapsto o\}$.
 Nowa sterta $h_{1,n}$ jest zatem po prostu stertą $h_1$ z dodatkowym nowym obiektem $o$ pod nową lokacją $l_0$.
 Weźmy zatem $\hbase_{1,n} = \hbase_1\{l_0 \mapsto o\}$.
 Spełnia ona warunki 4 i 6, ponieważ jedyną nową lokacją na stosie jest $l_0$, które trafiło właśnie do $\hbase_{1,n}$.
@@ -1461,11 +1459,205 @@ Mamy wtedy
 $(h_2, \ctxts_2) \rightarrow (h_{2, n}, \ctxts_2' :: \ctxt_2\[ l_0'\] _\emptyset))$, a zatem biorąc takie $h_{2, n}$
 i $\ctxts_{2,n} = \ctxts_2' :: \ctxt_2\[ l_0'\] _\emptyset$ mamy spełnione też warunki 7 i 8.
 
-Niech teraz $\hbase_{2,n} = \hbase_2\{l_0' \mapsto o'\}$ i $f' = f\{l_0 \mapsto l0'\}$.
+Jest to jedyny przypadek, w którym na stercie pojawia się nowa lokacja, a zatem należy zmodyfikować
+izomorfizm $f$.
+Niech więc $\hbase_{2,n} = \hbase_2\{l_0' \mapsto o'\}$ i $f' = f\{l_0 \mapsto l_0'\}$.
 Warunki 1 i 5 są w oczywisty sposób spełnione.
 Warunek 2 jest spełniony, ponieważ z założenia $f$ było zdefiniowane tylko na lokacjach z $\hbase_1$, a $l_0$ trafiło do $\hbase_{1,n}$.
 Wreszcie, warunek 3 jest spełniony, ponieważ z założenia o izomorfizmie $\ctxts_1$ i $\ctxts_2$,
-dla $j = 1, \ldots, k$ mamy $f(l_j) = l_j'$.
+dla $j = 1, \ldots, k$ mamy $f'(l_j) = l_j'$, a z definicji $f'$, $f'(l_0) = l_0'$.
+
+\item $\ctxts_1 = \ctxts_1'::\ctxt_1\[\letin{C}{x}{e_1}{e_2}\]_\emptyset$, \;\;
+      $\ctxts_2 = \ctxts_2'::\ctxt_2\[\letin{C}{x}{e_1'}{e_2'}\]_\emptyset$
+      
+Redukcja $\ctxts_1$ jest postaci
+$(h_1, \ctxts_1' :: \ctxt_1\[ \letin{C}{x}{e_1}{e_2}\] _\emptyset) \rightarrow
+ (h_1, \ctxts_1' :: \ctxt_1 [\letin{C}{x}{\[ e_1\] _\emptyset}{e_2}])$, a zatem
+jedyne co się w niej dzieje to dodanie $e_2$ do kontekstu i zmiana redeksu na $e_1$.
+
+Możemy więc wziąć
+$\ctxts_{2,n} = \ctxts_2' :: \ctxt_2 [\letin{C}{x}{\[ e_1'\] _\emptyset}{e_2'}])$,
+a sterty i izomorfizm $f$ pozostawić bez zmian.
+
+\item $\ctxts_1 = \ctxts_1'::\ctxt_1[\letin{C}{x}{\[ l\] _\emptyset}{e}]$, \;\;
+      $\ctxts_2 = \ctxts_2'::\ctxt_2[\letin{C}{x}{\[ l'\] _\emptyset}{e'}]$
+      
+Redukcja $\ctxts_1$ jest postaci
+$(h_1, \ctxts_1' :: \ctxt_1[\letin{C}{x}{\[ l\] _\emptyset}{e}]) \rightarrow
+ (h_1, \ctxts_1' :: \ctxt_1\[ e\{l/x\}\] _\emptyset)$.
+Podobnie jak wyżej, możemy pozostawić sterty oraz izomorfizm bez zmian i przyjąć
+$\ctxts_{2,n} = (h_2, \ctxts_2' :: \ctxt_2\[ e'\{l'/x\}\] _\emptyset)$.
+
+Wyrażenia $e\{l/x\}$ i $e'\{l'/x\}$ są izomorficzne, ponieważ z założenia $f$ jest izomorfizmem
+między $e$ i $e'$ oraz $f(l) = l'$.
+
+\item $\ctxts_1 = \ctxts_1'::\ctxt_1\[\ite{ l_0 == l_1}{e_1}{e_2}\]_\emptyset$, \;\;
+      $\ctxts_2 = \ctxts_2'::\ctxt_2\[\ite{ l_0' == l_1'}{e_1'}{e_2'}\]_\emptyset$
+      
+Redukcja $\ctxts_1$ jest postaci
+$(h_1, \ctxts_1'::\ctxt_1\[ \ite{ l_0 == l_1}{e_1}{e_2}\] _\emptyset\!) \rightarrow \!(h_1, \ctxts_1':: \ctxt_1\[ e_i \] _\emptyset)$,
+gdzie $i \in \{ 1,2 \}$ w zależności od tego czy $l_0 = l_1$.
+
+Ponieważ $l_0' = f(l_0)$ i $l_1' = f(l_1)$, więc $l_0' = l_1'$ wtedy i tylko wtedy gdy $l_0 = l_1$.
+Redukcja $\ctxts_2$ zatem wybierze tę samą gałąź, co redukcja $\ctxts_1$.
+Możemy więc wziąć $\ctxts_{2,n} = \ctxts_2'::\ctxt_2\[ e_i' \]_\emptyset$,
+a sterty i izomorfizm $f$ pozostawić bez zmian.
+      
+\item $\ctxts_1 = \ctxts_1'::\ctxt_1\[ l.m(\overline{l})\]_\emptyset$, \;\;
+      $\ctxts_2 = \ctxts_2'::\ctxt_2\[ l'.m(\overline{l'})\]_\emptyset$, \;\;
+      $l \neq \jnull$
+      
+Redukcja $\ctxts_1$ jest postaci
+$(h_1, \ctxts_1 :: \ctxt_1 \[ l.m(\overline{l})\]_\emptyset) \rightarrow
+ (h_1, \ctxts_1 :: \ctxt_1 \[ l.m(\overline{l})\]_\emptyset::\[ e\]_\emptyset)$, gdzie
+$e$ jest ciałem metody $m$ z wartościami $\overline{l}$ podstawionymi w miejsce argumentów.
+
+Niech teraz $e'$ będzie ciałem metody $m$ z wartościami $\overline{l'}$
+podstawionymi w miejsce argumentów.
+Ponieważ listy argumentów $\overline{l}$ i $\overline{l'}$ są izomorficzne, więc wyrażenia
+$e$ i $e'$ są izomorficzne.
+
+Możemy więc wziąć
+$ \ctxts_{2,n} = \ctxts_2 :: \ctxt_2 \[ l'.m(\overline{l'})\]_\emptyset::\[ e' \]_\emptyset$,
+a sterty i izomorfizm pozostawić bez zmian.
+
+\item $\ctxts_1 = \ctxts_1'::\ctxt_1\[ l_1.m(\overline{l})\]_\emptyset :: \[ l_2 \]_\emptyset$, \;\;
+      $\ctxts_2 = \ctxts_2'::\ctxt_2\[ l_1'.m(\overline{l'})\]_\emptyset :: \[ l_2' \]_\emptyset$
+      
+Redukcja $\ctxts_1$ jest postaci
+$(h_1, \ctxts_1'::\ctxt_1\[ l_1.m(\overline{l})\]_\emptyset :: \[ l_2 \]_\emptyset) \rightarrow
+ (h_1, \ctxts_1'::\ctxt_1\[ l_2\]_\emptyset)$.
+Następuje więc jedynie zdjęcie wywołania metody ze stosu wywołań.
+Możemy zatem wziąć
+$\ctxts_{2,n} = \ctxts_2'::\ctxt_2\[ l_2'\]_\emptyset$, a sterty i izomorfizm pozostawić bez zmian.
+
+\item $\ctxts_1 = \ctxts_1'::\ctxt_1\[ l_1.x = l\]_\emptyset$, \;\;
+      $\ctxts_2 = \ctxts_2'::\ctxt_2\[ l_1'.x = l'\]_\emptyset$, \;\;
+      $l_1 \neq \jnull$
+      
+Redukcja $\ctxts_1$ jest postaci
+$(h_1,  \ctxts_1'::\ctxt_1\[ l_1.x = l\]_\emptyset) \rightarrow
+ (h_{1, n},\; \ctxts_1'::\ctxt_1\[ l\]_\emptyset)$, gdzie
+$o = h_1(l_1)\{x \mapsto  l\}$, $h_{1,n} = h_1\{l_1 \mapsto o\}$
+
+Ponieważ izomorfizm jest różnowartościowy i zachowuje $\jnull$, więc również $l_1' \neq \jnull$.
+Weźmy zatem
+$o' = h_2(l_1')\{x \mapsto  l'\}$, $h_{2,n} = h_2\{l_1' \mapsto o'\}$ i
+$h_{2,n}^{base} = h_2^{base}\{l_1' \mapsto o'\}$.
+
+Możemy teraz wziąć $\ctxts_{2,n} = \ctxts_2'::\ctxt_2\[ l'\]_\emptyset$ i
+pozostawić izomorfizm $f$ bez zmian.
+
+\item $\ctxts_1 = \ctxts_1'::\ctxt_1\[ l_1.x\]_\emptyset$, \;\;
+      $\ctxts_2 = \ctxts_2'::\ctxt_2\[ l_1'.x\]_\emptyset$, \;\;
+      $l \neq \jnull$
+      
+Redukcja $\ctxts_1$ jest postaci
+$(h_1, \ctxts_1'::\ctxt_1\[ l_1.x\]_\emptyset) \rightarrow
+ (h_1, \ctxts_1'::\ctxt\[ l_2\]_\emptyset)$,
+gdzie $l_2=h_1(l_1)(x)$.
+
+Ponieważ sterty $h_1$ i $h_2$ są izomorficzne, więc na stercie $h_2$ istnieje obiekt pod lokacją
+$l_1'$ zawierający pole $x$ i, co więcej, jeśli $l_2' = h_2(l_1')(x)$, to $f(l_2) = l_2'$.
+
+Zatem możemy wziąć $\ctxts_{2, n} = \ctxts_2'::\ctxt\[ l_2'\]_\emptyset$, a sterty
+i izomorfizm pozostawić bez zmian.
+
+\item $\ctxts_1 = \ctxts_1'::\ctxt_1\[ \throwin{l}\]_\emptyset$, \;\;
+      $\ctxts_2 = \ctxts_2'::\ctxt_2\[ \throwin{l'}\]_\emptyset$, \;\;
+      $l \neq \jnull$
+
+Redukcja $\ctxts_1$ jest postaci
+ $(h_1, \ctxts_1'::\ctxt_1\[ \throwin{l}\]_\emptyset) \rightarrow
+  (h_1, \ctxts_1'::\ctxt_1\[ l\]_{D})$, gdzie $\classof(h_1, l) = D$, zatem jedynym efektem
+jest zmiana trybu wykonania na wyjątkowy z wartością wyjątku $l$ i typem $D$.
+Możemy więc po prostu wziąć $\ctxts_{2, n} = \ctxts_2'::\ctxt_2\[ l'\]_{D}$,
+a sterty i izomorfizm pozostawić bez zmian.
+
+\item $\ctxts_1 = \ctxts_1'::\ctxt_1\[ \tcatch{e_1}{\mmod\; C}{x}{e_2}\]_\emptyset$, \;\;
+      $\ctxts_2 = \ctxts_2'::\ctxt_2\[ \tcatch{e_1'}{\mmod\; C}{x}{e_2'}\]_\emptyset$
+
+Redukcja $\ctxts_1$ jest postaci
+$(h_1, \ctxts_1'::\ctxt_1\[ \tcatch{e_1}{\mmod\; C}{x}{e_2}\]_\emptyset) \rightarrow
+ (h_1, \ctxts_1'::\ctxt_1[\tcatch{\[ e_1\] _\emptyset}{\mmod\; C}{x}{e_2}])$,
+a zatem przebiega podobnie, jak analogiczna redukcja dla $\jlet$ -- do kontekstu dodawane jest
+wyrażenie $e_2$, a redeks zostaje zmieniony na $e_1$. Podobnie jak dla $\jlet$, możemy wziąć
+$\ctxts_{2, n} = \ctxts_2'::\ctxt_2[\tcatch{\[ e_1'\] _\emptyset}{\mmod\; C}{x}{e_2'}])$,
+a sterty i izomorfizm pozostawić bez zmian.
+
+\item $\ctxts_1 = \ctxts_1'::\ctxt_1[\tcatch{\[ l\] _\emptyset}{\mmod\; C}{x}{e_2}]$, \;\;
+      $\ctxts_2 = \ctxts_2'::\ctxt_2[\tcatch{\[ l'\] _\emptyset}{\mmod\; C}{x}{e_2'}]$
+
+Przy normalnym wykonaniu wyrażenia wewnątrz blocku $\jtry$, jest on po prostu usuwany z kontekstu.
+Redukcja $\ctxts_1$ jest wtedy postaci
+$(h_1, \ctxts_1'::\ctxt_1[\tcatch{\[ l\] _\emptyset}{\mmod\; C}{x}{e_2}]) \rightarrow
+ (h_1, \ctxts_1'::\ctxt_1\[ l\]_\emptyset)$.
+ 
+Wystarczy zatem wziąć $\ctxts_{2,n} = \ctxts_2'::\ctxt_2\[ l'\]_\emptyset$,
+a sterty i izomorfizm pozostawić bez zmian.
+
+\item $\ctxts_1 = \ctxts_1'::\ctxt_1[\tcatch{\[ l\] _{C'}}{\mmod\; C}{x}{e_2}]$, \;\;
+      $\ctxts_2 = \ctxts_2'::\ctxt_2[\tcatch{\[ l'\] _{C'}}{\mmod\; C}{x}{e_2'}]$, \;\;
+      gdzie $C' \leq:  C $
+      
+Redukcja w tym przypadku oznacza złapanie rzuconego wcześniej wyjątku i obsłużenie go przez $e_2$.
+Jest ona postaci
+$(h_1, \ctxts_1'::\ctxt_1[\tcatch{\[ l\] _{C'}}{\mmod\; C}{x}{e_2}]) \rightarrow
+ (h_1, \ctxts_1'::\ctxt_1\[ e\]_\emptyset)$, gdzie $e = e_2\{l/x\}$.
+
+Niech $e' = e_2'\{l' / x\}$. Wtedy wystarczy wziąć
+$\ctxts_{2,n} = \ctxts_2'::\ctxt_2\[ e'\]_\emptyset$, a sterty i izomorfizm pozostawić bez zmian.
+
+\item $\ctxts_1 = \ctxts_1'::\ctxt_1[\tcatch{\[ l\] _{C'}}{\mmod\; C}{x}{e_2}]$, \;\;
+      $\ctxts_2 = \ctxts_2'::\ctxt_2[\tcatch{\[ l'\] _{C'}}{\mmod\; C}{x}{e_2'}]$, \;\;
+      gdzie $C'\not=\emptyset, C' \not\!\leq:  C $  
+
+W przypadku niezłapanie wyjątku, kontekst $\jtry$ jest usuwany, a wyjątek przekazywany dalej.
+Redukcja jest postaci
+$(h_1, \ctxts_1'::\ctxt_1[\tcatch{\[ l\] _{C'}}{\mmod\; C}{x}{e_2}]) \rightarrow
+ (h_1, \ctxts_1'::\ctxt_1\[ l\] _{C'})$.
+Bierzemy zatem $\ctxts_{2,n} = \ctxts_2'::\ctxt_2\[ l'\] _{C'}$,
+a sterty i izomorfizm pozostawiamy bez zmian.
+ 
+\item $\ctxts_1 = \ctxts_1'::\ctxt_1[\letin{C}{x}{\[ l\] _{C'}}{e}]$, \;\;
+      $\ctxts_2 = \ctxts_2'::\ctxt_2[\letin{C}{x}{\[ l'\] _{C'}}{e'}]$, \;\;
+      $C' \neq \emptyset$
+      
+Przypadek wyjątku w czasie ewaluacji wyrażenia wewnętrzego $\jlet$ jest analogiczny jak
+poprzedni. Możemy wziąć $\ctxts_{2,n} = \ctxts_2'::\ctxt_2\[ l'\] _{C'}$,
+a sterty i izomorfizm zostawić bez zmian.
+      
+\item $\ctxts_1 = \ctxts_1'::\ctxt_1\[ l_1.m(\overline{l})\]_\emptyset::\[l_2\]_C$, \;\;
+      $\ctxts_2 = \ctxts_2'::\ctxt_2\[ l_1'.m(\overline{l'})\]_\emptyset::\[l_2'\]_C$, \;\;
+      $C\not=\emptyset$  
+      
+Podobnie w przypadku wyjątku podczas wykonywania metody. Wywołanie jest zdejmowane ze stosu,
+a wyjątek przekazywany wyżej. Redukcja jest postaci
+$(h_1, \ctxts_1'::\ctxt_1\[ l_1.m(\overline{l})\]_\emptyset::\[l_2\]_C) \rightarrow
+ (h_1, \ctxts_1'::\[l_2\]_C)$.
+ 
+Bierzemy $\ctxts_{2,n} = (h_1, \ctxts_2'::\[l_2'\]_C)$, a sterty i izomorfizm pozostawiamy bez zmian.
+
+ 
+\item Redukcja $\ctxts_1$ powoduje odwołanie do lokacji $\jnull$
+
+Jest tak, gdy $\ctxts_1 = \ctxts_1'::\ctxt_1\[e\]_\emptyset$, gdzie
+$e$ jest postaci  $\jnull.x$, $\jnull.x = l$, $\jnull.m( \overline{l})$ lub
+$\throwin{\jnull}$.
+ 
+Redukcja $\ctxts_1$ jest wtedy postaci
+$(h_1, \ctxts_1':: \ctxt_1 \[ e \]_\emptyset) \rightarrow
+ (h_1, \ctxts_1':: \ctxt_1 \[ \npe\]_\npetype)$.
+ 
+Wówczas $\ctxts_2 = \ctxts_2'::\ctxt_2 \[ e' \]_\emptyset$, gdzie $e'$ jest izomorficzne z $e$,
+a ponieważ izomorfizm zachowuje $\jnull$ więc redukcja $e'$ również powoduje
+odwołanie do $\jnull$.
+
+Ponieważ izomorfizm zachowuje także $\npe$, możemy wziąć
+$\ctxts_{2,n} = \ctxts_2'::\ctxt_2 \[ \npe \]_\npetype$,
+a sterty i izomorfizm pozostawić bez zmian.
+
+
 \end{itemize}
 \end{proof}
 
