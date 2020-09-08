@@ -1369,6 +1369,7 @@ i $f$ jest izomorfizmem między każdą parą odpowiadających sobie kontekstów
 Sformułuję teraz twierdzenie o zależności ewaluacji od zmiennych wolnych,
 a następnie udowodnię kilka lematów pomocnych w jego dowodzie.
 \begin{theorem}[O zależności ewaluacji od zmiennych wolnych]{\ } \\
+\label{th:free_eval}
     Niech $h$ będzie spójną stertą, $env$ środowiskiem,
     a $E$ wyrażeniem Jafun, w którym nie występują konkretne lokacje, a wszystkie zmienne wolne są przez $env$ mapowane
     na lokacje w $h$.
@@ -1417,6 +1418,7 @@ W tym celu jednak musimy sformułować następujący lemat, będący krokiem ind
 powyższego twierdzenia na częściowe ewaluacje.
 
 \begin{lemma}[O zależności redukcji od zmiennych wolnych]{\ } \\
+\label{lem:free_red}
 Niech $\ctxts_1$ będzie dowolnym stosem wywołań, a $h_1, \hbase_1, \hrest_1$ będą stertami,
 takimi że $\hbase_1$ jest spójna , $h_1 = \hbase_1 \oplus \hrest_1$,
 a wszystkie lokacje występujące w wyrażeniach na stosie $\ctxts_1$ znajdują się na stercie $\hbase_1$.
@@ -1656,15 +1658,82 @@ odwołanie do $\jnull$.
 Ponieważ izomorfizm zachowuje także $\npe$, możemy wziąć
 $\ctxts_{2,n} = \ctxts_2'::\ctxt_2 \[ \npe \]_\npetype$,
 a sterty i izomorfizm pozostawić bez zmian.
-
-
 \end{itemize}
 \end{proof}
-
-
-
-
 \end{lemma}
+
+Korzystając z tego lematu w kroku indukcyjnym udowodnimy teraz następujący lemat,
+mówiący o ewaluacjach dowolnej długości.
+
+\begin{lemma}[O zależności częsciowej ewaluacji od zmiennych wolnych]{\ } \\
+\label{lem:free_part_eval}
+Niech $\ctxts_1$ będzie dowolnym stosem wywołań, a $h_1, \hbase_1, \hrest_1$ będą stertami,
+takimi że $\hbase_1$ jest spójna , $h_1 = \hbase_1 \oplus \hrest_1$,
+a wszystkie lokacje występujące w wyrażeniach na stosie $\ctxts_1$ znajdują się na stercie $\hbase_1$.
+Niech teraz $h_{1, n}, \ctxts_{1, n}, \mathit{confs}_1$ będą takie,
+że $(h_1, \ctxts_1) \eval{confs_1} (h_{1, n}, \ctxts_{1, n})$.
+
+Weźmy teraz dowolną spójną stertę $\hbase_2$, stos wywołań $\ctxts_2$ oraz izomorfizm $f$,
+takie że $f$ jest izomorfizmem między $\hbase_1$ i $\hbase_2$ oraz między $\ctxts_1$ i $\ctxts_2$,
+zdefiniowanym tylko na lokacjach znajdujących się w $\hbase_1$.
+Jeśli wszystkie lokacje występujące w wyrażeniach na stosie $\ctxts_2$
+znajdują się na stercie $\hbase_2$, to dla dowolnych stert $h_2, \hrest_2$, takich że $h_2 = \hbase_2 \oplus \hrest_2$
+istnieją sterty $\hbase_{1, n}, \hbase_{2, n}, h_{2, n}$, stos $\ctxts_{2, n}$, izomorfizm $f'$
+oraz ciąg konfiguracji $\mathit{confs}_2$, takie że
+\begin{enumerate}
+ \item $f'$ rozszerza $f$
+ \item $f'$ jest zdefiniowane tylko na lokacjach znajdujących się w $\hbase_{1, n}$
+ \item $f'$ jest izomorfizmem między $\hbase_{1,n}$ i $\hbase_{2,n}$ oraz między $\ctxts_{1,n}$ i $\ctxts_{2,n}$
+ \item $h_{1, n} = \hbase_{1, n} \oplus \hrest_1$
+ \item $h_{2, n} = \hbase_{2, n} \oplus \hrest_2$
+ \item wszystkie lokacje występujące w wyrażeniach na stosie $\ctxts_{1, n}$ znajdują się na stercie $\hbase_{1, n}$
+ \item wszystkie lokacje występujące w wyrażeniach na stosie $\ctxts_{2, n}$ znajdują się na stercie $\hbase_{2, n}$
+ \item $(h_2, \ctxts_2) \eval{confs_2} (h_{2, n}, \ctxts_{2, n})$.
+\end{enumerate}
+\begin{proof}
+Przez indukcję po długości ciągu konfiguracji $\mathit{confs}_1$.
+\begin{itemize}
+ \item Jeśli $\mathit{confs}_1 = [\ ]$ jest pustym ciągiem, to znaczy że $h_{1,n} = h_1$ oraz
+ $\ctxts_{1,n} = \ctxts_1$.
+ Możemy wtedy wziąć $h_{1,n}^{base} = h_1^{base}$, $h_{2,n}^{base} = h_2^{base}$,
+ $h_{2,n} = h_2$, $\ctxts_{2,n} = \ctxts_2$, $f' = f$ oraz $\mathit{confs}_2 = [\ ]$.
+ \item Jeśli $\mathit{confs}_1 = \mathit{confs'}_1 :: (h_{1,n-1}, \ctxts_{1,n-1})$, to
+ Z założenia indukcyjnego będziemy mieli
+ sterty $\hbase_{1, n-1}, \hbase_{2, n-1}, h_{2, n-1}$, stos $\ctxts_{2, n-1}$, izomorfizm $f'$
+ oraz ciąg konfiguracji $\mathit{confs'}_2$, takie że spełnione są warunki z treści zadania,
+ w szczególności $(h_2, \ctxts_2) \eval{confs'_2} (h_{2,n-1}, \ctxts_{2, n-1})$.
+ Z lematu \ref{lem:free_red} dostaniemy 
+ sterty $\hbase_{1, n}, \hbase_{2, n}, h_{2, n}$, stos $\ctxts_{2, n}$ oraz izomorfizm $f''$, takie że
+ spełnione są warunki 1-7 oraz
+ $(h_{2,n-1}, \ctxts_{2,n-1}) \rightarrow (h_{2, n}, \ctxts_{2, n})$.
+ Składając tę redukcję z ewaluacją z założenia indukcyjnego dostaniemy, że w istocie
+ $(h_2, \ctxts_2) \eval{confs_2} (h_{2, n}, \ctxts_{2, n})$.
+\end{itemize}
+\end{proof}
+\end{lemma}
+
+Możemy wreszcie udowodnić twierdzenie \ref{th:free_eval}
+\begin{proof} (twierdzenia o zależności ewaluacji od zmiennych wolnych)
+    Niech $h$, $env$, $E$, $h_1$, $h_2$, $\hrest_1$, $\hrest_2$, $\mathit{confs_1}, h_{1,n}, A, l_1$
+    będą jak w treści twierdzenia.
+    Pokażę, że istnieją istnieją  $\hbase_{1, n}, \hbase_{2, n}, \mathit{confs}_2, h_{2, n}, l_2, f$,
+    spełniające warunki z treści.
+    
+    W tym celu zastosujemy lemat \ref{lem:free_part_eval} dla
+    $\hbase_1 = \hbase_2 = h$, ewaluacji
+    $(h_1, \[ E[/env] \]_\emptyset) \eval{confs_1} (h_{1,n}, \[ l_1 \]_A)$ i
+    $\ctxts_2 = \[ E[/env] \]_\emptyset$.
+    Żeby jednak móc go zastosować, musimy pokazać że wszystkie lokacje z wyrażenia $E[/env]$
+    występują na stercie $h$. Wynika to jednak wprost z założeń, że w wyrażeniu $E$ nie ma
+    konkretnych lokacji, a wszystkie zmienne wolne mapowane są przez $env$ na lokacje z $h$.
+    Stąd, po podstawieniu za zmienne wolne lokacji z $env$, założenie jest spełnione.
+    
+    Ostatnim problemem jest wybranie odpowiedniego początkowego $f$.
+    Wystarczy jednak, żeby $f$ była identycznością na $\jnull$, $\npe$ i lokacjach występująych
+    w $h$ lub $E[/env]$. Ponieważ $h$ jest spójna, więc tak zdefiniowana $f$ jest w oczywisty sposób
+    automorfizmem na $h$ oraz na $E[/env]$.
+\end{proof}
+
 
 
 \chapter{Poprawność}
