@@ -1275,7 +1275,51 @@ Wtedy $(h, \ctxts) \eval{confs ++ confs'} (h'', \ctxts'')$.
 TODO
 \end{proof}
 
-\section{Ewaluacja przy rozszerzonym stosie i kontekście}
+\section{Ewaluacja w rozszerzonym kontekście}
+
+Reguły takie jak \textsc{Ht-let} pozwalają wnioskować o ewaluacji złożonych wyrażeń
+na podstawie założeń o ewaluacji ich podwyrażeń.
+Dowód ich poprawności wymaga jednak skonstruowania ewaluacji wyrażenia opakowanego
+w dodatkowy kontekst $\jlet$ lub $\jtry$ przy założeniu, że istnieje ewaluacja tego
+wyrażenia bez dodatkowego kontekstu.
+W tej sekcji sformułuję i udowodnię twierdzenie pozwalające mówić o takich ewaluacjach.
+
+\begin{lemma}[Redukcja w rozszerzonym kontekście]{\ } \\
+Niech $h, h', \ctxts, \ctxts', \ctxt, \ctxt', E_1, E_1', A, A'$ będą takie, że
+$(h, \ctxt \[ E_1 \]_A :: \ctxts) \rightarrow (h', \ctxt' \[ E_1' \]_{A'} :: \ctxts')$.
+Wtedy dla dowolnych $\mmod, C, x, E_2$ istnieją również następujące redukcje:
+\begin{itemize}
+ \item $(h, [ \letin{C}{x}{\ctxt \[ E_1 \]_A}{E_2}] :: \ctxts) \rightarrow
+        (h', [ \letin{C}{x}{\ctxt \[ E_1'\]_{A'}}{E_2}] :: \ctxts')$
+ \item $(h, [ \tcatch{\ctxt \[ E_1 \]_A}{\mmod\; C}{x}{E_2}] :: \ctxts) \rightarrow \\
+        (h, [ \tcatch{\ctxt' \[ E_1' \]_{A'}}{\mmod\; C}{x}{E_2}] :: \ctxts')$
+\end{itemize}
+\begin{proof}
+W pierwszej kolejności, rozpatrzmy dwa przypadki: jeśli stos $\ctxts$ jest niepusty,
+redukowany jest pewnien redeks z $\ctxts$, a zatem ramka $\ctxt\[E_1\]_A$ pozostaje bez zmian.
+Stąd, także w przypadku rozszerzonego kontekstu redukowany będzie redeks ze stosu $\ctxts$, a
+rozszerzona ramka $[ \letin{C}{x}{\ctxt \[ E_1 \]_A}{E_2}]$ pozostanie bez zmian.
+
+Załóżmy więc, że stos $\ctxts$ jest pusty, a $E_1$ jest aktualnym redeksem.
+Zauważmy, że zdecydowana większość przypadków redukcji w ogóle nie rusza kontekstu,
+w którym znajduje się $E_1$, a tylko modyfikuje samo wyrażenie, dodaje nowy kontekst
+lub wrzuca nową ramkę na stos. We wszystkich tych przypadkach, redukcja jest niezależna od
+zewnętrznych kontekstów, a więc będzie przeiegała tak samo przy rozszerzonym kontekście.
+
+Wyjątkiem są redukcje letgo i letex, powodujące zdjęcie kontekstu $\jlet$ oraz
+redukcje ctchnrml, ctchexok, ctchexnok, powodujące zdjęcie kontekstu $\jtry$.
+Jeśli jednak redukcja
+$(h, \ctxt \[ E_1 \]_A :: \ctxts) \rightarrow (h', \ctxt' \[ E_1' \]_{A'} :: \ctxts')$
+jest jedną z nich, to zdejmowany kontekst musi być najgłębszym kontekstem w $\ctxt$.
+
+Istnieją zatem dokładnie te same redukcje konfiguracji
+$(h, [ \letin{C}{x}{\ctxt \[ E_1 \]_A}{E_2}] :: \ctxts)$ oraz
+$(h, [ \tcatch{\ctxt \[ E_1 \]_A}{\mmod\; C}{x}{E_2}] :: \ctxts)$,
+w których również zdejmowany jest
+jeden z kontekstów w $\ctxt$, a zewnętrzny kontekst $\jlet$ lub $\jtry$ pozostaje niezmieniony.
+\end{proof}
+\end{lemma}
+
 
 \section{Ewaluacja zależy tylko od zmiennych wolnych}
 Twierdzenie o zależności ewaluacji od zmiennych wolnych jest kluczowe w dowodzie poprawności dla
