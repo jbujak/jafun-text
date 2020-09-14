@@ -908,7 +908,7 @@ wolnej $x$ w~$E$.
 
 \chapter{Reguły wnioskowania}
 Osądy w prezentowanej logice są postaci $\Gamma | P \vdash Q$, gdzie $\Gamma$ to środowisko typów,
-przypisujące zmiennym odpowiadające im typy (czyli nazwy klas), a $P$ i $Q$ to termy logiki.
+przypisujące zmiennym i $\jthis$ odpowiadające im typy (czyli nazwy klas), a $P$ i $Q$ to termy logiki.
 Intuicyjnie, osąd $\Gamma | P \vdash Q$ oznacza że $Q$ wynika z $P$, a więc że każda sterta spełniająca
 $P$ spełnia też $Q$.
 
@@ -1024,7 +1024,7 @@ w regule, wszystkie zmienne wolne w termach $P$ i $Q$ muszą mieć przypisany pe
 \begin{figure}[h]
 \begin{center}
 \AxiomC{\phantom{$Q$}}
-\prooflabel{Weak}
+\prooflabel{*-Weak}
 \UnaryInfC{$P * Q \vdash P$}
 \DisplayProof
 \hskip 2em
@@ -1040,21 +1040,25 @@ w regule, wszystkie zmienne wolne w termach $P$ i $Q$ muszą mieć przypisany pe
 
 \vskip 2em
 
-\AxiomC{$P_1 \vdash Q_1$}
-\AxiomC{$P_2 \vdash Q_2$}
+\AxiomC{$\Gamma_1 | P_1 \vdash Q_1$}
+\AxiomC{$\Gamma_2 | P_2 \vdash Q_2$}
+\AxiomC{$\Gamma_1 \cap \Gamma_2 = \emptyset$}
 \prooflabel{$*$I}
-\BinaryInfC{$P_1 * Q_1 \vdash P_2 * Q_2$}
+\TrinaryInfC{$\Gamma_1, \Gamma_2 | P_1 * P_2 \vdash Q_1 * Q_2$}
 \DisplayProof
-\hskip 2em
+
+\vskip 2em
+
 \AxiomC{$R * P \vdash Q$}
 \prooflabel{$\wand$I}
 \UnaryInfC{$R \vdash P \wand Q$}
 \DisplayProof
 \hskip 2em
-\AxiomC{$R_1 \vdash P \wand Q$}
-\AxiomC{$R_2 \vdash P$}
+\AxiomC{$\Gamma_1 | R_1 \vdash P \wand Q$}
+\AxiomC{$\Gamma_2 | R_2 \vdash P$}
+\AxiomC{$\Gamma_1 \cap \Gamma_2 = \emptyset$}
 \prooflabel{$\wand$E}
-\BinaryInfC{$R_1 * R_2 \vdash Q$}
+\TrinaryInfC{$\Gamma_1, \Gamma_2 | R_1 * R_2 \vdash Q$}
 \DisplayProof
 \end{center}
 \caption{Reguły wnioskowania dla operatorów separacyjnych}
@@ -1330,7 +1334,7 @@ jeden z kontekstów w $\ctxt$, a zewnętrzny kontekst $\jlet$ lub $\jtry$ pozost
 
 \section{Ewaluacja zależy tylko od zmiennych wolnych}
 Twierdzenie o zależności ewaluacji od zmiennych wolnych jest kluczowe w dowodzie poprawności dla
-reguł \textsc{Weak} i \textsc{Ht-frame}.
+reguł \textsc{*-Weak} i \textsc{Ht-frame}.
 Mówi ono, że jeśli dwie sterty zgadzają się na lokacjach odpowiadających zmiennym wolnym w pewnym wyrażeniu $E$,
 to ewaluacje wyrażenia $E$ na tych dwóch stertach będą w pewnym sensie równoważne.
 
@@ -1790,7 +1794,10 @@ Możemy wreszcie udowodnić twierdzenie \ref{th:free_eval}
 Głównym twierdzeniem, dowodzonym w ramach niniejszej pracy, jest poprawność prezentowanej logiki.
 Mówi ono, że jeśli możemy udowodnić pewne wynikanie $\Gamma | P \vdash Q$,
 to każda sterta spełniająca $P$ będzie również spełniała $Q$.
-Ponieważ jednak Jafun jest silnie typowany, więc w ścisłym sformułowaniu tego twierdzenia potrzebne
+Dla ścisłego sformułowania tego twierdzenia potrzebujemy jednak kilku dodatkowych założeń o stertach,
+o których chcemy wnioskować.
+Będziemy rozważać jedynie spójne sterty, a
+ponieważ język Jafun jest silnie typowany, więc potrzebne
 jest jeszcze założenie o odpowiednim otypowaniu obiektów na stercie.
 
 Powiemy więc, że środowisko $\mathit{env}$ zgadza się ze środowiskiem typów $\Gamma$ na stercie $h$,
@@ -1800,8 +1807,8 @@ To znaczy, dla każdego $x$, jesli $\Gamma \vdash x : C$, to obiekt $h(\mathit{e
 Możemy teraz ściśle sformułować twierdzenie o poprawności.
 \begin{theorem}[O poprawności logiki separacji dla języka Jafun]{\ } \\
   Niech $P, Q$ będą dowolnymi termami logiki separacji, takimi że $\Gamma | P \vdash Q$.
-  Wtedy dla każdej sterty $h$ i środowiska $\mathit{env}$, takich że $\mathit{env}$ zgadza się z $\Gamma$
-  na stercie $h$, jeśli  $\[ P \]_{h, env} \triangleq \top$, to również $\[ Q \]_{h, env} \triangleq \top$.
+  Wtedy dla każdej spójnej sterty $h$ i środowiska $\mathit{env}$, takich że $\mathit{env}$ zgadza się z $\Gamma$
+  na stercie $h$, jeśli  $\[ P \]_{h, env} = \top$, to również $\[ Q \]_{h, env} = \top$.
   \qed
 \end{theorem}
 
@@ -1813,6 +1820,9 @@ W tym celu będziemy zakładać, że wszystkie osądy z przesłanek są poprawne
 a następnie korzystając z tych założeń będziemy dowodzić poprawność osądu będącego wnioskiem reguły.
 Takie założenie jest możliwe dzięki temu, że drzewa dowodów przesłanek są właściwymi poddrzewami
 dowodu dla wniosku, a zatem założenie o poprawności przesłanek jest założeniem indukcyjnym.
+
+Pełen dowód tego twierdzenia w systemie Coq znajduje się w pliku \texttt{JaIrisSoundeness.v}
+jako dowód twierdzenia \texttt{JFIOuterSoundness}.
 
 \section{Poprawność reguł dla tradycyjnych operatorów logicznych}
 Dowody poprawności reguł przedstawionych na rysunku \ref{fig:logical_rules} są do siebie
@@ -1842,7 +1852,7 @@ jest poprawność reguły $\exists\mathrm{E}$, eliminującej kwantyfikator $\exi
 Kluczowym krokiem w dowodzie poprawności $\exists\mathrm{E}$ jest zauważenie, że dodanie świeżej,
 nie będącej zmienną wolną w termie,
 zmiennej do środowiska nie zmienia spełnialności tego termu przez stertę.
-To znaczy jeśli $x \not\in FV(P)$, to $\[ P \]_{h, env} \triangleq \[ P \]_{h, env[x \mapsto l]}$.
+To znaczy jeśli $x \not\in FV(P)$, to $\[ P \]_{h, env} = \[ P \]_{h, env[x \mapsto l]}$.
 Formalny dowód tego faktu wymaga indukcji po budowie termu $P$, ale intuicyjnie jest to prawda,
 ponieważ skoro $x$ nie jest wolne w $P$, więc $P$ nie ma możliwości odwoływania się do niego,
 a zatem podczas obliczania semantyki $P$ w środowisku $\mathit{env}$ nigdy nie odwołamy się
@@ -1867,6 +1877,101 @@ drugiej przesłanki, $h$ spełnia $Q$ w środowisku $env[x \mapsto l]$.
 Możemy teraz ponownie skorzystać z faktu o świeżych zmiennych, bo, podobnie jak w $R$,
 $x$ jest świeże w $Q$. Ostatecznie dostajemy więc, że $h$ spełnia $Q$ w środowisku $env$, a zatem
 reguła $\exists\mathrm{E}$ jest poprawna.
+
+\section{Poprawność reguł dla operatorów separacji}
+Poprawność reguł \textsc{Sep-assoc} i \textsc{Sep-sym} wynika w prosty sposób z własności sterty,
+takich jak przemienność i łączność operatora $\oplus$ oraz faktu że suma spójnych stert jest spójna.
+Poprawność pozostałych reguł jest nieco bardziej skomplikowanym zagadnieniem.
+
+\subsection{Reguły eliminacji i wprowadzania operatorów separacji}
+Dowód poprawności eliminacji i wprowadzania operatorów separacji nie jest skompliowany,
+ale kryje się w nim kilka subtelności związanych z manipulowaniem środowiskami, tak
+żeby było możliwe skorzystanie z nich używając założeń indukcyjnych.
+Pokażę je na przykładzie reguły $*\mathrm{I}$, ale podobne rozumowanie jest też stosowane w
+pozostałych regułach.
+
+Aby pokazać poprawność tej reguły, bierzemy dowolne spójne $h$ spełniające $P_1 * P_2$ i środowisko
+$env$ zgadzające się z $(\Gamma_1, \Gamma_2)$ na $h$.
+Ponieważ $h$ spełnia $P_1 * P_2$, więc istnieje podział $h$ na rozłączne sterty $h_1$ i $h_2$,
+spełniające odpowiednio $P_1$ i $P_2$. Chcemy teraz skorzystać z założeń indukcyjnych, żeby
+otrzymać, że spełniają one też odpowiednio $Q_1$ i $Q_2$, co zakończy dowód.
+
+Nie możemy jednak zrobić tego używając środowiska $env$, bo nie musi ono zgadzać się z $\Gamma_1$
+ani $\Gamma_2$ -- jest na to zbyt duże. O ile oba ze środowisk typów są niepuste, to $env$ zawiera
+zarówno zmienne niebędące w $\Gamma_1$, jak i zmienne niebędące w $\Gamma_2$.
+Należy więc ostrożenie wziąc podzbiór środowiska $env$, zgodny z $\Gamma_1$ na $h_1$ i drugi,
+zgodny z $\Gamma_2$ na $h_2$ w taki sposób, żeby zachować spełnianie termów przez sterty
+$h_1$ i $h_2$ w tych okrojonych środowiskach.
+
+Aby to osiągnąć, wystarczy wziąć $env_1$ i $env_2$ będące obcięciami środowiska $env$ odpowiednio do
+zmiennych znajdujących się w $\Gamma_1$ i $\Gamma_2$.
+Wtedy oczywiście $env_1$ zgadza się z $\Gamma_1$ na $h_1$ i analogicznie dla $env_2$.
+Pozostaje więc pokazać, że $h_1$ spełnia $P_1$ w środowisku $env_1$.
+W tym celu możemy znów skorzystać z faktu, że dodawanie świeżych zmiennych do środowiska nie
+wpływa na spełnianie termu przez stertę. Ponieważ wszystkie zmienne wolne w $P_1$ znajdują
+się w $\Gamma_1$, więc znajdują się też w $env_1$. Możemy więc otrzymać $env$ przez dodawanie
+do $env_1$ kolejnych zmiennych, z których każda jest świeża w $P_1$, a zatem dodanie żadnej z nich
+nie zmienia spełniania $P_1$ przez $h_1$. Stąd mamy więc
+$\[ P_1 \]_{h_1, env} = \[ P_1 \]_{h_1, env_1}$ i podobnie
+$\[ Q_1 \]_{h_1, env} = \[ Q_1 \]_{h_1, env_1}$.
+
+Korzystając więc z powyższych równości i z założenia indukcyjnego, dostajemy że $h_1$ spełnia $Q_1$
+w środowisku $env$. Przeprowadzenie analogicznego rozumowania dla $h_2$ kończy dowód.
+
+\subsection{Reguła osłabiania}
+Reguła osłabiania \textsc{*-Weak} jest jedną z dwóch reguł, obok reguły \textsc{Ht-frame},
+dzięki którym operatory separacji są tak przydatne.
+Sprawia ona, że logika separacji jest afiniczna, to znaczy że jeśli sterta spełnia pewien term,
+to każda jej spójna nadsterta też go spełnia.
+
+Istotnie, skoro mamy $P_1 * P_2 \vdash P_1$ dla dowolnych $P_1, P_2$,
+to po przyjęciu $P_2 = \texttt{True}$ możemy w pewnym sensie zapomnieć o niepasującej nam części
+sterty. Jeśli mamy więc stertę $h_1$ spełniającą term $P_1$, to dla dowolnej sterty $h_2$ mamy
+$h_1 \oplus h_2$ spełnia $P_1 * \mathtt{True}$, a zatem, korzystając z reguły osłabiania, także
+$h_1 \oplus h_2$ spełnia $P_1$.
+
+Jest to niewątpliwie silna własność logiki, jednak zachować jej poprawność przy zadanej semantyce
+języka, niezbędne były pewne kompromisy. Przede wszystkim, logika ta nie zawiera kwantyfikatora
+ogólnego $\forall$. Przy naszej definicji sterty kwantyfikator ten zaburzyłby poprawność reguły
+osłabiania. Bez dodatkowych założeń nie ma bowiem gwarancji, że $h_1 \oplus h_2$ spełnia
+$\forall x . P$, nawet jeśli samo $h_1$ spełnia $\forall x . P$. Podczas rozszerzania sterty moglibyśmy
+dodać nowe lokacje, niespełniające $P$, i w ten sposób zepsuć poprawność tej reguły.
+
+Jednocześnie, nięzbędne jest też zadbanie, żeby nie było możliwe symulowanie kwantyfikatora ogólnego
+przy pomocy innych kontrukcji logiki. Możliwe byłoby to na przykład przez zastąpienie
+termu $\forall x : C . P$ przez $\neg \exists x : C . \neg P$.
+Z tego powodu kwantyfikator $\exists$ został w logice ograniczony do termów najwyższego poziomy, tak
+że niemożliwe staje się jego zanegowanie.
+
+Te dwa ograniczenia wystarczają do zapewnienia poprawności reguły osłabiania przy zachowaniu
+semantyki języka bez zmian.
+
+{\ }
+
+Wciąż jednak, pomimo tych ograniczeń, dowód poprawności reguły osłabiania nie jest trywialny.
+Wynika ona wprost z pomocniczego twierdzenia, mówiącego że jeśli pewne środowisko mapuje
+wszystkie zmienne wolne termu na lokacje na pewnej stercie, to możemy dowolnie rozszerzać zarówno
+środowisko jak i stertę bez zmiany semantyki tego termu, to znaczy jeśli
+$h_1 \subseteq h$, $env_1 \subseteq env$ i wszystkie zmienne wolne z termu $P$
+mapowane są przez $env_1$ na lokacje w $h_1$, to $\[ P \]_{h_1, env_1} = \[ P \]_{h, env}$.
+
+Twierdzenie to, mimo że wygląda podobnie to przytaczanego wcześniej faktu o rozszerzaniu środowiska
+o świeże zmienne, jest od niego istotnie trudniejsze do udowodnienia, ponieważ tutaj chcemy
+zagwarantować także możliwość rozszerzania sterty.
+Powoduje to utrudnienia w dowodzie dla przypadku trójki Hoare'a. W pozostałych przypadkach
+dowód nadal nie jest trudny. Dzięki temu, że operator $*$ może występować jedynie w
+wyrażeniach wewnętrznych, nie musimy przejmować się kwantyfikatorem $\exists$.
+
+W przypadku trójek Hoare'a jednak musimy skorzystać z udowodnionego wcześniej twierdzenia
+\ref{th:free_eval} (O zależności ewaluacji od zmiennych wolnych).
+Zapewnia nam ono, że dla dowolnej ewaluacji na stercie $h_1$ będziemy mieli odpowiednią
+ewaluację na stercie $h$ i, co więcej, otrzymane na końcu sterty będą izomorficzne.
+Pozostaje więc pokazać, że dla semantyka termu dla izomorficznych stert jest taka sama.
+Jest to prawda tylko przy założeniu, że środowiska, w których rozpatrujemy semantykę,
+również są izomorficzne, przynajmniej na zmiennych wolnych w tym termie. Na szczęście jednak
+twierdzenie \ref{th:free_eval} zapewnia nam, że otrzymany izomorfizm jest identycznością na
+lokacjach przypisanych w środowisku, a zatem wyjściowe środowiska $env$ i $env_1$
+spełniają to założenie.
 
 
 \chapter{Formalizacja w systemie Coq}
