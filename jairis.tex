@@ -914,6 +914,9 @@ $P$ spełnia też $Q$.
 
 Dla poprawienia czytelności, jeśli $\Gamma$ jest wspólne dla wszystkich osądów występujących
 w danej regule, to jest ono pomijane.
+Dodatkowo zakładamy, że wszystkie zmienne wolne występujące w termach w danych osądzie muszą być
+obecne w środowisku typów dla tego osądu, tj. żeby osąd $\Gamma | P \vdash Q$ mógł pojawić się
+w regule, wszystkie zmienne wolne w termach $P$ i $Q$ muszą mieć przypisany pewien typ w $\Gamma$.
 
 % TODO założenie o otypowaniu P i Q
 
@@ -1003,9 +1006,9 @@ w danej regule, to jest ono pomijane.
 
 \vskip 2em
 
-\AxiomC{$\Gamma, x : C | Q \vdash P[t / x]$}
+\AxiomC{$\Gamma, x : C | Q \vdash P[v / x]$}
 \prooflabel{$\exists$I}
-\UnaryInfC{$Q \vdash \exists x : C . P$}
+\UnaryInfC{$\Gamma | Q \vdash \exists x : C . P$}
 \DisplayProof
 \hskip 2em
 \AxiomC{$\Gamma | R \vdash \exists x : C .  P$}
@@ -1015,6 +1018,7 @@ w danej regule, to jest ono pomijane.
 \DisplayProof
 \end{center}
 \caption{Reguły wnioskowania dla tradycyjnych operatorów logicznych}
+\label{fig:logical_rules}
 \end{figure}
 
 \begin{figure}[h]
@@ -1054,6 +1058,7 @@ w danej regule, to jest ono pomijane.
 \DisplayProof
 \end{center}
 \caption{Reguły wnioskowania dla operatorów separacyjnych}
+\label{fig:sep_rules}
 \end{figure}
 
 
@@ -1165,6 +1170,7 @@ w danej regule, to jest ono pomijane.
 \DisplayProof
 \end{center}
 \caption{Reguły wnioskowania dla trójek Hoare'a}
+\label{fig:hoare_rules}
 \end{figure}
 
 
@@ -1235,6 +1241,7 @@ w danej regule, to jest ono pomijane.
 
 
 \caption{Reguły wnioskowania dla trójek Hoare'a - c.d.}
+\label{fig:hoare_rules2}
 \end{center}
 \end{figure}
 
@@ -1779,8 +1786,88 @@ Możemy wreszcie udowodnić twierdzenie \ref{th:free_eval}
 \end{proof}
 
 
-
 \chapter{Poprawność}
+Głównym twierdzeniem, dowodzonym w ramach niniejszej pracy, jest poprawność prezentowanej logiki.
+Mówi ono, że jeśli możemy udowodnić pewne wynikanie $\Gamma | P \vdash Q$,
+to każda sterta spełniająca $P$ będzie również spełniała $Q$.
+Ponieważ jednak Jafun jest silnie typowany, więc w ścisłym sformułowaniu tego twierdzenia potrzebne
+jest jeszcze założenie o odpowiednim otypowaniu obiektów na stercie.
+
+Powiemy więc, że środowisko $\mathit{env}$ zgadza się ze środowiskiem typów $\Gamma$ na stercie $h$,
+jeśli mają te same dziedziny i typ każdej zmiennej w $\Gamma$ zgadza się z jej typem na stercie $h$.
+To znaczy, dla każdego $x$, jesli $\Gamma \vdash x : C$, to obiekt $h(\mathit{env}(x))$ jest typu $C$.
+
+Możemy teraz ściśle sformułować twierdzenie o poprawności.
+\begin{theorem}[O poprawności logiki separacji dla języka Jafun]{\ } \\
+  Niech $P, Q$ będą dowolnymi termami logiki separacji, takimi że $\Gamma | P \vdash Q$.
+  Wtedy dla każdej sterty $h$ i środowiska $\mathit{env}$, takich że $\mathit{env}$ zgadza się z $\Gamma$
+  na stercie $h$, jeśli  $\[ P \]_{h, env} \triangleq \top$, to również $\[ Q \]_{h, env} \triangleq \top$.
+  \qed
+\end{theorem}
+
+Dowód tego twierdzenia przebiega przez indukcję po budowie drzewa dowodu dla $\Gamma | P \vdash Q$.
+Najpierw należy pokazać, poprawność przypadków bazowych, czyli udowodnić tezę twierdzenia dla
+wszystkich reguł niezawierających osądów w przesłankach.
+Następnie należy pokazać, że wszystkie pozostałe reguły zachowują poprawność.
+W tym celu będziemy zakładać, że wszystkie osądy z przesłanek są poprawne,
+a następnie korzystając z tych założeń będziemy dowodzić poprawność osądu będącego wnioskiem reguły.
+Takie założenie jest możliwe dzięki temu, że drzewa dowodów przesłanek są właściwymi poddrzewami
+dowodu dla wniosku, a zatem założenie o poprawności przesłanek jest założeniem indukcyjnym.
+
+\section{Poprawność reguł dla tradycyjnych operatorów logicznych}
+Dowody poprawności reguł przedstawionych na rysunku \ref{fig:logical_rules} są do siebie
+bardzo podobne i,~oprócz kilku szczegółów techniczych, mało interesujące, jako że wprost
+wynikają z własności operatorów logicznych.
+Na przykład, poprawność reguły \textsc{Asm} jest oczywista -- każda sterta spełniająca $P$ spełnia $P$.
+
+Dowód poprawności innych reguł jednak wymaga doprecyzowania.
+Poprawność reguły \textsc{Trans} wymaga pokazania, że zmienna $v$ istnieje w środowisku $\mathit{env}$.
+Jest to prawdą, ponieważ z faktu, że $v$ jest zmienną wolną w osądzie wynika, że $v$ ma przypisany
+typ w środowisku typów $\Gamma$.
+Istnienie $v$ w środowisku $\mathit{env}$ wynika więc z założenia o zgodności $\mathit{env}$ i~$\Gamma$ 
+
+Kolejną regułą, której poprawność jest nieoczywista, jest reguła $\exists \mathrm{I}$,
+wprowadzająca kwantyfikator $\exists$.
+Należy tu pokazać, że, zakładając poprawność przesłanki, każda sterta spełniająca
+$Q$ spełnia też $\exists x : C . P$.
+Kluczową rolę gra tutaj wartość $v$, którą podstawiamy za zmienną $x$.
+Należy rozpatrzeć przypadki, w których $v$ jest równa $\jnull$, $\jthis$ lub jest zmienną.
+Następnie możemy dodać do środowiska mapowanie $x$ na odpowiednio $\jnull$, $env(\jthis)$ lub $env(v)$.
+Powstałe środowisko jest wtedy zgodne ze środowiskiem $(\Gamma, x : C)$ na stercie $h$,
+a zatem można po prostu zastosować założenie indukcyjne.
+
+Wreszcie, najbardziej najbardziej skomplikowanym przypadkiem, spośród reguł dla klasycznych operatorów,
+jest poprawność reguły $\exists\mathrm{E}$, eliminującej kwantyfikator $\exists$.
+
+Kluczowym krokiem w dowodzie poprawności $\exists\mathrm{E}$ jest zauważenie, że dodanie świeżej,
+nie będącej zmienną wolną w termie,
+zmiennej do środowiska nie zmienia spełnialności tego termu przez stertę.
+To znaczy jeśli $x \not\in FV(P)$, to $\[ P \]_{h, env} \triangleq \[ P \]_{h, env[x \mapsto l]}$.
+Formalny dowód tego faktu wymaga indukcji po budowie termu $P$, ale intuicyjnie jest to prawda,
+ponieważ skoro $x$ nie jest wolne w $P$, więc $P$ nie ma możliwości odwoływania się do niego,
+a zatem podczas obliczania semantyki $P$ w środowisku $\mathit{env}$ nigdy nie odwołamy się
+do lokacji $env(x)$. Nie ma zatem znaczenia, czy $x$ występuje w środowisku $\mathit{env}$ i,
+jeśli tak, to jaka jest wartość $env(x)$.
+
+Kiedy udowodnimy ten fakt, reszta dowodu przebiega już w prosty sposób:
+mamy stertę $h$ oraz środowisko $env$ zgadzające się na $h$ z $\Gamma$, takie że
+$h$ spełnia term $R$ w środowisku $env$. Skoro tak, to z założenia indukcyjnego dla
+pierwszej przesłanki mamy, że $h$ spełnia też w tym środowisku term $\exists x : C . P$, a zatem
+istnieje taka lokacja $l$, że $h(l)$ jest typu $C$ i $h$ spełnia $P$ w środowisku $env[x \mapsto l]$.
+
+Możemy więc teraz zastosować założenie indukcyjne dla drugiej przesłanki.
+Jak zauważyliśmy przed chwilą, $env[x \mapsto l]$ zgadza się z $(\Gamma, x : C)$ na stercie $h$ oraz
+$h$ spełnia $P$ w tym środowisku. Pozostaje pokazać, że $h$ spełnia $R$ w tym środowisku.
+W tym momencie korzystamy z obserwacji o zachowaniu spełniania przy dodaniu świeżej zmiennej.
+Wiemy, że $h$ spełnia $R$ w środowisku $env$, oraz że $x$ jest świeże w $R$
+(bo $x$ nie jest w $\Gamma$, a wszystkie zmienne wolne z $R$ są).
+$h$ spełnia więc też $R$ w środowisku $env[x \mapsto l]$, a zatem z założenia indukcyjnego dla
+drugiej przesłanki, $h$ spełnia $Q$ w środowisku $env[x \mapsto l]$.
+
+Możemy teraz ponownie skorzystać z faktu o świeżych zmiennych, bo, podobnie jak w $R$,
+$x$ jest świeże w $Q$. Ostatecznie dostajemy więc, że $h$ spełnia $Q$ w środowisku $env$, a zatem
+reguła $\exists\mathrm{E}$ jest poprawna.
+
 
 \chapter{Formalizacja w systemie Coq}
 
