@@ -1143,8 +1143,9 @@ Będziemy też wymagać, żeby każda klasa $C$ pojawiająca się w osądach nal
 \vskip 2em
 
 \AxiomC{$\mathrm{flds}(C) = f_1, \ldots, f_n$}
+\AxiomC{$\Gamma \vdash v_i : \mathrm{typeof}(C, f_i)$}
 \prooflabel{Ht-new-field}
-\UnaryInfC{$S \vdash \hoare{\mathtt{True}}{\mathbf{new} \ C(v_1, \ldots, v_n)}{\phi}{w}{w \hookrightarrow f_i = v_i}$}
+\BinaryInfC{$\Gamma | S \vdash \hoare{\mathtt{True}}{\mathbf{new} \ C(v_1, \ldots, v_n)}{\phi}{w}{w \hookrightarrow f_i = v_i}$}
 \DisplayProof
 
 \vskip 2em
@@ -1166,9 +1167,9 @@ Będziemy też wymagać, żeby każda klasa $C$ pojawiająca się w osądach nal
 
 \vskip 2em
 
-\AxiomC{\phantom{$Q$}}
+\AxiomC{$\Gamma \vdash x : C, \;\; v : \mathrm{typeof}(C, f)$}
 \prooflabel{Ht-field-set}
-\UnaryInfC{$S \vdash \hoare{x \neq \mathtt{null}}{x.f = v}{\phi}{\_}{x \hookrightarrow f = v}$}
+\UnaryInfC{$\Gamma | S \vdash \hoare{x \neq \mathtt{null}}{x.f = v}{\phi}{\_}{x \hookrightarrow f = v}$}
 \DisplayProof
 
 \vskip 2em
@@ -1180,7 +1181,7 @@ Będziemy też wymagać, żeby każda klasa $C$ pojawiająca się w osądach nal
 
 \vskip 2em
 
-\AxiomC{\phantom{$Q$}}
+\AxiomC{$\Gamma \vdash x : C, \;\; v : \mathrm{typeof}(C, f)$}
 \prooflabel{Ht-field-get}
 \UnaryInfC{$S \vdash \hoare{x \hookrightarrow f = v}{x.f}{\phi}{w}{w = v}$}
 \DisplayProof
@@ -1297,6 +1298,7 @@ Pokażę teraz twierdzenia o własności ewaluacji, które będą później uży
 \section{Łączenie ewaluacji}
 Podatwowym twierdzeniem, pozwalającym mówić o ewaluacji złożonych wyrażeń, jest twierdzenie o łączeniu ewaluacji.
 \begin{theorem}[O łączeniu ewaluacji]
+\label{th:eval_join}
 Niech $(h, \ctxts), (h', \ctxts'), (h'', \ctxts'')$ będą konfiguracjami, a $confs$ i $confs'$ -- ciągami konfiguracji,
 takimi że $(h, \ctxts) \eval{confs} (h', \ctxts')$ i $(h', \ctxts') \eval{confs'} (h'', \ctxts'')$.
 Wtedy $(h, \ctxts) \eval{confs ++ confs'} (h'', \ctxts'')$.
@@ -1350,6 +1352,22 @@ jeden z kontekstów w $\ctxt$, a zewnętrzny kontekst $\jlet$ lub $\jtry$ pozost
 \end{proof}
 \end{lemma}
 
+\begin{theorem}[O ewaluacji w rozszerzonym kontekście]{\ } \\
+\label{th:eval_ext_ctx}
+Niech $h, h', \ctxts, \ctxts', \ctxt, \ctxt', E_1, E_1', A, A', confs$ będą takie, że
+$(h, \ctxt \[ E_1 \]_A :: \ctxts) \eval{confs} (h', \ctxt' \[ E_1' \]_{A'} :: \ctxts')$.
+Wtedy dla dowolnych $\mmod, C, x, E_2$ istnieją ciągi konfiguracji $confs', confs''$, takie że
+zachodzą również następujące ewaluacje:
+\begin{itemize}
+ \item $(h, [ \letin{C}{x}{\ctxt \[ E_1 \]_A}{E_2}] :: \ctxts) \eval{confs'}
+        (h', [ \letin{C}{x}{\ctxt \[ E_1'\]_{A'}}{E_2}] :: \ctxts')$
+ \item $(h, [ \tcatch{\ctxt \[ E_1 \]_A}{\mmod\; C}{x}{E_2}] :: \ctxts) \eval{confs''} \\
+        (h, [ \tcatch{\ctxt' \[ E_1' \]_{A'}}{\mmod\; C}{x}{E_2}] :: \ctxts')$
+\end{itemize}
+\end{theorem}
+\begin{proof}
+TODO
+\end{proof}
 
 \section{Ewaluacja zależy tylko od zmiennych wolnych}
 Twierdzenie o zależności ewaluacji od zmiennych wolnych jest kluczowe w dowodzie poprawności dla
@@ -2072,6 +2090,84 @@ Jednak, ponieważ nie wiemy nic szczególnego o wyrażeniu $E$, więc nie możem
 założeń stwierdzić, że sterta po ewaluacji spełnia $S$.
 Skoro jednak $S$ jest trwałe i sterta przed ewaluacją spełniała $S$, więc każda inna sterta,
 w szczególności ta po ewaluacji, spełnia $S$.
+
+\section{Reguły opisujące kontrukcje języka}
+Zbiór reguł opisujących kontrukcje języka najbardziej odróżnia się od reguł logiki Iris,
+opisującej język $\lambda_{\mathrm{ref, conc}}$, będący nieotypowanym językiem funkcyjnym, opartym
+na rachunku lambda, z operatorami pozwalającymi na dostęp do sterty i równoległość.
+
+Niniejsza logika jest pod tym względem istotnie różna od logiki Iris. 
+Język jafun jest imperatywnym, silnie typowanym językiem obiektowym.
+Jego konstrukcje różnią się zatem od konstrukcji $\lambda_{\mathrm{ref, conc}}$ zarówno pod względem
+składni, jak i semantyki.
+
+\subsection{Reguły dla wyrażeń prostych}
+Reguły \textsc{Ht-new-*}, \textsc{Ht-field-get} i \textsc{Ht-field-set} w prosty sposób opisują
+działanie alokacji i dostępu do pól obiektów. Poprawność ich wszystkich
+wynika wprost z semantyki języka i logiki.
+Jedynym nieoczywistym krokiem w dowodzie jest zapewnienie, że odpowiednie zmienne istnieją w
+środowisku i są mapowane na obiekty odpowiedniego typu na stercie. 
+Jest to jednak zapewnianie przez założenia, że wszystkie zmienne wolne w wyrażeniach należą do $\Gamma$,
+a środowisko $env$ zgadza się z $\Gamma$ na rozpatrywanej stercie.
+
+Reguły \textsc{Ht-null-*} i \textsc{Ht-throw} różnego rodzaju sytuacje w trakcie ewaluacji programu,
+których może zostać rzucony wyjątek. Należą do nich wszystkie próby dostępu do obiektu pod lokacją
+$\jnull$ oraz rzucenie wyjątku explicite przez słowo kluczowe $\jthrow$.
+Znów, nie dzieje się tutaj nic specjalnego, a dowód poprawności wynika w prosty sposób z
+semantyki języka.
+
+Najbardziej skomplikowaną spośród reguł dla wyrażeń prostych jest reguła \textsc{Ht-invoke}.
+Opisuje ona wywołanie zachowanie ewaluacji podczas wywołania metody $m$ na obiekcie klasy $C$,
+lub pochodnej i stanowi główną motywację dla wprowadzenia pojęcia listy niezmienników.
+W klasycznym podejściu, zastosowanym również w logice Iris, reguła dla wywołania funkcji
+wymaga udowodnienia oczekiwanych własności tylko dla wyrażenia będącego ciałem tej funkcji z
+odpowiednimi wartościami podstawionymi w miejsce argumentów.
+Jednak, z uwagi na to, że Jafun (podobnie jak Java) oferuje polimorfizm, nie można bez ewaluacji
+rozstrzygnąć jakiego dokładnie typu jest dany obiekt, a zatem nie można też rozstrzygnąć
+jak wygląda ciało metody o danej nazwie.
+
+Założenie, mówiące że lista niezmienników jest udowodniona, daje nam pewność, że
+trójka Hoare'a $\hoare{P'}{\cdot}{A}{w}{Q'}$ rzeczywiście zachodzi dla każdej metody w obiektach
+dziedziczących z $C$. Zatem, na mocy założenia indukcyjnego dla przesłanki, zachodzi dla nich
+także trójka $\hoare{P}{x.m(\overline{v})}{A}{w}{Q}$.
+
+\subsection{Reguły dla wyrażeń złożonych}
+Podstawowymi twierdzeniami pozwalającymi nam udowodnić poprawność reguł dla wyrażeń złożonych są
+twierdzenia \ref{th:eval_join} (O łączeniu ewaluacji) oraz
+\ref{th:eval_ext_ctx} (O ewaluacji w rozszerzonym kontekście).
+Przykładem zastosowania ich obu jest dowód poprawości reguły \textsc{Ht-let}, opisującej
+wykonanie wyrażenia $\letin{C}{x}{E_1}{E_2}$ przy założeniu, że wyrażenie $E_1$ wykonuje się w sposób
+normalny, niewyjątkowy.
+
+Z założenia indukcyjnego dla pierwszej przesłanki wynika, że wyrażenie $E_1$ ewaluuje się poprawnie
+do pewnej lokacji $l$ zawierającej obiekt typu $C$,w taki sposób, że sterta po ewaluacji
+spełnia wyrażenie $Q[l/x]$.
+
+Korzystając z redukcji letin, dostajemy 
+$\[ \letin{C}{x}{E_1}{E_2}\]_\emptyset\rightarrow [\letin{C}{x}{\[ E_1\] _\emptyset}{E_2}]$.
+Możemy teraz zastosować twierdzenie \ref{th:eval_ext_ctx} od otrzymanej z założenia indukcyjnego
+ewaluacji wyrażenia $E_1$, co w efekcie da nam kompletną ewaluację wyrażenia wewnętrznego $\jlet$:
+$[\letin{C}{x}{\[ E_1\] _\emptyset}{E_2}] \eval{} [\letin{C}{x}{\[ l \] _\emptyset}{E_2}]$.
+Korzystając teraz z redukcji letgo, otrzymujemy
+$[\letin{C}{x}{\[ l \] _\emptyset}{E_2}] \rightarrow \[ E_2\{l/x\} \]$.
+Możemy wreszcie zastosować założenie indukcyjne dla drugiej przesłanki w środowisku rozszerzonym o
+$(x \mapsto l)$, co daje nam ewaluację $\[ E_2\{l/x\} \] \eval{} \[ l' \]_A$, przy czym sterta po
+ewaluacji spełnia $R[l'/w]$.
+
+Ostatecznie, możemy skorzystać z twierdzenia \ref{th:eval_join}, aby połączyć wyżej pokazane ewaluacje
+i redukcje w jedną ewaluację 
+$\[ \letin{C}{x}{E_1}{E_2}\]_\emptyset \eval{} \[ l' \]_A$, dla której sterta końcowa spełnia $R[l'/w]$.
+
+Założenie o trwałości termu $S$ jest istotne w powyższym rozumowaniu w momencie, w którym stosujemy
+założenie indukcyjne dla drugiej przesłanki. Zauważmy, że sterta, dla której chcemy je zastosować
+to sterta powstała po ewaluacji wyrażenia $E_1$, a zatem bez założenia o trwałości nie musiałaby
+ona spełniać $S$, co uniemożliwiłoby zastosowanie założenia indukcyjnego.
+Ponieważ jednak $S$ jest trwałe i spełniane przez stertę początkową, jest więc również spełniane
+przez stertę po wykonaniu $E_1$.
+
+Dowód poprawności reguły dla $\jlet$ jest najbardziej skompliowanym z dowodów dla reguł złożonych.
+Zastosowane są w nim wszystkie techniki używane w dowodzie pozostałych przypadków.
+Bardzo podobne rozumowanie można więc przeprowadzić dla wszystkich pozostałych reguł.
 
 \chapter{Formalizacja w systemie Coq}
 
