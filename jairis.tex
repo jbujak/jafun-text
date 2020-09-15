@@ -879,7 +879,7 @@ jeden spełnia $P$, a drugi $Q$.
 Operator $\wand$ to pewnego rodzaju odwrotność operatora $*$ -- sterta spełnia $P \wand Q$, jeśli
 po połączeniu jej z dowolną rozłączną stertą spełniającą $P$, otrzymana sterta spełnia $Q$.
 
-\begin{figure}
+\begin{figure}[H]
 \begin{align*}
  \[ \texttt{True} \] \triangleq & \ \top \\
  \[ \texttt{False} \] \triangleq & \ \bot \\
@@ -906,20 +906,39 @@ wolnej $x$ w~$E$.
 \label{fig:sematics}
 \end{figure}
 
+Dodatkowo, powiemy że term $P$ jest \textit{trwały} (ang. \textit{persistent}),
+jeśli nie zawiera żadnych operatorów opisujących sterty -- $\hookrightarrow$, $*$ ani $\wand$.
+Trwałe termy będą odgrywały istotną rolę w regułach wnioskowania dla naszej logiki,
+ponieważ, jak zobaczymy później, ich semantyka nie zależy od wyboru konkretnej sterty.
+
 \chapter{Reguły wnioskowania}
-Osądy w prezentowanej logice są postaci $\Gamma | P \vdash Q$, gdzie $\Gamma$ to środowisko typów,
+\label{chap:rules}
+Ustalmy pewien program \(\overline{\mathbf{C}}\) języka Jafun i
+listę niezmienników $\mathtt{invariants}$, zawierającą trójki postaci
+$(C, m, \hoare{P}{\cdot}{A}{w}{Q})$, składające się z nazwy klasy z \(\overline{\mathbf{C}}\),
+nazwy metody w tej klasie i trójki Hoare'a ze znakiem $\cdot$ zamiast wyrażenia.
+Każdy taki niezmiennik będzie naszym założeniem na temat zachowania metody $m$ wywołanej na
+obiekcie klasy $C$ (lub obiekcie dowolnej klasy będącej rozszerzeniem $C$).
+Intuicyjnie, jeśli $(C, m, \hoare{P}{\cdot}{A}{w}{Q}) \in \mathtt{invariants}$,
+to zakładamy, że każdy obiekt klasy $C$ lub pochodnej spełania trójkę Hoare'a
+$\hoare{P}{E}{A}{w}{Q}$, gdzie $E$ to ciało metody $m$.
+
+Osądy w prezentowanej logice są postaci
+$\overline{\mathbf{C}}, \mathtt{invariants}, \Gamma | P \vdash Q$, gdzie $\Gamma$ to środowisko typów,
 przypisujące zmiennym i $\jthis$ odpowiadające im typy (czyli nazwy klas), a $P$ i $Q$ to termy logiki.
-Intuicyjnie, osąd $\Gamma | P \vdash Q$ oznacza że $Q$ wynika z $P$, a więc że każda sterta spełniająca
+Intuicyjnie, osąd $\overline{\mathbf{C}}, \mathtt{invariants}, \Gamma | P \vdash Q$
+oznacza, że $Q$ wynika z $P$, a więc że każda sterta spełniająca
 $P$ spełnia też $Q$.
 
 Dla poprawienia czytelności, jeśli $\Gamma$ jest wspólne dla wszystkich osądów występujących
-w danej regule, to jest ono pomijane.
-Dodatkowo zakładamy, że wszystkie zmienne wolne występujące w termach w danych osądzie muszą być
+w danej regule, to jest ono pomijane. Ponieważ $\overline{\mathbf{C}}$ i $\mathtt{invariants}$
+są ustalone i wspólne dla osądów we wszystkich regułach, będą one również pomijane.
+
+Dodatkowo zakładamy, że wszystkie zmienne wolne występujące w termach w danym osądzie muszą być
 obecne w środowisku typów dla tego osądu, tj. żeby osąd $\Gamma | P \vdash Q$ mógł pojawić się
 w regule, wszystkie zmienne wolne w termach $P$ i $Q$ muszą mieć przypisany pewien typ w $\Gamma$.
-
-% TODO założenie o otypowaniu P i Q
-
+Będziemy też wymagać, żeby każda klasa $C$ pojawiająca się w osądach należała do programu
+\(\overline{\mathbf{C}}\). 
 
 \begin{figure}[h]
 \begin{center}
@@ -1189,7 +1208,7 @@ w regule, wszystkie zmienne wolne w termach $P$ i $Q$ muszą mieć przypisany pe
 \vskip 2em
 
 \AxiomC{$\Gamma \vdash x : C$}
-\AxiomC{$\hoare{P'}{\cdot}{A}{w}{Q'} \in \mathtt{invariants}(C, m)$}
+\AxiomC{$(C, m, \hoare{P'}{\cdot}{A}{w}{Q'}) \in \mathtt{invariants}$}
 \noLine
 \UnaryInfC{$S \wedge \hoare{P'}{x.m(\overline{v})}{A}{w}{Q'} \vdash \hoare{P}{x.m(\overline{v})}{A}{w}{Q}$}
 \prooflabel{Ht-invoke}
@@ -1789,30 +1808,69 @@ Możemy wreszcie udowodnić twierdzenie \ref{th:free_eval}
     automorfizmem na $h$ oraz na $E[/env]$.
 \end{proof}
 
-
 \chapter{Poprawność}
 Głównym twierdzeniem, dowodzonym w ramach niniejszej pracy, jest poprawność prezentowanej logiki.
 Mówi ono, że jeśli możemy udowodnić pewne wynikanie $\Gamma | P \vdash Q$,
 to każda sterta spełniająca $P$ będzie również spełniała $Q$.
-Dla ścisłego sformułowania tego twierdzenia potrzebujemy jednak kilku dodatkowych założeń o stertach,
-o których chcemy wnioskować.
-Będziemy rozważać jedynie spójne sterty, a
-ponieważ język Jafun jest silnie typowany, więc potrzebne
-jest jeszcze założenie o odpowiednim otypowaniu obiektów na stercie.
+Dla ścisłego sformułowania tego twierdzenia potrzebujemy jednak kilku dodatkowych założeń o stertach
+i programach, o których chcemy wnioskować.
 
+\section{Konieczne założenia}
+Będziemy rozważać jedynie spójne sterty. Ponieważ język Jafun jest silnie typowany, więc potrzebne
+jest także założenie o odpowiednim otypowaniu obiektów na stercie.
 Powiemy więc, że środowisko $\mathit{env}$ zgadza się ze środowiskiem typów $\Gamma$ na stercie $h$,
 jeśli mają te same dziedziny i typ każdej zmiennej w $\Gamma$ zgadza się z jej typem na stercie $h$.
 To znaczy, dla każdego $x$, jesli $\Gamma \vdash x : C$, to obiekt $h(\mathit{env}(x))$ jest typu $C$.
 
+W twierdzeniu o poprawności będziemy wymagać, żeby rozważane środowisko było zgodne z $\Gamma$
+na stercie, o której będziemy wnioskować. W połączeniu z założeniem o tym, że wszystkie zmienne wolne
+pojawiąjące się w osądach muszą być w $\Gamma$, zapewni to, że wszystkie zmienne wolne są mapowane
+przez środowisko na pewną lokację istniejącą na stercie i, co więcej, obiekt znajduący się pod tą
+lokacją jest odpowiedniego typu.
+
+Wreszcie, należy poczynić odpowiednie założenia o niezmiennikach.
+Lista niezmienników została wprowadzona w rozdziale \ref{chap:rules} jako lista elementów postaci
+$(C, m, \hoare{P}{\cdot}{A}{w}{Q})$.
+Każdy taki niezmiennik oznaczał założenie o własności ewaluacji metody $m$ na obiektach klasy
+$C$ i jej pochodnych.
+Żeby jednak takie założenie było poprawne, należy zadbać o to, żeby każdy taki niezmiennik dał
+się wyprowadzić korzystając z reguł dowodzenia i niezmienników będących wcześniej na liście.
+Pozwoli to udowodnić poprawność każdego z nich przez prostą indukcję po długości listy niezmienników.
+
+Zdefiniujmy więc \textit{udowodnioną listę niezminników} indukcyjnie, w następujący sposób.
+Powiemy, że pusta lista niezmienników jest udowodniona.
+Niepusta lista niezmienników $\mathtt{invariants}::(C, m, \hoare{P}{\cdot}{A}{w}{Q})$ dla
+programu $\overline{\mathbf{C}}$ jest
+udowodniona wtedy i tylko wtedy, gdy udowodniona jest lista $\mathtt{invariants}$ oraz osąd
+$\overline{\mathbf{C}}, \mathtt{invariants}, \Gamma | \mathtt{True} \vdash \hoare{P}{E}{A}{w}{Q}$
+jest wyprowadzalny dla każdego $E$ będącego ciałem metody $m$ w klasie $C$ lub jej pochodnej i
+dla $\Gamma$ będącej środowiskiem typów przypisującym nazwom argumentów metody
+$m$ ich typy, a wartości $\jthis$ typ $C$.
+
+Zauważmy, że warunek dodania niezmiennika do listy jest bardzo silny -- należy udowodnić jego
+prawdziwość nie tylko dla metody w interesującej nas klasie, ale również dla każdego jej przeciążonego
+odpowiednika w klasach pochodnych. Z jednej strony ogranicza to zakres wnioskowania o metodach,
+ale z drugiej wymusza pewną dyscyplinę podczas przeciążania metod.
+Definiując metodę z intencją jej przeciążenia należy bowiem zastanowić się, jakie własności
+powinna ona spełniać we wszystkich klasach pochodnych.
+Dzięki temu można zapewnić, że metoda ta we wszystkich klasach dziedziczących zachowuje się
+w podobny, dobrze określony sposób.
+
+\section{Twierdzenie o poprawności}
+
 Możemy teraz ściśle sformułować twierdzenie o poprawności.
 \begin{theorem}[O poprawności logiki separacji dla języka Jafun]{\ } \\
+  Niech $\overline{\mathbf{C}}$ będzie programem języka Jafun i niech $\mathtt{invariants}$
+  będzie udowodnioną listą niezmienników.
   Niech $P, Q$ będą dowolnymi termami logiki separacji, takimi że $\Gamma | P \vdash Q$.
   Wtedy dla każdej spójnej sterty $h$ i środowiska $\mathit{env}$, takich że $\mathit{env}$ zgadza się z $\Gamma$
-  na stercie $h$, jeśli  $\[ P \]_{h, env} = \top$, to również $\[ Q \]_{h, env} = \top$.
+  na stercie $h$ mamy $\[ P \]_{h, env} = \[ Q \]_{h, env}$.
   \qed
 \end{theorem}
 
-Dowód tego twierdzenia przebiega przez indukcję po budowie drzewa dowodu dla $\Gamma | P \vdash Q$.
+Dowód tego twierdzenia przebiega w pierdzej kolejności przez indukcję po
+długości listy niezmienników, a następnie przez indukcję po budowie drzewa dowodu
+dla $\Gamma | P \vdash Q$.
 Najpierw należy pokazać, poprawność przypadków bazowych, czyli udowodnić tezę twierdzenia dla
 wszystkich reguł niezawierających osądów w przesłankach.
 Następnie należy pokazać, że wszystkie pozostałe reguły zachowują poprawność.
@@ -1821,7 +1879,7 @@ a następnie korzystając z tych założeń będziemy dowodzić poprawność os�
 Takie założenie jest możliwe dzięki temu, że drzewa dowodów przesłanek są właściwymi poddrzewami
 dowodu dla wniosku, a zatem założenie o poprawności przesłanek jest założeniem indukcyjnym.
 
-Pełen dowód tego twierdzenia w systemie Coq znajduje się w pliku \texttt{JaIrisSoundeness.v}
+Dowód tego twierdzenia w systemie Coq znajduje się w pliku \texttt{JaIrisSoundeness.v}
 jako dowód twierdzenia \texttt{JFIOuterSoundness}.
 
 \section{Poprawność reguł dla tradycyjnych operatorów logicznych}
@@ -1973,6 +2031,47 @@ twierdzenie \ref{th:free_eval} zapewnia nam, że otrzymany izomorfizm jest ident
 lokacjach przypisanych w środowisku, a zatem wyjściowe środowiska $env$ i $env_1$
 spełniają to założenie.
 
+
+\section{Poprawność reguł dla trójek Hoare'a}
+Najliczniejszą grupę reguł wnioskowania stanowią, przedstawione na rysunkach
+\ref{fig:hoare_rules} i \ref{fig:hoare_rules2}, reguły dla trójek Hoare'a.
+Większość z nich jest bardzo prosta, a ich poprawność wynika wprost z semantyki języka.
+Do takich należą \textsc{Ht-new-null}, gwarantująca że alokacja obiektu zawsze się powiedzie i zwróci
+niepustą lokację, czy \textsc{Ht-null-get}, mówiąca że próba odczytu pola obiektu pod lokacją
+$\jnull$ zakończy się rzuceniem wyjątku $\npe$.
+
+Z drugiej strony, dowody poprawności niektórych z nich są skomplikowane lub zawierają
+subtelne niuanse. O takich przykładach opowiem poniżej.
+
+Jednym z motywów powtarzających się w wielu regułach dla trójek Hoare'a
+jest założenie o trwałości niektórych termów.
+Zazwyczaj oznacza to, że w dowodzie poprawności potrzebujemy założenia o spełnianiu takiego
+termu przez pewną stertę, przy założeniu, że spełnia go inna sterta.
+Ponieważ termy trwałe nie opisują w żaden sposób własności sterty, więc dowolne dwie sterty
+są równoważne, jeśli chodzi o spełnianie danego trwałego termu.
+
+\section{Reguły strukturalne}
+Dzięki regule \textsc{Ht-frame} możemy w pełni docenić operator separacji $*$.
+Upraszcza ona dowodzenie faktów o trójkach Hoare'a na złożonych stertach,
+sprawiając że możliwe jest dowodzenie własności ograniczając się tylko do istotnych
+dla nich fragmentów sterty, a następnie rozszerzanie tych fragmentów to
+interesującej nas całości. Dzięki takiemu podejściu możliwe jest ograniczenie
+założeń w warunkach początkowych trójki Hoare'a do niezbędnego minimum.
+
+Dowód poprawności reguły \textsc{Ht-frame} przebiega podobnie do dowodu dla reguły osłabiania i
+również korzysta z twierdzenia \ref{th:free_eval} (O zależności ewaluacji od zmiennych wolnych).
+
+Reguła \textsc{Ht-csq} pozwala na wzmacnianie warunków początkowych i osłabianie warunków końcowych
+trójek Hoare'a.
+Niuansem jest w niej założenie o trwałości $S$.
+Jest ono używane w dowodzie poprawności, kiedy chcemy skorzystać z założenia indukcyjnego dla
+trzeciej przesłanki. Konkretnie, po ewaluacji wyrażenia $E$ otrzymamy stertę, o której
+wiemy, że spełnia $Q'$. Założenie indukcyjne dla trzeciej przesłanki pozwoli nam stwierdzić,
+że o ile spełnia ona $S$, to spełnianie $Q'$ implikuje spełnianie $Q$.
+Jednak, ponieważ nie wiemy nic szczególnego o wyrażeniu $E$, więc nie możemy bez dodatkowych
+założeń stwierdzić, że sterta po ewaluacji spełnia $S$.
+Skoro jednak $S$ jest trwałe i sterta przed ewaluacją spełniała $S$, więc każda inna sterta,
+w szczególności ta po ewaluacji, spełnia $S$.
 
 \chapter{Formalizacja w systemie Coq}
 
