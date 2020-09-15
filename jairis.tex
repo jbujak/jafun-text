@@ -62,10 +62,14 @@
 }
 
 %Klasyfikacja tematyczna wedlug AMS (matematyka) lub ACM (informatyka)
-\klasyfikacja{}
+\klasyfikacja{
+    F. Theory of Computation \\
+    F.3. Logics and meanings of programs \\
+    F.3.1 Specifying and verifying and reasoning about programs
+}
 
 % Słowa kluczowe:
-\keywords{Logika separacji, Jafun, weryfikacja}
+\keywords{Logika separacji, Jafun, Iris, semantyka, weryfikacja programów}
 
 % Tu jest dobre miejsce na Twoje własne makra i~środowiska:
 \newtheorem{defi}{Definicja}[section]
@@ -440,7 +444,8 @@ d,Analyze,struct,Ltac,%
 %tu idzie streszczenie na strone poczatkowa
 \begin{abstract}
   W~pracy zdefiniowano logikę separacji dla języka Jafun, przedstawiono jej formalizację
-  w~systemie Coq i~~udowoniono jej poprawność względem semantyki języka. Logika separacji pozwala
+  w~systemie Coq i~~udowoniono jej poprawność względem semantyki języka. Logika separacji
+  dla tego języka pozwala
   na~podział sterty na rozłączne fragmenty. Upraszcza to~wnioskowanie o~programach, pozwalając
   na~dowodzenie własności podwyrażeń na~prostszych fragmentach sterty.
 \end{abstract}
@@ -451,13 +456,36 @@ d,Analyze,struct,Ltac,%
 
 \chapter*{Wprowadzenie}
 \addcontentsline{toc}{chapter}{Wprowadzenie}
+Iris jest logiką separacyjną wyższego rzędu opisaną w pracach \cite{iris-notes} i \cite{iris-model}.
+Logika separacyjna to logika będąca rozszerzeniem logiki Hoare'a o operatory umożliwiające
+opisywanie rozłącznych zasobów, takich jak sterty czy bardziej skompliowane obiekty.
 
-\chapter{Podstawowe pojęcia i definicje}
+Iris pozwala na wnioskowanie o programach w języku $\lambda_{\mathrm{ref, conc}}$,
+będącym rachunkiem lambda
+z dodatkowymi słowami kluczowymi pozwalającymi na dostęp do sterty i wykonanie równoległe,
+jednak z uwagi na jego ogólność, możliwe jest też stosowanie go do innych języków.
+Przykładem takiego zastosowania jest wykorzystanie Iris do udowodnienia poprawności systemu
+typów języka Rust (a dokładniej pewnego jego uproszczenia, $\lambda_{\mathrm{Rust}}$)
+w pracy \cite{iris-rust}.
+
+Iris jest, mimo jego zalet, skomplikowanym systemem, o wysokim poziomie ogólności i 
+skomplikowanym modelu.
+W celu zachowania poprawności, model Iris budowany przy użyciu techniki znanej
+jako \textit{step-indexing} (\cite{step-indexing}).
+Nie rozpatruje się w tym podejściu zwykłych zbiorów i funkcji, ale bardziej skomplikowane
+struktury algebraiczne.
+
+W niniejszej pracy przedstawiamy prostszą logikę separacyjną dla
+podobnego do Javy, imperatywnego i zorientowanego obiektowo języka Jafun.
+Przy jej definiowaniu przyjęliśmy jednak podejście odmienne od Iris, na którym się wzorowaliśmy.
+Wyszliśmy od istniejącej już semantyki języka Jafun (opisanej w \cite{jafun-sem}),
+zdefiniowaliśmy prostą semantykę dla logiki separacji, a następnie wzięliśmy taki jej wycinek,
+żeby zagwarantować jej poprawność względem semantyki języka.
 
 \chapter{Jafun}
 
 Jafun to~zorientowany obiektowo język programowania podobny do Javy.
-Jego szczegółowy opis znajduje się w pracy \cite{jafun-def}.
+Jego szczegółowy opis znajduje się w pracach \cite{jafun-def} i \cite{jafun-sem}.
 Poniżej przytaczam te aspekty języka, które są istotne dla prezentowanej logiki.
 
 \section{Składnia i semantyka}
@@ -837,6 +865,8 @@ Ewaluacją wyrażenia $e$ na stercie $h$ będziemy nazywać taką ewaluację kon
 $(h, e) \eval{confs} (h_n, A, l)$ lub
 
 \chapter{Składnia i semantyka}
+
+\section{Składnia}
 Prezentowana logika separacji dla języka Jafun jest logiką z~kwantyfikatorami egzystencjalnymi pierwszego rzędu, trójkami Hoare'a, operatorem $\hookrightarrow$,
 pozwalającym na opisywanie zawartości sterty i~operatorami separacji $*$ i $\wand$.
 
@@ -847,7 +877,6 @@ języka, prezentowana logika nie zawiera kwantyfikatora ogólnego,
 a kwantyfikator egzystencjalny jest ograniczony
 do~termów najwyższego poziomu (Rysunek \ref{fig:syntax}).
 
-Używane będzie także oznaczenie $v_1 \neq v_2$ jako skrót dla $v_1 = v_2 \Rightarrow \mathtt{False}$.
 
 \begin{figure}[h]
 \begin{align*}
@@ -864,20 +893,29 @@ Używane będzie także oznaczenie $v_1 \neq v_2$ jako skrót dla $v_1 = v_2 \Ri
 \label{fig:syntax}
 \end{figure}
 
-Środowisko to~funkcja częściowa przypisująca identyfikatorom lokacje na stercie lub \texttt{null}.
-Semantyka logiki (Rysunek \ref{fig:sematics}) jest standardowa dla kwantyfikatora i operatorów logicznych.
+\section{Oznaczenia i notacje}
+
+Środowisko to~funkcja częściowa przypisująca identyfikatorom zmiennych i wartości $\jthis$
+lokacje na stercie lub \texttt{null}.
+
+Semantykę termu $P$ na stercie $h$ w środowisku $env$ będziemy oznaczać jako
+$\[ P \]_{h, env}$. Może ona przyjmować wartości $\top$ lub $\bot$, oznaczające odpowiednio
+prawdę i fałsz. W naturalny sposób, powiemy że sterta $h$ spełnia term $P$ w środowisku $env$
+wtedy i tylko wtedy, gdy $\[ P \]_{h, env} = \top$.
+
+Dodatkowo, powiemy że term $P$ jest \textit{trwały} (ang. \textit{persistent}),
+jeśli nie zawiera żadnych operatorów opisujących sterty -- $\hookrightarrow$, $*$ ani $\wand$.
+Może on natomiast zawierać porównania $=$, spójniki logiczne i trójki Hoare'a.
+Trwałe termy będą odgrywały istotną rolę w regułach wnioskowania dla naszej logiki,
+ponieważ, jak zobaczymy później, ich semantyka nie zależy od wyboru konkretnej sterty.
+
+Używane będzie także oznaczenie $v_1 \neq v_2$ jako skrót dla $v_1 = v_2 \Rightarrow \mathtt{False}$.
+
+\section{Semantyka}
+
+Semantyka logiki dla danej sterty i środowiska jest przedstawiona na rysunku \ref{fig:sematics}.
 Dla uproszczenia zapisu notacja $\[ \cdot \]$ została użyta do~opisu semantyki obu poziomów termów
 ($\outerP$ i $P$). To, do którego poziomu się odnosi, wynika z kontekstu.
-
-Sterta spełnia trójkę Hoare'a $\hoare{P}{E}{A}{x}{Q}$, jeśli dla~każdej sterty spełniającej
-$P$, wyrażenie $E$ zostanie obliczone bez błędu, zwróci wyjątek typu $A$ (czyli być może żaden),
-a~wynikowa sterta będzie
-spełniała $Q$, w którym za~$x$~podstawiony zostanie wynik obliczenia.
-
-Sterta spełnia term $P * Q$, jeśli można ją podzielić na dwa rozłączne fragmenty, z których
-jeden spełnia $P$, a drugi $Q$.
-Operator $\wand$ to pewnego rodzaju odwrotność operatora $*$ -- sterta spełnia $P \wand Q$, jeśli
-po połączeniu jej z dowolną rozłączną stertą spełniającą $P$, otrzymana sterta spełnia $Q$.
 
 \begin{figure}[H]
 \begin{align*}
@@ -906,10 +944,35 @@ wolnej $x$ w~$E$.
 \label{fig:sematics}
 \end{figure}
 
-Dodatkowo, powiemy że term $P$ jest \textit{trwały} (ang. \textit{persistent}),
-jeśli nie zawiera żadnych operatorów opisujących sterty -- $\hookrightarrow$, $*$ ani $\wand$.
-Trwałe termy będą odgrywały istotną rolę w regułach wnioskowania dla naszej logiki,
-ponieważ, jak zobaczymy później, ich semantyka nie zależy od wyboru konkretnej sterty.
+\vspace{2em}
+
+Semantyka jest standardowa dla tradycyjnych spójników logicznych i wartości \texttt{True}
+oraz \texttt{False}.
+
+Intuicyjnie, sterta spełnia term $\exists x : C . P$, jeśli istnieje na niej taka lokacja $l$,
+że obiekt znajdujący się pod nią jest typu $C$ oraz spełniony jest term $P[l/x]$.
+Dla uproszczenia dalszego wnioskowwania, w formalnym zapisie semantyki ten ostatni warunek został
+zastąpniony przez odpowiednią modyfikację środowiska.
+
+W logice występują dwa różne sposoby porównania wartości. Pierwsza z nich, $x = y$ jest interpretowana
+jako porównanie lokacji, na które mapowane są w środowisku zmienne $x$ i $y$
+(oczywiście zmienne te muszą być obecne w środowisku).
+Nie następuje przy tym odwołanie do sterty. Drugim sposobem jest porównanie
+$x \hookrightarrow f = y$. Ono z kolei jest interpretowane jako porównanie pola $f$ obiektu znajdującego
+się pod lokacją odpowiadająca zmiennej $x$ z lokacją odpowiadającą zmiennej $y$. W tym przypadku
+również $x$ i $y$ muszą być obecne w środowisku, a dodatkowo lokacja odpowiadająca zmiennej $x$
+nie może być równa $\jnull$, musi być obecna na stercie oraz zawierać pole $f$.
+
+Sterta spełnia trójkę Hoare'a $\hoare{P}{E}{A}{x}{Q}$, jeśli dla~każdej sterty spełniającej
+$P$, wyrażenie $E$ zostanie obliczone bez błędu, zwróci wyjątek typu $A$
+(czyli być może żaden, jeśli $A = \emptyset$),
+a~wynikowa sterta będzie
+spełniała $Q$, w którym za~$x$~podstawiony zostanie wynik obliczenia.
+
+Wreszcie, sterta spełnia term $P * Q$, jeśli można ją podzielić na dwa rozłączne fragmenty, z których
+jeden spełnia $P$, a drugi $Q$.
+Operator $\wand$ to pewnego rodzaju odwrotność operatora $*$ -- sterta spełnia $P \wand Q$, jeśli
+po połączeniu jej z dowolną rozłączną stertą spełniającą $P$, otrzymana sterta spełnia $Q$.
 
 \chapter{Reguły wnioskowania}
 \label{chap:rules}
@@ -2181,9 +2244,26 @@ Bardzo podobne rozumowanie można więc przeprowadzić dla wszystkich pozostały
 oriented languages. In \textit{Proc. of the 19th International Symposium on Principles
 and Practice of Declarative Programming}, PPDP ’17, pp. 61–72. ACM, 2017.
 
-\bibitem {jafun-sem} J. Chrząszcz and A.Schubert. Formalisation of a frame stack semantics for a Java-like language. 2018
+\bibitem {jafun-sem} J. Chrząszcz and A.Schubert. Formalisation of a frame stack semantics for a Java-like language, 2018
+
+\bibitem {iris-notes} L. Birkedal and A. Bizjak. Lecture Notes on Iris: Higher-Order
+Concurrent Separation Logic, 2018
+
+\bibitem {iris-model} R. Jung, R. Krebbers, J. Jourdan, A. Bizjak, L. Birkedal and D. Dreyer.
+Iris from the ground up. A modular foundation for higher-order concurrent separation logic, 2018
+
+\bibitem {iris-rust} R. Jung, J. Jourdan, R. Krebbers, and D. Dreyer. 2018. RustBelt: Securing the
+Foundations of the Rust Programming Language. \textit{Proc. ACM Program. Lang.} 2, POPL,
+Article 66, January 2018
+
+\bibitem{step-indexing} A. Appel and D. McAllester. An indexed model of recursive types for
+foundational proof-carrying code. \textit{TOPLAS}, 23(5), 657–683, 2001
+
+
+
 
 \end{thebibliography}
+
 
 \end{document}
 
