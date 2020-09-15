@@ -91,6 +91,7 @@
 \newcommand \llbracket {[\![}
 \newcommand \rrbracket {]\!]}
 \newcommand \eval [1] {\overset{#1}{\leadsto}}
+\newcommand \concat {+\!\!\!+}
 
 \newtheorem{theorem}{Twierdzenie}
 \newtheorem{lemma}{Lemat}
@@ -1367,7 +1368,21 @@ takimi że $(h, \ctxts) \eval{confs} (h', \ctxts')$ i $(h', \ctxts') \eval{confs
 Wtedy $(h, \ctxts) \eval{confs ++ confs'} (h'', \ctxts'')$.
 \end{theorem}
 \begin{proof}
-TODO
+Przez indukcję po długości ciągu konfiguracji $confs'$.
+\begin{itemize}
+ \item Jeśli $confs'$ jest ciągiem pustym, to znaczy że $confs \concat\; confs' = confs$,
+ $h' = h''$ i $\ctxts' = \ctxts''$. A zatem, skoro $(h, \ctxts) \eval{confs} (h', \ctxts')$,
+ to również $(h, \ctxts) \eval{confs ++ confs'} (h'', \ctxts'')$.
+ \item Założmy, że $confs'$ jest niepuste, to znaczy $confs' = confs'' \concat [ (h'_n, \ctxts'_n) ]$
+ Z załóżenia indukcyjnego wiemy, że istnieje wtedy ewaluacja
+ $(h, \ctxts) \eval{confs ++ confs''} (h'_n, \ctxts'_n)$.
+ Ale ponieważ $confs'$ było poprawną ewaluacją $(h', \ctxts') \eval{confs'} (h'', \ctxts'')$, a więc
+ poprawną ewaluacją jest też
+ $(h', \ctxts') \eval{confs'' ++ [(h'_n, \ctxts'_n)]} (h'', \ctxts'')$.
+ Stąd, z definicji ewaluacji musi istnieć redukcja $(h'_n, \ctxts'_n) \rightarrow (h'', \ctxts'')$,
+ a zatem ostatecznie poprawną ewaluacją jest też $(h, \ctxts) \eval{confs ++ confs'} (h'', \ctxts'')$.
+\end{itemize}
+
 \end{proof}
 
 \section{Ewaluacja w rozszerzonym kontekście}
@@ -1379,7 +1394,8 @@ w dodatkowy kontekst $\jlet$ lub $\jtry$ przy założeniu, że istnieje ewaluacj
 wyrażenia bez dodatkowego kontekstu.
 W tej sekcji sformułuję i udowodnię twierdzenie pozwalające mówić o takich ewaluacjach.
 
-\begin{lemma}[Redukcja w rozszerzonym kontekście]{\ } \\
+\begin{lemma}[O redukcji w rozszerzonym kontekście]{\ } \\
+\label{lem:red_ext_ctx}
 Niech $h, h', \ctxts, \ctxts', \ctxt, \ctxt', E_1, E_1', A, A'$ będą takie, że
 $(h, \ctxt \[ E_1 \]_A :: \ctxts) \rightarrow (h', \ctxt' \[ E_1' \]_{A'} :: \ctxts')$.
 Wtedy dla dowolnych $\mmod, C, x, E_2$ istnieją również następujące redukcje:
@@ -1418,6 +1434,7 @@ jeden z kontekstów w $\ctxt$, a zewnętrzny kontekst $\jlet$ lub $\jtry$ pozost
 \begin{theorem}[O ewaluacji w rozszerzonym kontekście]{\ } \\
 \label{th:eval_ext_ctx}
 Niech $h, h', \ctxts, \ctxts', \ctxt, \ctxt', E_1, E_1', A, A', confs$ będą takie, że
+$confs$ jest poprawną ewaluacją
 $(h, \ctxt \[ E_1 \]_A :: \ctxts) \eval{confs} (h', \ctxt' \[ E_1' \]_{A'} :: \ctxts')$.
 Wtedy dla dowolnych $\mmod, C, x, E_2$ istnieją ciągi konfiguracji $confs', confs''$, takie że
 zachodzą również następujące ewaluacje:
@@ -1429,7 +1446,17 @@ zachodzą również następujące ewaluacje:
 \end{itemize}
 \end{theorem}
 \begin{proof}
-TODO
+Przez indukcję po długości $confs$.
+\begin{itemize}
+ \item Jeśli $confs$ jest ciągiem pustym, to konfiguracja początkowa i końcowa muszą byc sobie równe.
+ Zatem w obu przypadkach rozszerzonego kontekstu otrzymujemy równe konfiguracje początkowe i końcowe,
+ opakowane dodatkowo w kolejny kontekst. Biorąc więc ciągi puste za $confs'$ i $confs''$,
+ dostajemy w obu przypadkach poprawne konfiguracje.
+ \item Jeśli $confs$ jest niepuste i $confs = conf::confs_{suf}$, to z lematu \ref{lem:red_ext_ctx}
+ dostajemy istnienie odpowiednich redukcji dla pierwszego kroku ewaluacji w rozszerzonych kontekstach,
+ a następnie z założenia indukcyjnego dostajemy pozostałą część ewaluacji.
+ Składając je razem, dostajemy oczekiewaną pełną ewaluację.
+\end{itemize}
 \end{proof}
 
 \section{Ewaluacja zależy tylko od zmiennych wolnych}
