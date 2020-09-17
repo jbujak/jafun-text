@@ -1949,6 +1949,7 @@ TODO
 \end{lemma}
 
 \chapter{Równoważność stert i środowisk względem semantyki}
+\label{chap:equiv}
 W tym rozdziale przedstawimy kilka twierdzeń dotyczących równoważności pewnych stert i środowisk
 przy pewnych założeniach.
 
@@ -2412,6 +2413,168 @@ Zastosowane są w nim wszystkie techniki używane w dowodzie pozostałych przypa
 Bardzo podobne rozumowanie można więc przeprowadzić dla wszystkich pozostałych reguł.
 
 \chapter{Formalizacja w systemie Coq}
+W ramach niniejszej pracy prezentowana logika oraz dowód poprawności zostały
+sformalizowane w systemie Coq. Dowód poprawności logiki został zbudowany na podstawie
+Coq-owej formalizacji semantyki języka Jafun, która została przedstawiona w \cite{jafun-sem}.
+
+\section{Reprezentacja poszczególnych obiektów}
+\subsection{Obiekty Jafun}
+Reprezentacja wyrażeń Jafun, sterty oraz lokacji i obiektów na stercie pozostaje
+bez zmian w stosunku do formalizacji semantyki języka Jafun.
+W szczególności sterta reprezentowana jest jako skończony słownik przyporządkowujący
+liczbom naturalnym (interpretowanym jako lokacje) obiekty Jafun:
+\begin{verbatim}
+Module NatMap := FMapAVL.Make(Nat_as_OT).
+Definition Heap : Type :=  NatMap.t Obj. (* Loc => Obj *)
+\end{verbatim}
+Taka reprezentacja wymagała jednak udowodnienia dużej liczby pomocniczych lematów
+opisujących podstawowe własności sterty, takie jak łączność, przemienność i element
+neutralny operatora $\oplus$ sumy rozłącznej stert,
+czy przechodniość relacji bycia podstertą.
+
+Największym jednak wyzwaniem było zdefiniowanie równości na stertach i jej własności.
+Ponieważ sterty zdefiniowane są jako \texttt{FMapAVL}, kolejność w której dodawane są
+elementy ma znaczenie. Oznacza to, że sterty
+\texttt{Heap.add(l1, o1, Heap.add(l2, o2, Heap.empty))} oraz
+\texttt{Heap.add(l2, o2, Heap.add(l1, o1, Heap.empty))} są interpretowane przez Coq
+jako dwie różne sterty, mimo że koncepcyjnie reprezentują dokładnie tę samą stertę
+$\{l_1 \mapsto o_1, l_2 \mapsto o_2\}$.
+
+Wymusiło to zdefiniowanie własnej relacji równoważności stert, utożsamiającej sterty
+zawierające te same lokacje i przypisujące im równe obiekty.
+\begin{verbatim}
+Definition HeapEq (h1 h2 : Heap) := forall n, Heap.find n h1 = Heap.find n h2.
+\end{verbatim}
+Oczywiście, mając taką definicję również należało udowodnić wszystkie jej pożądane własności,
+takie jak symetria i zwrotność. Oprócz tego istotnym jest twierdzenie podobne
+do tych zaprezentowanych w rozdziale \ref{chap:equiv} --
+dowolne dwie równe sterty są równoważne względem semantyki dla każdego termu.
+Dowód tego twierdzenia przebiega przez prostą indukcję po budowie termu, a
+przypadki dla równości i trójek Hoare'a wynikają wprost z równości obiektów pod równymi
+lokacjami.
+
+\subsection{Termy logiki}
+Termy logiki reprezentowane są przez dwa typy indukcyjne,
+\texttt{JFIOuterTerm} i \texttt{JFITerm},
+odpowiadające termom odpowiednio $\outerP$ i $P$.
+Dla uproszczenia dowodu, w definicji termu definiujemy wartości w inny sposób niż
+są one definiowane w składni Jafun.
+Wartości w Jafun zdefiniowane są jako
+\begin{verbatim}
+Inductive Loc : Set := | null | JFLoc (n:nat).
+Inductive JFRef := | JFVar (x:JFXId) | JFThis.
+Inductive JFVal := | JFVLoc (l:Loc) | JFSyn (x:JFRef).
+\end{verbatim}
+Z zachowaniem takiej definicji wartości także dla termów logiki wiązałyby się dwa problemy.
+Po pierwsze, w logice nie dopuszczamy konkretnych lokacji poza $\jnull$, zatem
+w dowodzie trzeba by zachować tę własność jako niezmiennik. Po drugie,
+$\jnull$, $\jthis$ oraz nazwane zmienne traktowane są w logice jako równorzędne obiekty,
+więc dodatkowa hierarcha nie jest potrzebna. Z tych powodów, w składni logiki przyjęliśmy
+prostszą definicję wartości:
+\begin{verbatim}
+Inductive JFIVal : Type := | JFINull | JFIThis | JFIVar (var : string).
+\end{verbatim}
+
+Ponieważ jednak w wyrażeniach Jafun (występujących w logice w trójkach Hoare'a)
+wartości nadal reprezentowane są przez \texttt{JFVal}, nieraz zdarza się, że ta sama wartość
+jest reprezentowana zarówno przez typy \texttt{JFVal}, jak i \texttt{JFIVal}.
+Do zapewnienia, że w takich sytuacjach wartości są ze sobą zgodne służy pomocnicza
+definicja \texttt{JFIValToJFVal}, zdefiniowana w naturalny sposób jako
+\begin{verbatim}
+Definition JFIValToJFVal val :=
+ match val with
+ | JFINull => JFVLoc null
+ | JFIThis => JFSyn JFThis
+ | JFIVar var => JFSyn (JFVar var)
+ end.
+\end{verbatim}
+Jest ona wielokrotnie używana w formalizacji reguł wnioskowania dla trójek Hoare'a,
+aby powiązać ze sobą wartości występujące w warunkach początkowych lub końcowych
+z odpowiadającymi im wartościami w wyrażeniu Jafun.
+
+\subsection{Reguły wnioskowania}
+Reguły wnioskowania dla obu poziomów termów zdefiniowane są jako typy indukcyjne
+\begin{verbatim}
+Inductive JFIProves : JFIDeclsType -> JFITypeEnv -> JFITerm -> JFITerm -> Prop
+Inductive JFIProvesOuter : JFIDeclsType -> JFITypeEnv -> JFIOuterTerm ->
+                           JFIOuterTerm -> Prop
+\end{verbatim}
+Typ \texttt{JFIDeclsType} to rekord zawierający program $\overline{\mathbb{C}}$,
+o którym wnioskujemy oraz listę niezmienników metod \texttt{invariants}.
+Jest on wspólny dla wszystkich reguł, a zatem żadna z nich go nie modyfikuje.
+Typ \texttt{JFITypeEnv} natomiast to środowisko typowe $\Gamma$,
+czyli słownik przypisujący nazwom zmiennych ich typy. Może on być modyfikowany przez
+poszczególne reguły, na przykład przy wprowadzaniu nowej zmiennej przez
+kwantyfikator $\exists$.
+
+Istnienie obiektu o typie \texttt{JFIProves decls gamma p q} jest interpretowane jako
+dowodliwość osądu $\mathtt{decls,\; gamma}\; |\; p \vdash q$, a sam obiekt tego typu
+interpretowany jest jako dowód tego osądu.
+Zaletą takiego podejścia jest łatwa weryfikacja dowodu osądów -- jeśli można
+skonstruować obiekt danego typu to dowód musi być poprawny -- oraz możliwość
+dowodzenia przez indukcję po budowie dowodu.
+
+Przykładem prostej reguły wnioskowania jest reguła przechodniości \textsc{Trans}, mówiąca
+o że jeśli z \texttt{p} można udowodnić \texttt{q}, a z \texttt{q} można udowodnić
+\texttt{r}, to również z \texttt{p} można udowodnić \texttt{r}:
+\begin{verbatim}
+...
+| JFITransRule :
+    forall q decls gamma p r,
+      (JFIProves decls gamma p q) -> (JFIProves decls gamma q r) ->
+      (*----------------------------------------------------------*)
+      JFIProves decls gamma p r
+...
+\end{verbatim}
+
+Dodatkowym założeniem, obecnym w większości reguł, jest założenie, że
+wszystkie zmienne wolne w termie muszą być obecne w środowisku typów.
+Warunek ten jest opisywane przez predykat \texttt{FreeVarsInTermAreInGamma} i pojawia się
+we wszystkich regułach, w których nie może on być wywnioskowany z osądów pojawiających się
+w przesłankach.
+
+Na przykład reguła \textsc{Asm}, w której to założenie jest potrzebne, jest zapisana jako
+\begin{verbatim}
+...
+| JFIAsmRule :
+    forall decls gamma p,
+      (FreeVarsInTermAreInGamma p gamma) ->
+      (*----------------------------------*)
+      JFIProves decls gamma p p 
+...
+\end{verbatim}
+
+
+Wspomniane wcześniej powiązanie między wartościami logiki (typu \texttt{JFIVal}) a wartościami
+w wyrażeniach Jafun (typu \texttt{JFVal}) jest wymagane wszędzie we wszystkich tych regułach,
+gdzie pewna wartość występuje jednocześnie w termie
+($\cdot = \cdot$ lub $\cdot \hookrightarrow \cdot = \cdot$) i w wyrażeniu Jafun.
+Przykładem prostej reguły, która wymaga takiego powiązania jest reguła \textsc{Ht-ret},
+mówiąca że zawsze możemy udowodnić trójkę Hoare'a
+$\hoare{\mathtt{True}}{w}{\emptyset}{v}{v = w}$.
+Pierwsze $w$ jest wyrażeniem języka Jafun, składającym się tylko z wartości.
+Drugie $w$, występujące w warunku końcowym, jest operandem operatora $=$, a zatem jest
+częścią termu logiki.
+
+W poniższej regule, symbol \texttt{w\_expr} reprezentuje wartość Jafun, a
+symbol \texttt{w} -- wartość w termie
+(dla jasności, w poniższej trójce Hoare'a \texttt{JFITrue} to warunek początkowy,
+\texttt{None} oznacza brak wyjątku, a \texttt{v}
+to nowa zmienna związana z wartością wyrażenia).
+Powiązanie wartości Jafun z wartością logiki jest realizowane przez założenie
+\texttt{FreeVarsInValAreInGamma w gamma}.
+\begin{verbatim}
+...
+| JFIHTRetRule :
+    forall decls gamma s v w w_expr,
+      FreeVarsInValAreInGamma w gamma ->
+      w_expr = JFIValToJFVal w ->
+      (*----------------------------------------------------------------*)
+      JFIProves decls gamma s
+        (JFIHoare JFITrue (JFVal1 w_expr) None v (JFIEq (JFIVar v) w))
+...
+\end{verbatim}
+
 
 \chapter{Podsumowanie}
 
