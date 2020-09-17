@@ -896,8 +896,44 @@ do~termów najwyższego poziomu (Rysunek \ref{fig:syntax}).
 
 \section{Oznaczenia i notacje}
 
+\begin{definition}[Środowisko]{\ } \\
 Środowisko to~funkcja częściowa przypisująca identyfikatorom zmiennych i wartości $\jthis$
 lokacje na stercie lub \texttt{null}.
+\qed
+\end{definition}
+
+\begin{definition}[Sterta]{\ } \\
+ Sterta to funkcja częściowa przypisująca lokacjom obiekty języka Jafun.
+ \qed
+\end{definition}
+
+\begin{definition}[Spójność sterty]{\ } \\
+Niech $h$ będzie stertą.
+Powiemy, że $h$ jest spójna, jeśli każda lokacja będąca wartością pola w pewnym obiekcie na $h$
+również jest na $h$.
+To znaczy, dla każdego $x, l_1, l_2$, jeśli $h(l_1)(x) = l_2$, to $l_2 \in \dom{h}$.
+\qed
+\end{definition}
+
+\begin{definition}[Suma rozłączna stert]{\ } \\
+Niech $h, h_1, h_2$ będą stertami.
+Powiemy, że $h$ jest sumą rozłączną stert $h_1$ i $h_2$ (zapisywane $h = h_1 \oplus h_2$),
+jeśli
+\begin{enumerate}
+ \item Dla każdej lokacji $l$, $l \in h$ wtedy i tylko wtedy gdy $l \in h_1$ lub $l \in h_2$
+ \item Nie istnieje lokacja $l$, taka że $l \neq \npe$ i $l \in h_1$ i $l \in h_2$
+\end{enumerate}
+\qed
+
+Osłabienie warunku rozłączności sterty poprzez dopuszczenie występowania lokacji $\npe$
+jednocześnie w obu stertach wynika z dwóch czynników.
+Po pierwsze, semantyka języka Jafun wymaga, aby sterta, na której wykonywany jest program zawierała
+tę lokację, zatem aby można było ewaluować pewne wyrażenia Jafun na obu rozłącznych częściach
+sterty, lokacja $\npe$ musi znajdować się na obu z nich.
+Po drugie, ponieważ klasa $\npetype$ nie zawiera żadnych pól, obiekt pod lokacją $\npe$ nie może
+być modyfikowany. Dzięki temu nie może dojść do konfliktu wynikającego z różnic między obiektami
+pod tą samą lokacją.
+\end{definition}
 
 Semantykę termu $P$ na stercie $h$ w środowisku $env$ będziemy oznaczać jako
 $\[ P \]_{h, env}$. Może ona przyjmować wartości $\top$ lub $\bot$, oznaczające odpowiednio
@@ -909,6 +945,7 @@ jeśli nie zawiera żadnych operatorów opisujących sterty -- $\hookrightarrow$
 Może on natomiast zawierać porównania $=$, spójniki logiczne i trójki Hoare'a.
 Trwałe termy będą odgrywały istotną rolę w regułach wnioskowania dla naszej logiki,
 ponieważ, jak zobaczymy później, ich semantyka nie zależy od wyboru konkretnej sterty.
+
 
 Używane będzie także oznaczenie $v_1 \neq v_2$ jako skrót dla $v_1 = v_2 \Rightarrow \mathtt{False}$.
 
@@ -927,7 +964,6 @@ Dla uproszczenia zapisu notacja $\[ \cdot \]$ została użyta do~opisu semantyki
  \[ P \wedge Q \]_{h, env} \triangleq & \ \[ P \]_{h, env} \wedge \[ Q \]_{h, env} \\
  \[ P \vee Q \]_{h, env} \triangleq & \ \[ P \]_{h, env} \vee \[ Q \]_{h, env} \\
  \[ P \Rightarrow Q \]_{h, env} \triangleq & \ \[ P \]_{h, env} \Rightarrow \[ Q \]_{h, env} \\
- % TODO this
  \[ x = y \]_{h, env} \triangleq & \ env(x) = env(y) \\
  \[ x \hookrightarrow f = y \]_{h, env} \triangleq & \ h(env(x))(f) = env(y) \\
  \[ \hoare{P}{E}{A}{x}{Q} \]_{h, env} \triangleq & \forall h : Heap \ . \ \[ P \]_{h, env} \Rightarrow \\
@@ -1149,7 +1185,7 @@ Będziemy też wymagać, żeby każda klasa $C$ pojawiająca się w osądach nal
 \end{figure}
 
 
-\begin{figure}
+\begin{figure}[h]
 \begin{center}
 \textbf{Reguły strukturalne dla trójek Hoare'a}
 
@@ -1262,7 +1298,7 @@ Będziemy też wymagać, żeby każda klasa $C$ pojawiająca się w osądach nal
 \end{figure}
 
 
-\begin{figure}
+\begin{figure}[h]
 \begin{center}
 \AxiomC{$S \vdash \hoare{P \wedge v_1 = v_2}{E_1}{A}{w}{Q}$}
 \AxiomC{$S \vdash \hoare{P \wedge v_1 \neq v_2}{E_2}{A}{w}{Q}$}
@@ -1332,30 +1368,6 @@ Będziemy też wymagać, żeby każda klasa $C$ pojawiająca się w osądach nal
 \label{fig:hoare_rules2}
 \end{center}
 \end{figure}
-
-\chapter{Własności stert}
-
-\section{Definicje}
-\begin{definition}[Spójność sterty]{\ } \\
-Niech $h$ będzie stertą.
-Powiemy, że $h$ jest spójna, jeśli każda lokacja będąca wartością pola w pewnym obiekcie na $h$
-również jest na $h$.
-To znaczy, dla każdego $x, l_1, l_2$, jeśli $h(l_1)(x) = l_2$, to $l_2 \in \dom{h}$.
-\qed
-\end{definition}
-
-\begin{definition}[Suma rozłączna stert]{\ } \\
-Niech $h, h_1, h_2$ będą stertami.
-Powiemy, że $h$ jest sumą rozłączną stert $h_1$ i $h_2$ (zapisywane $h = h_1 \oplus h_2$),
-jeśli
-\begin{enumerate}
- \item Dla każdej lokacji $l$, $l \in h$ wtedy i tylko wtedy gdy $l \in h_1$ lub $l \in h_2$
- \item Nie istnieje lokacja $l$, taka że $l \in h_1$ i $l \in h_2$
-\end{enumerate}
-
-\qed
-\end{definition}
-
 
 \chapter{Własności ewaluacji}
 Pokażę teraz twierdzenia o własności ewaluacji, które będą później użyte do udowodnienia poprawności reguł dla trójek Hoare'a.
@@ -1915,6 +1927,146 @@ Możemy wreszcie udowodnić twierdzenie \ref{th:free_eval}
     w $h$ lub $E[/env]$. Ponieważ $h$ jest spójna, więc tak zdefiniowana $f$ jest w oczywisty sposób
     automorfizmem na $h$ oraz na $E[/env]$.
 \end{proof}
+
+Podczas wnioskowania o izomorficznych stertach przydatny będzie jeszcze następujący
+lemat, mówiący że ewaluacje izomorficznych stert są izomorficzne.
+
+\begin{lemma}[O ewaluacji izomorficznych stert] {\ } \\
+\label{lem:iso_eval}
+Niech $h_1, h_2$ będą izomorficznymi stertami, $E_1$ i $E_2$ izomorficznymi wyrażeniami,
+a $f$ izomorfizem między nimi.
+Wtedy dla dowolnych $h_1', l_1, A$, jeśli $(h_1, E_1) \eval{} (h_1', l_1, A)$, to
+istnieją $h_2', l_2, f'$, takie że
+\begin{enumerate}
+ \item $f'$ rozszerza $f$
+ \item $f'$ jest izomorfizmem między $h_1'$ i $h_2'$
+ \item $f(l_1) = l_2$
+ \item $(h_2, E_2) \eval{} (h_2', l_2, A)$
+\end{enumerate}
+\begin{proof}
+TODO
+\end{proof}
+\end{lemma}
+
+\chapter{Równoważność stert i środowisk względem semantyki}
+W tym rozdziale przedstawimy kilka twierdzeń dotyczących równoważności pewnych stert i środowisk
+przy pewnych założeniach.
+
+\begin{definition}[Równoważność stert i środowisk] {\ } \\
+Powiemy, że sterty $h_1$ i $h_2$ oraz środowiska $env_1$ i $env_2$ są równoważne dla termu $P$, jeśli
+zachodzi $\[ P \]_{h_1, env_1} = \[ P \]_{h_2, env_2}$.
+
+Jeśli w danym zastosowaniu $h_1 = h_2$ lub $env_1 = env_2$, to będziemy je pomijać,
+mówiąc po prostu o równoważności stert lub środowisk.
+\qed
+\end{definition}
+
+Dowód wszystkich przedstawianych równoważności przebiega w ten sam sposób -- przez indukcję
+po budowie termu $P$. Najpierw jednak zauważmy, że przypadki w których $P$ jest równe 
+\texttt{True} lub \texttt{False}, albo jest koniunkcją, alternatywą lub implikacją
+są prawdziwe niezależnie od konkretnych warunków na $h_1, h_2, env_1$ i $env_2$, i
+równoważnosć w tych przypadkach wynika wprost
+z założeń indukcyjnych dla ich podwyrażeń.
+
+\begin{lemma}[Równoważność izomorficznych stert i środowisk] {\ } \\
+\label{lem:iso_equiv}
+Jeśli $f$ jest izomorfizmem pomiędzy stertami $h_1$ i $h_2$, oraz między środowiskami
+$env_1$ i $env_2$, to te sterty oraz środowiska są równoważne dla dowolnego termu.
+\begin{proof}
+Zgodnie z zastrzeżeniem powyżej, wystarczy pokazać tę równoważność dla równości, trójek Hoare'a
+i operatorów separacyjnych.
+\begin{itemize}
+ \item ,,$v_1 = v_2$'' i ,,$v_1 \hookrightarrow f = v_2$'' --
+ równoważność wynika wprost z semantyki
+ tych operatorów i zachowania kompozycji przez izomorfizm.
+ \item ,,$*$'' i ,,$\wand$'' -- równoważność wynika wprost z założeń indukcyjnych dla podwyrażeń
+ \item trójki Hoare'a -- równoważność wynika z lematu \ref{lem:iso_eval} (O ewaluacji
+ izomorficznych stert) i założeń indukcyjnych
+ dla warunku początkowego i końcowego trójki Hoare'a: równoważność
+ warunków początkowych w obu stertach mamy od razu. Ponieważ $env_1$ i $env_2$ są izomorficzne,
+ więc również $E[/env_1]$ i $E[/env_2]$, a zatem oba te wyrażenia ewaluują się do izomorficznych
+ stert. A zatem możemy skorzystać też z założenia indukcyjnego dla warunków końcowych na
+ tych nowych stertach.
+\end{itemize}
+\end{proof}
+\end{lemma}
+
+Następujące twierdzenie jest użyteczne w dowodzie poprawności reguły dla wywołania funkcji.
+Mówi ona, że podstawienie lokacji za zmienną w wyrażeniu ma taki sam efekt, jak
+dodanie mapowania tej zmiennej na lokację w środowisku i pozostawienie wyrażenia bez zmian.
+
+\begin{lemma}[Równoważność podstawienia zmiennych i dodania ich do środowiska] {\ } \\
+Dla dowolnego wyrażenia $P$, środowiska $env$ i sterty h zachodzi równość
+$\[ P \]_{h, env[x \mapsto l]} = \[ P[l / x] \]_{h, env}$
+\begin{proof}
+Przez indukcję po budowie termu $P$.
+Równoważność wszystkich przypadków poza równościami i trójkami Hoare'a jest oczywista i
+wynika wprost z założeń indukcyjnych dla podwyrażeń.
+\begin{itemize}
+ \item ,,$v_1 = v_2$'' i $v_1 \hookrightarrow f = v_2$ -- w tym przypadku należy rozpatrzeć
+ jakiej postaci są wartości $v_1$ i $v_2$. Przypadki dla $\jthis$ i $\jnull$ oraz
+ dla zmiennej innej niż $x$ są proste, bo wartości te są identyczne w obu przypadkach.
+ Jeśli któraś (lub obie) jest zmienną $x$, to semantyką tej wartość w przypadku $P[l/x]$
+ jest po prostu $l$, natomiast w przypadku $P$ jest nią $env[x \mapsto l](x)$,
+ a zatem również $l$.
+ \item W przypadku trójki Hoare'a jest jeszcze prościej, bowiem wyrażenia ewaluowane
+ w obu trójkach są identyczne.
+ W pierwszym przypadku jest to $E[/env[x \mapsto l]]$, natomiast w drugim
+ $E[l / x][/env]$. Przez prostą indukcję po budowie $E$ można udowonić że wyrażenia te są
+ sobie równe.
+\end{itemize}
+\end{proof}
+\end{lemma}
+
+Kolejne twierdzenie to przeniesienie twierdzenia \ref{th:free_eval} (O zależości ewaluacji
+od zmiennych wolnych)
+z ewaluacji na semantykę termów. Mówi ono, że dla semantyki termu istotne są tylko te
+elementy sterty i środowiska, które odpowiadają zmienny, wolnym w tym termie.
+
+\begin{lemma}[Równoważność rozszerzonej sterty i środowiska] {\ } \\
+\label{lem:ext_equiv}
+Weźmy $P$, $h_1$, i $env_1$ takie, że wszystkie zmienne wolne w $P$ są przez
+$env_1$ mapowane na $h_1$. Wtedy dla dowolnej sterty $h_2$ rozszerzającej $h_1$ i dowolnego
+środowiska $env_2$ rozszerzającego $env_1$, sterty $h_1$ i $h_2$ oraz środowiska $env_1$ i
+$env_2$ są równoważne dla $P$.
+\begin{proof}
+Ponownie, jedynymi interesującymi przypadkami są równości, operatory separacyjne i 
+trójki Hoare'a.
+\begin{itemize}
+ \item ,,$v_1 = v_2$'' i ,,$v_1 \hookrightarrow f = v_2$'' -- jeśli $v_1$, lub $v_2$
+ nie są zmiennymi, to semantyka tych wartości jest w oczywisty sposób taka sama.
+ Jeśli natomiast któreś z nich jest zmienną, to jest to zmienna wolna, a zatem z założenia
+ musi znaleźć się w $env_1$ i być mapowana na $h_1$. A ponieważ $env_2$ i $h_2$ rozszerzają
+ odpowiednio $env_1$ i $h_1$, a zatem semantyka wartości dla $env_2$ i $h_2$ jest również
+ taka sama, jak dla $env_1$ i $h_1$.
+ \item ,,$*$'' i ,,$\wand$'' -- z założenia indukcyjnego możemy nadmiarową część sterty
+ dołożyć do dowolnego z operandów bez zmiany semantyki.
+ Zauważmy, że powstała w ten sposób sterta nie musi
+ być spójna (na nadmiarowej części mogą znajdować się obiekty zawierające w polach
+ lokacje z obu rozłącznych części), ale to nie przeszkadza, gdyż nigdy nie odwołamy
+ się do obiektu pod żadną lokacją z tej nadmiarowej części.
+ \item trójki Hoare'a -- odpowiednia ewaluacja wynika z twierdzenia
+ \ref{th:free_eval} (O zależności ewaluacji od zmiennych wolnych), a równoważność
+ semantyki dla warunków końcowych trójek Hoare'a wynika z założenia indukcyjnego
+ i lematu \ref{lem:iso_equiv} (O równoważności izomorficznych stert i środowisk).
+\end{itemize}
+\end{proof}
+\end{lemma}
+
+Szczególnym przypadkiem powyższego lematu jest następujący, mówiący że możemy
+bezkarnie dodawać świeże zmienne do środowiska.
+Dzięki słabszym założeniom jest on łatwiejszy w stosowaniu.
+
+\begin{lemma}[Równoważność środowiska po dodaniu świeżej zmiennej] {\ } \\
+\label{lem:fresh_var_equiv}
+Jeśli $x$ nie jest zmienną wolną w $P$, a $env$ zawiera wszystkie zmienne wolne z $P$ i mapuje je na lokacje z $h$, to dla dowolnej lokacji $l$ środowiska $env$ i $env[l/x]$
+są równoważne dla termu $P$.
+\begin{proof}
+Teza wynika wprost z lematu \ref{lem:ext_equiv}(O równoważności rozszerzonej sterty
+i środowiska) po wzięciu $env_1 = env$, $env_2 = env[l / x]$ i
+$h_1 = h_2$.
+\end{proof}
+\end{lemma}
 
 \chapter{Poprawność}
 Głównym twierdzeniem, dowodzonym w ramach niniejszej pracy, jest poprawność prezentowanej logiki.
