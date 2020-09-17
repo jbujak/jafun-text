@@ -2070,6 +2070,7 @@ $h_1 = h_2$.
 \end{lemma}
 
 \chapter{Poprawność}
+\label{chap:soundness}
 Głównym twierdzeniem, dowodzonym w ramach niniejszej pracy, jest poprawność prezentowanej logiki.
 Mówi ono, że jeśli możemy udowodnić pewne wynikanie $\Gamma | P \vdash Q$,
 to każda sterta spełniająca $P$ będzie również spełniała $Q$.
@@ -2492,6 +2493,10 @@ Jest ona wielokrotnie używana w formalizacji reguł wnioskowania dla trójek Ho
 aby powiązać ze sobą wartości występujące w warunkach początkowych lub końcowych
 z odpowiadającymi im wartościami w wyrażeniu Jafun.
 
+Semantyka termu, przy ustalonym programie, środowisku i stercie,
+jest sformalizowana przez predykat \texttt{JFIHeapSatisfiesInEnv}, który
+jest naturalnym przepisaniem definicji z rysunku \ref{fig:sematics}.
+
 \subsection{Reguły wnioskowania}
 Reguły wnioskowania dla obu poziomów termów zdefiniowane są jako typy indukcyjne
 \begin{verbatim}
@@ -2567,7 +2572,6 @@ Powiązanie wartości Jafun z wartością logiki jest realizowane przez założe
 ...
 | JFIHTRetRule :
     forall decls gamma s v w w_expr,
-      FreeVarsInValAreInGamma w gamma ->
       w_expr = JFIValToJFVal w ->
       (*----------------------------------------------------------------*)
       JFIProves decls gamma s
@@ -2575,6 +2579,31 @@ Powiązanie wartości Jafun z wartością logiki jest realizowane przez założe
 ...
 \end{verbatim}
 
+\section{Dowód poprawności}
+Najważniejszym pojęciem, użytym w sformułowaniu twierdzenia o poprawności
+jest semantyczne wynikanie. Powiemy, że przy ustalonym programie
+i środowisku typów $\Gamma$ term $P$ wynika semantycznie z termu $S$, jeśli
+dla dowolnej sterty $h$ i środowiska $env$, takich że $env$ zgadza się z $\Gamma$ na $h$,
+jeśli $h$ spełnia $S$ w $env$, to $h$ spełnia również $P$ w $env$:
+\begin{verbatim}
+Definition JFISemanticallyImplies gamma s p (CC : JFProgram) :=
+  forall env this h,
+    JFIGammaMatchEnv h gamma env ->
+    JFIHeapSatisfiesInEnv h s env this CC ->
+    JFIHeapSatisfiesInEnv h p env this CC. 
+\end{verbatim}
+
+Kiedy mamy taką definicję, twierdzenie o poprawności może być sformułowane
+przez powiedzenie, że jeśli $\Gamma | P \vdash T$, to $T$ wynika semantycznie z $P$
+w środowisku $\Gamma$ :
+\begin{verbatim}
+Theorem JFISoundness : forall gamma decls p t,
+  JFIProves decls gamma p t ->
+  JFISemanticallyImplies gamma p t (JFIDeclsProg decls). 
+\end{verbatim}
+
+Twierdzenie to jest następnie dowodzone przez indukcję po budowie drzewa dowodu
+dla \texttt{JFIProves decls gamma p t} zgodnie z opisem w rozdziale \ref{chap:soundness}.
 
 \chapter{Podsumowanie}
 
