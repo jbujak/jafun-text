@@ -2606,6 +2606,21 @@ Twierdzenie to jest następnie dowodzone przez indukcję po budowie drzewa dowod
 dla \texttt{JFIProves decls gamma p t} zgodnie z opisem w rozdziale \ref{chap:soundness}.
 
 \chapter{Podsumowanie}
+Przedstawiona w niniejszej pracy logika separacyjna dla języka Jafun pozwala
+wnioskować o programach napisanych w języku Jafun. Dzięki wprowadzonym operatorom
+separacyjnym dowody można przeprowadzać osobno dla rozłącznych fragmentów sterty,
+a następnie scalać w dowód dla sterty utworzonej przez sumę tych fragmentów.
+
+Dzięki sformalizowaniu logiki w systemie Coq poprawność dowodów twierdzeń
+o programach w języku Jafun można zweryfikować komputerowo, a udowodnione twierdzenie
+o poprawności logiki zapewnia, że udowodnione twierdzenia mają odzwierciedlenie
+w semantyce języka.
+
+W przyszłości możliwe jest uzupełnienie logiki o kwantyfikator uniwersalny $\forall$.
+Dla zachowania poprawności logiki, wymagałoby to jednak zmianę definicji sterty,
+a co za tym idzie również zmiany semantyki język Jafun.
+Logika bez tego kwantyfikatora jest jednak również wartościowa i umożliwia
+dowodzenie szerokiej gamy twierdzeń o zachowaniu programów napisanych w Jafun.
 
 \appendix
 \begin{thebibliography}{99}
