@@ -471,7 +471,7 @@ w pracy \cite{iris-rust}.
 
 Iris jest, mimo jego zalet, skomplikowanym systemem, o wysokim poziomie ogólności i 
 skomplikowanym modelu.
-W celu zachowania poprawności, model Iris budowany przy użyciu techniki znanej
+W celu zachowania poprawności, model Iris budowany jest przy użyciu techniki znanej
 jako \textit{step-indexing} (\cite{step-indexing}).
 Nie rozpatruje się w tym podejściu zwykłych zbiorów i funkcji, ale bardziej skomplikowane
 struktury algebraiczne.
@@ -553,8 +553,8 @@ Niech \(\fmodifier\;C_3\; x\) będzie deklaracją pola w \(\overline{\mathbf{F}}
 Niech \(\mmod_r\; C_4\; \mmod_o\; m(\args)\; \throws\; \Exc\; \boldsymbol\{E_1\boldsymbol\}\)
 będzie deklaracją metody w \(\overline{\mathbf{M}}\),
 gdzie $\args = \mmod'_1\; C'_1\;x_1,\ldots,\mmod'_n\; C'_n\;x_n$,
-$\Exc = \mmod''_1\; C''_1,\ldots, \mmod''_k\; C''_k$, and
-$\mmod_r,\mmod_o,\mmod'_i, \mmod''_j\in\Lannot$ for all possible $i,j$.
+$\Exc = \mmod''_1\; C''_1,\ldots, \mmod''_k\; C''_k$, i
+$\mmod_r,\mmod_o,\mmod'_i, \mmod''_j\in\Lannot$ dla dowolnych $i,j$.
 Ustalając
 \(\overline{\mathbf{M}}_1 \dotcup \overline{\mathbf{M}}_2 = 
  \overline{\mathbf{M}}_1 \cup \{ \mathbf{M} \in \overline{\mathbf{M}}_2\;|\; \name(\mathbf{M}) \not \in \overline{\mathbf{M}}_1 \}\), 
@@ -604,8 +604,8 @@ możemy zdefiniować następujące pomocnicze notacje:
 
 
 
-Semantyka małych kroków języka Jafun jest zdefiniowana przez relację $\rightarrow$ na rysunku \ref{fig:jafun_semantics},
-dla ustalonego programu $\overline{\mathbf{}}$.
+Semantyka małych kroków języka Jafun dla ustalonego programu $\overline{\mathbf{C}}$
+jest zdefiniowana przez relację $\rightarrow$ na rysunku \ref{fig:jafun_semantics}.
 Relacja $\rightarrow$ jest relacją binarną na parach (sterta, stos wywołań).
 W ogólności ma ona postać 
 $$
@@ -869,7 +869,7 @@ $(h, e) \eval{confs} (h_n, A, l)$ lub
 \chapter{Składnia i semantyka}
 
 \section{Składnia}
-Prezentowana logika separacji dla języka Jafun jest logiką z~kwantyfikatorami egzystencjalnymi pierwszego rzędu, trójkami Hoare'a, operatorem $\hookrightarrow$,
+Prezentowana logika separacji dla języka Jafun jest logiką z~kwantyfikatorem egzystencjalnym pierwszego rzędu, trójkami Hoare'a, operatorem $\hookrightarrow$,
 pozwalającym na opisywanie zawartości sterty i~operatorami separacji $*$ i $\wand$.
 
 Iris, na~którym wzorowana jest niniejsza logika, jest afiniczną logiką separacyjną, to~znaczy
@@ -929,7 +929,7 @@ jeśli
 Osłabienie warunku rozłączności sterty poprzez dopuszczenie występowania lokacji $\npe$
 jednocześnie w obu stertach wynika z dwóch czynników.
 Po pierwsze, semantyka języka Jafun wymaga, aby sterta, na której wykonywany jest program, zawierała
-tę lokację, zatem aby można było ewaluować pewne wyrażenia Jafun na obu rozłącznych częściach
+tę lokację. Zatem, aby można było ewaluować jakiekolwiek wyrażenia Jafun na obu rozłącznych częściach
 sterty, lokacja $\npe$ musi znajdować się na obu z nich.
 Po drugie, ponieważ klasa $\npetype$ nie zawiera żadnych pól, obiekt pod lokacją $\npe$ nie może
 być modyfikowany. Dzięki temu nie może dojść do konfliktu wynikającego z różnic między obiektami
@@ -1969,7 +1969,7 @@ Dowód wszystkich przedstawianych równoważności przebiega w ten sam sposób -
 po budowie termu $P$. Najpierw jednak zauważmy, że przypadki w których $P$ jest równe 
 \texttt{True} lub \texttt{False}, albo jest koniunkcją, alternatywą lub implikacją
 są prawdziwe niezależnie od konkretnych warunków na $h_1, h_2, env_1$ i $env_2$, i
-równoważnoćć w tych przypadkach wynika wprost
+równoważnoć w tych przypadkach wynika wprost
 z założeń indukcyjnych dla ich podwyrażeń.
 
 \begin{lemma}[Równoważność izomorficznych stert i środowisk] {\ } \\
@@ -2089,7 +2089,7 @@ To znaczy, dla każdego $x$, jesli $\Gamma \vdash x : C$, to obiekt $h(\mathit{e
 
 W twierdzeniu o poprawności będziemy wymagać, żeby rozważane środowisko było zgodne z $\Gamma$
 na stercie, o której będziemy wnioskować. W połączeniu z założeniem o tym, że wszystkie zmienne wolne
-pojawiąjące się w osądach muszą być w $\Gamma$, zapewni to, że wszystkie zmienne wolne są mapowane
+pojawiające się w osądach muszą być w $\Gamma$, zapewni to, że wszystkie zmienne wolne są mapowane
 przez środowisko na pewną lokację istniejącą na stercie i, co więcej, obiekt znajduący się pod tą
 lokacją jest odpowiedniego typu.
 
@@ -2174,15 +2174,15 @@ jest poprawność reguły $\exists\mathrm{E}$, eliminującej kwantyfikator $\exi
 
 Kluczowym krokiem w dowodzie poprawności $\exists\mathrm{E}$ jest zauważenie, że dodanie świeżej,
 nie będącej zmienną wolną w termie,
-zmiennej do środowiska nie zmienia spełnialności tego termu przez stertę.
+zmiennej do środowiska nie zmienia spełnialności tego termu przez stertę (\ref{lem:fresh_var_equiv})
 To znaczy jeśli $x \not\in FV(P)$, to $\[ P \]_{h, env} = \[ P \]_{h, env[x \mapsto l]}$.
-Formalny dowód tego faktu wymaga indukcji po budowie termu $P$, ale intuicyjnie jest to prawda,
+Intuicyjnie jest to prawda,
 ponieważ skoro $x$ nie jest wolne w $P$, więc $P$ nie ma możliwości odwoływania się do niego,
 a zatem podczas obliczania semantyki $P$ w środowisku $\mathit{env}$ nigdy nie odwołamy się
 do lokacji $env(x)$. Nie ma zatem znaczenia, czy $x$ występuje w środowisku $\mathit{env}$ i,
 jeśli tak, to jaka jest wartość $env(x)$.
 
-Kiedy udowodnimy ten fakt, reszta dowodu przebiega już w prosty sposób:
+Reszta dowodu przebiega już w prosty sposób:
 mamy stertę $h$ oraz środowisko $env$ zgadzające się na $h$ z $\Gamma$, takie że
 $h$ spełnia term $R$ w środowisku $env$. Skoro tak, to z założenia indukcyjnego dla
 pierwszej przesłanki mamy, że $h$ spełnia też w tym środowisku term $\exists x : C . P$, a zatem
@@ -2310,7 +2310,7 @@ $\jnull$ zakończy się rzuceniem wyjątku $\npe$.
 Z drugiej strony, dowody poprawności niektórych z nich są skomplikowane lub zawierają
 subtelne niuanse. O takich przykładach opowiem poniżej.
 
-Jednym z motywów powtarzających się w wielu regułach dla trójek Hoare'a
+Jednym z motywów, powtarzających się w wielu regułach dla trójek Hoare'a,
 jest założenie o trwałości niektórych termów.
 Zazwyczaj oznacza to, że w dowodzie poprawności potrzebujemy założenia o spełnianiu takiego
 termu przez pewną stertę, przy założeniu, że spełnia go inna sterta.
