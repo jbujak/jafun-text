@@ -459,7 +459,7 @@ d,Analyze,struct,Ltac,%
 \addcontentsline{toc}{chapter}{Wprowadzenie}
 Iris jest logiką separacyjną wyższego rzędu opisaną w pracach \cite{iris-notes} i \cite{iris-model}.
 Logika separacyjna to logika będąca rozszerzeniem logiki Hoare'a o operatory umożliwiające
-opisywanie rozłącznych zasobów, takich jak sterty czy bardziej skompliowane obiekty.
+opisywanie rozłącznych zasobów, takich jak sterty czy bardziej skomplikowane obiekty.
 
 Iris pozwala na wnioskowanie o programach w języku $\lambda_{\mathrm{ref, conc}}$,
 będącym rachunkiem lambda
@@ -491,7 +491,7 @@ Poniżej przytaczam te aspekty języka, które są istotne dla prezentowanej log
 
 \section{Składnia i semantyka}
 
-Program w języku jafun jest listą definicji klas.
+Program w języku Jafun jest listą definicji klas.
 Definicja klasy składa się z listy pól i listy metod.
 Metody mogą przyjmować dowolną liczbę argumentów i rzucać dowolną liczbę wyjątków,
 deklarowanych przez słowo kluczowe $\throws$, podobnie jak w Javie.
@@ -623,7 +623,8 @@ Indeks $A$ opisuje, czy program wykonuje się w sposób normalny ($A=\emptyset$)
 czy był rzucony jakiś niezłapany jeszcze wyjątek ($A\in \overline{\mathbf{C}}$).
 
 Dla wygody każda ramka stosu jest podzielona na kontekst $\ctxt_i \in \BCtxt$ i redeks $E_i$.
-Kontekst $\ctxt_i$ opisuje wszystkie zagnieżdżone bloki $\jlet$ i $\jcatch$, wewnątrz którch znajduje się $E_i$.
+Kontekst $\ctxt_i$ opisuje wszystkie zagnieżdżone bloki $\jlet$ i $\jcatch$,
+wewnątrz których znajduje się $E_i$.
 
 \begin{figure}[H]
 \begin{tabular}{@{}ll@{}}
@@ -853,7 +854,7 @@ $\classof(h,l_o)=C$, a
 $C'\; m()\;\throws\; \npetype\; \boldsymbol\{E\boldsymbol\}$
 jest metodą nieprzyjmującą argumentów w klasie $C$.
 Metoda $m$ odpowiada funkcji \texttt{main} w zwykłej Javie.
-Dodatkowo zakładamy, że na stercie $h$, pod pewną lokacją $\npe$ istnieje object klasy $\npetype$
+Dodatkowo zakładamy, że na stercie $h$, pod pewną lokacją $\npe$ istnieje obiekt klasy $\npetype$
 (``null pointer exception``).
 
 \section{Ewaluacja}
@@ -927,7 +928,7 @@ jeśli
 
 Osłabienie warunku rozłączności sterty poprzez dopuszczenie występowania lokacji $\npe$
 jednocześnie w obu stertach wynika z dwóch czynników.
-Po pierwsze, semantyka języka Jafun wymaga, aby sterta, na której wykonywany jest program zawierała
+Po pierwsze, semantyka języka Jafun wymaga, aby sterta, na której wykonywany jest program, zawierała
 tę lokację, zatem aby można było ewaluować pewne wyrażenia Jafun na obu rozłącznych częściach
 sterty, lokacja $\npe$ musi znajdować się na obu z nich.
 Po drugie, ponieważ klasa $\npetype$ nie zawiera żadnych pól, obiekt pod lokacją $\npe$ nie może
@@ -937,10 +938,10 @@ pod tą samą lokacją.
 
 Semantykę termu $P$ na stercie $h$ w środowisku $env$ będziemy oznaczać jako
 $\[ P \]_{h, env}$. Może ona przyjmować wartości $\top$ lub $\bot$, oznaczające odpowiednio
-prawdę i fałsz. W naturalny sposób, powiemy że sterta $h$ spełnia term $P$ w środowisku $env$
+prawdę i fałsz. W naturalny sposób powiemy, że sterta $h$ spełnia term $P$ w środowisku $env$
 wtedy i tylko wtedy, gdy $\[ P \]_{h, env} = \top$.
 
-Dodatkowo, powiemy że term $P$ jest \textit{trwały} (ang. \textit{persistent}),
+Dodatkowo powiemy, że term $P$ jest \textit{trwały} (ang. \textit{persistent}),
 jeśli nie zawiera żadnych operatorów opisujących sterty -- $\hookrightarrow$, $*$ ani $\wand$.
 Może on natomiast zawierać porównania $=$, spójniki logiczne i trójki Hoare'a.
 Trwałe termy będą odgrywały istotną rolę w regułach wnioskowania dla naszej logiki,
@@ -988,8 +989,8 @@ oraz \texttt{False}.
 
 Intuicyjnie, sterta spełnia term $\exists x : C . P$, jeśli istnieje na niej taka lokacja $l$,
 że obiekt znajdujący się pod nią jest typu $C$ oraz spełniony jest term $P[l/x]$.
-Dla uproszczenia dalszego wnioskowwania, w formalnym zapisie semantyki ten ostatni warunek został
-zastąpniony przez odpowiednią modyfikację środowiska.
+Dla uproszczenia dalszego wnioskowania, w formalnym zapisie semantyki ten ostatni warunek został
+zastąpiony przez odpowiednią modyfikację środowiska.
 
 W logice występują dwa różne sposoby porównania wartości. Pierwsza z nich, $x = y$ jest interpretowana
 jako porównanie lokacji, na które mapowane są w środowisku zmienne $x$ i $y$
@@ -1020,7 +1021,7 @@ nazwy metody w tej klasie i trójki Hoare'a ze znakiem $\cdot$ zamiast wyrażeni
 Każdy taki niezmiennik będzie naszym założeniem na temat zachowania metody $m$ wywołanej na
 obiekcie klasy $C$ (lub obiekcie dowolnej klasy będącej rozszerzeniem $C$).
 Intuicyjnie, jeśli $(C, m, \hoare{P}{\cdot}{A}{w}{Q}) \in \mathtt{invariants}$,
-to zakładamy, że każdy obiekt klasy $C$ lub pochodnej spełania trójkę Hoare'a
+to zakładamy, że każdy obiekt klasy $C$ lub pochodnej spełnia trójkę Hoare'a
 $\hoare{P}{E}{A}{w}{Q}$, gdzie $E$ to ciało metody $m$.
 
 Osądy w prezentowanej logice są postaci
@@ -1372,7 +1373,7 @@ Będziemy też wymagać, żeby każda klasa $C$ pojawiająca się w osądach nal
 \chapter{Własności ewaluacji}
 Pokażę teraz twierdzenia o własności ewaluacji, które będą później użyte do udowodnienia poprawności reguł dla trójek Hoare'a.
 \section{Łączenie ewaluacji}
-Podatwowym twierdzeniem, pozwalającym mówić o ewaluacji złożonych wyrażeń, jest twierdzenie o łączeniu ewaluacji.
+Podstawowym twierdzeniem, pozwalającym mówić o ewaluacji złożonych wyrażeń, jest twierdzenie o łączeniu ewaluacji.
 \begin{theorem}[O łączeniu ewaluacji]
 \label{th:eval_join}
 Niech $(h, \ctxts), (h', \ctxts'), (h'', \ctxts'')$ będą konfiguracjami, a $confs$ i $confs'$ -- ciągami konfiguracji,
@@ -1385,10 +1386,10 @@ Przez indukcję po długości ciągu konfiguracji $confs'$.
  \item Jeśli $confs'$ jest ciągiem pustym, to znaczy że $confs \concat\; confs' = confs$,
  $h' = h''$ i $\ctxts' = \ctxts''$. A zatem, skoro $(h, \ctxts) \eval{confs} (h', \ctxts')$,
  to również $(h, \ctxts) \eval{confs ++ confs'} (h'', \ctxts'')$.
- \item Założmy, że $confs'$ jest niepuste, to znaczy $confs' = confs'' \concat [ (h'_n, \ctxts'_n) ]$
- Z załóżenia indukcyjnego wiemy, że istnieje wtedy ewaluacja
+ \item Załóżmy, że $confs'$ jest niepuste, to znaczy $confs' = confs'' \concat [ (h'_n, \ctxts'_n) ]$
+ Z założenia indukcyjnego wiemy, że istnieje wtedy ewaluacja
  $(h, \ctxts) \eval{confs ++ confs''} (h'_n, \ctxts'_n)$.
- Ale ponieważ $confs'$ było poprawną ewaluacją $(h', \ctxts') \eval{confs'} (h'', \ctxts'')$, a więc
+ Ale, ponieważ $confs'$ było poprawną ewaluacją $(h', \ctxts') \eval{confs'} (h'', \ctxts'')$, więc
  poprawną ewaluacją jest też
  $(h', \ctxts') \eval{confs'' ++ [(h'_n, \ctxts'_n)]} (h'', \ctxts'')$.
  Stąd, z definicji ewaluacji musi istnieć redukcja $(h'_n, \ctxts'_n) \rightarrow (h'', \ctxts'')$,
@@ -1419,7 +1420,7 @@ Wtedy dla dowolnych $\mmod, C, x, E_2$ istnieją również następujące redukcj
 \end{itemize}
 \begin{proof}
 W pierwszej kolejności, rozpatrzmy dwa przypadki: jeśli stos $\ctxts$ jest niepusty,
-redukowany jest pewnien redeks z $\ctxts$, a zatem ramka $\ctxt\[E_1\]_A$ pozostaje bez zmian.
+redukowany jest pewien redeks z $\ctxts$, a zatem ramka $\ctxt\[E_1\]_A$ pozostaje bez zmian.
 Stąd, także w przypadku rozszerzonego kontekstu redukowany będzie redeks ze stosu $\ctxts$, a
 rozszerzona ramka $[ \letin{C}{x}{\ctxt \[ E_1 \]_A}{E_2}]$ pozostanie bez zmian.
 
@@ -1427,7 +1428,7 @@ Załóżmy więc, że stos $\ctxts$ jest pusty, a $E_1$ jest aktualnym redeksem.
 Zauważmy, że zdecydowana większość przypadków redukcji w ogóle nie rusza kontekstu,
 w którym znajduje się $E_1$, a tylko modyfikuje samo wyrażenie, dodaje nowy kontekst
 lub wrzuca nową ramkę na stos. We wszystkich tych przypadkach, redukcja jest niezależna od
-zewnętrznych kontekstów, a więc będzie przeiegała tak samo przy rozszerzonym kontekście.
+zewnętrznych kontekstów, a więc będzie przebiegała tak samo przy rozszerzonym kontekście.
 
 Wyjątkiem są redukcje letgo i letex, powodujące zdjęcie kontekstu $\jlet$ oraz
 redukcje ctchnrml, ctchexok, ctchexnok, powodujące zdjęcie kontekstu $\jtry$.
@@ -1460,14 +1461,14 @@ zachodzą również następujące ewaluacje:
 \begin{proof}
 Przez indukcję po długości $confs$.
 \begin{itemize}
- \item Jeśli $confs$ jest ciągiem pustym, to konfiguracja początkowa i końcowa muszą byc sobie równe.
+ \item Jeśli $confs$ jest ciągiem pustym, to konfiguracja początkowa i końcowa muszą być sobie równe.
  Zatem w obu przypadkach rozszerzonego kontekstu otrzymujemy równe konfiguracje początkowe i końcowe,
  opakowane dodatkowo w kolejny kontekst. Biorąc więc ciągi puste za $confs'$ i $confs''$,
  dostajemy w obu przypadkach poprawne konfiguracje.
  \item Jeśli $confs$ jest niepuste i $confs = conf::confs_{suf}$, to z lematu \ref{lem:red_ext_ctx}
  dostajemy istnienie odpowiednich redukcji dla pierwszego kroku ewaluacji w rozszerzonych kontekstach,
  a następnie z założenia indukcyjnego dostajemy pozostałą część ewaluacji.
- Składając je razem, dostajemy oczekiewaną pełną ewaluację.
+ Składając je razem, dostajemy oczekiwaną pełną ewaluację.
 \end{itemize}
 \end{proof}
 
@@ -1477,7 +1478,7 @@ reguł \textsc{*-Weak} i \textsc{Ht-frame}.
 Mówi ono, że jeśli dwie sterty zgadzają się na lokacjach odpowiadających zmiennym wolnym w pewnym wyrażeniu $E$,
 to ewaluacje wyrażenia $E$ na tych dwóch stertach będą w pewnym sensie równoważne.
 
-Równoważnośc ta nie będzie niestety trywialna, bo nowo zaalokowane lokacje na obu sterach mogą się różnić.
+Równoważność ta nie będzie niestety trywialna, bo nowo zaalokowane lokacje na obu sterach mogą się różnić.
 Zgodnie z semantyką języka, lokacja zwracana przez operator \textbf{new} to (maximum z lokacji na stercie) + 1.
 Stąd, ponieważ nie zakładamy niczego o lokacjach innych niż te odpowiadające zmiennym wolnym,
 wartość zwracana przez operator \textbf{new} może się różnić pomiędzy stertami.
@@ -1590,7 +1591,7 @@ na wszystkich lokacjach odpowiadających zmiennym wolnym w $E$ (wszystkie one za
 O ich pozostałych fragmentach (odpowiednio $\hrest_1$ i $\hrest_2$) nie zakładamy nic.
 Twierdzenie mówi, że jeśli mamy ewaluację wyrażenia $E$ w środowisku $env$ na stercie $h_1$,
 to istnieje też jego analogiczna ewaluacja na stercie $h_2$,
-taka że sterty docelowe oraz wyniki ewaluacji są izomorficzne, a fragmenty stert nie mające związu ze zmiennymi wolnymi
+taka że sterty docelowe oraz wyniki ewaluacji są izomorficzne, a fragmenty stert nie mające związku ze zmiennymi wolnymi
 pozostają niezmienione (Rysunek \ref{fig:free_vars_eval}).
 
 
@@ -1808,7 +1809,7 @@ $\ctxts_{2,n} = \ctxts_2'::\ctxt_2\[ e'\]_\emptyset$, a sterty i izomorfizm pozo
       $\ctxts_2 = \ctxts_2'::\ctxt_2[\tcatch{\[ l'\] _{C'}}{\mmod\; C}{x}{e_2'}]$, \;\;
       gdzie $C'\not=\emptyset, C' \not\!\leq:  C $  
 
-W przypadku niezłapanie wyjątku, kontekst $\jtry$ jest usuwany, a wyjątek przekazywany dalej.
+W przypadku niezłapania wyjątku, kontekst $\jtry$ jest usuwany, a wyjątek przekazywany dalej.
 Redukcja jest postaci
 $(h_1, \ctxts_1'::\ctxt_1[\tcatch{\[ l\] _{C'}}{\mmod\; C}{x}{e_2}]) \rightarrow
  (h_1, \ctxts_1'::\ctxt_1\[ l\] _{C'})$.
@@ -1819,7 +1820,7 @@ a sterty i izomorfizm pozostawiamy bez zmian.
       $\ctxts_2 = \ctxts_2'::\ctxt_2[\letin{C}{x}{\[ l'\] _{C'}}{e'}]$, \;\;
       $C' \neq \emptyset$
       
-Przypadek wyjątku w czasie ewaluacji wyrażenia wewnętrzego $\jlet$ jest analogiczny jak
+Przypadek wyjątku w czasie ewaluacji wyrażenia wewnętrznego $\jlet$ jest analogiczny jak
 poprzedni. Możemy wziąć $\ctxts_{2,n} = \ctxts_2'::\ctxt_2\[ l'\] _{C'}$,
 a sterty i izomorfizm zostawić bez zmian.
       
@@ -1856,10 +1857,10 @@ a sterty i izomorfizm pozostawić bez zmian.
 \end{proof}
 \end{lemma}
 
-Korzystając z tego lematu w kroku indukcyjnym udowodnimy teraz następujący lemat,
+Korzystając z tego lematu w kroku indukcyjnym, udowodnimy teraz następujący lemat,
 mówiący o ewaluacjach dowolnej długości.
 
-\begin{lemma}[O zależności częsciowej ewaluacji od zmiennych wolnych]{\ } \\
+\begin{lemma}[O zależności częściowej ewaluacji od zmiennych wolnych]{\ } \\
 \label{lem:free_part_eval}
 Niech $\ctxts_1$ będzie dowolnym stosem wywołań, a $h_1, \hbase_1, \hrest_1$ będą stertami,
 takimi że $\hbase_1$ jest spójna , $h_1 = \hbase_1 \oplus \hrest_1$,
@@ -1900,7 +1901,7 @@ Przez indukcję po długości ciągu konfiguracji $\mathit{confs}_1$.
  sterty $\hbase_{1, n}, \hbase_{2, n}, h_{2, n}$, stos $\ctxts_{2, n}$ oraz izomorfizm $f''$, takie że
  spełnione są warunki 1-7 oraz
  $(h_{2,n-1}, \ctxts_{2,n-1}) \rightarrow (h_{2, n}, \ctxts_{2, n})$.
- Składając tę redukcję z ewaluacją z założenia indukcyjnego dostaniemy, że w istocie
+ Składając tę redukcję z ewaluacją z założenia indukcyjnego, dostaniemy, że w istocie
  $(h_2, \ctxts_2) \eval{confs_2} (h_{2, n}, \ctxts_{2, n})$.
 \end{itemize}
 \end{proof}
@@ -1923,7 +1924,7 @@ Możemy wreszcie udowodnić twierdzenie \ref{th:free_eval}
     Stąd, po podstawieniu za zmienne wolne lokacji z $env$, założenie jest spełnione.
     
     Ostatnim problemem jest wybranie odpowiedniego początkowego $f$.
-    Wystarczy jednak, żeby $f$ była identycznością na $\jnull$, $\npe$ i lokacjach występująych
+    Wystarczy jednak, żeby $f$ była identycznością na $\jnull$, $\npe$ i lokacjach występujących
     w $h$ lub $E[/env]$. Ponieważ $h$ jest spójna, więc tak zdefiniowana $f$ jest w oczywisty sposób
     automorfizmem na $h$ oraz na $E[/env]$.
 \end{proof}
@@ -1944,7 +1945,9 @@ istnieją $h_2', l_2, f'$, takie że
  \item $(h_2, E_2) \eval{} (h_2', l_2, A)$
 \end{enumerate}
 \begin{proof}
-TODO
+Dowód przebiega przez indukcję po długości ewaluacji. W kroku indukcyjnym należy zapewnić
+zachowanie wszystkich własności z tezy lematy, co wygląda analogicznie jak w dowodzie
+lematu \ref{lem:free_red} (O zależności redukcji od zmiennych wolnych).
 \end{proof}
 \end{lemma}
 
@@ -1966,7 +1969,7 @@ Dowód wszystkich przedstawianych równoważności przebiega w ten sam sposób -
 po budowie termu $P$. Najpierw jednak zauważmy, że przypadki w których $P$ jest równe 
 \texttt{True} lub \texttt{False}, albo jest koniunkcją, alternatywą lub implikacją
 są prawdziwe niezależnie od konkretnych warunków na $h_1, h_2, env_1$ i $env_2$, i
-równoważnosć w tych przypadkach wynika wprost
+równoważnoćć w tych przypadkach wynika wprost
 z założeń indukcyjnych dla ich podwyrażeń.
 
 \begin{lemma}[Równoważność izomorficznych stert i środowisk] {\ } \\
@@ -2010,16 +2013,16 @@ wynika wprost z założeń indukcyjnych dla podwyrażeń.
  Jeśli któraś (lub obie) jest zmienną $x$, to semantyką tej wartość w przypadku $P[l/x]$
  jest po prostu $l$, natomiast w przypadku $P$ jest nią $env[x \mapsto l](x)$,
  a zatem również $l$.
- \item W przypadku trójki Hoare'a jest jeszcze prościej, bowiem wyrażenia ewaluowane
- w obu trójkach są identyczne.
+ \item W przypadku trójki Hoare'a jest jeszcze prościej, wyrażenia ewaluowane
+ są bowiem w obu trójkach identyczne.
  W pierwszym przypadku jest to $E[/env[x \mapsto l]]$, natomiast w drugim
- $E[l / x][/env]$. Przez prostą indukcję po budowie $E$ można udowonić że wyrażenia te są
+ $E[l / x][/env]$. Przez prostą indukcję po budowie $E$ można udowonić, że wyrażenia te są
  sobie równe.
 \end{itemize}
 \end{proof}
 \end{lemma}
 
-Kolejne twierdzenie to przeniesienie twierdzenia \ref{th:free_eval} (O zależości ewaluacji
+Kolejne twierdzenie to przeniesienie twierdzenia \ref{th:free_eval} (O zależności ewaluacji
 od zmiennych wolnych)
 z ewaluacji na semantykę termów. Mówi ono, że dla semantyki termu istotne są tylko te
 elementy sterty i środowiska, które odpowiadają zmienny, wolnym w tym termie.
@@ -2130,14 +2133,14 @@ Możemy teraz ściśle sformułować twierdzenie o poprawności.
   \qed
 \end{theorem}
 
-Dowód tego twierdzenia przebiega w pierdzej kolejności przez indukcję po
+Dowód tego twierdzenia przebiega w pierwszej kolejności przez indukcję po
 długości listy niezmienników, a następnie przez indukcję po budowie drzewa dowodu
 dla $\Gamma | P \vdash Q$.
 Najpierw należy pokazać, poprawność przypadków bazowych, czyli udowodnić tezę twierdzenia dla
 wszystkich reguł niezawierających osądów w przesłankach.
 Następnie należy pokazać, że wszystkie pozostałe reguły zachowują poprawność.
 W tym celu będziemy zakładać, że wszystkie osądy z przesłanek są poprawne,
-a następnie korzystając z tych założeń będziemy dowodzić poprawność osądu będącego wnioskiem reguły.
+a następnie, korzystając z tych założeń, będziemy dowodzić poprawność osądu, będącego wnioskiem reguły.
 Takie założenie jest możliwe dzięki temu, że drzewa dowodów przesłanek są właściwymi poddrzewami
 dowodu dla wniosku, a zatem założenie o poprawności przesłanek jest założeniem indukcyjnym.
 
@@ -2146,13 +2149,13 @@ jako dowód twierdzenia \texttt{JFIOuterSoundness}.
 
 \section{Poprawność reguł dla tradycyjnych operatorów logicznych}
 Dowody poprawności reguł przedstawionych na rysunku \ref{fig:logical_rules} są do siebie
-bardzo podobne i,~oprócz kilku szczegółów techniczych, mało interesujące, jako że wprost
+bardzo podobne i,~oprócz kilku szczegółów technicznych, mało interesujące, jako że wprost
 wynikają z własności operatorów logicznych.
 Na przykład, poprawność reguły \textsc{Asm} jest oczywista -- każda sterta spełniająca $P$ spełnia $P$.
 
 Dowód poprawności innych reguł jednak wymaga doprecyzowania.
 Poprawność reguły \textsc{Trans} wymaga pokazania, że zmienna $v$ istnieje w środowisku $\mathit{env}$.
-Jest to prawdą, ponieważ z faktu, że $v$ jest zmienną wolną w osądzie wynika, że $v$ ma przypisany
+Jest to prawdą, ponieważ, z faktu, że $v$ jest zmienną wolną w osądzie, wynika, że $v$ ma przypisany
 typ w środowisku typów $\Gamma$.
 Istnienie $v$ w środowisku $\mathit{env}$ wynika więc z założenia o zgodności $\mathit{env}$ i~$\Gamma$ 
 
@@ -2166,7 +2169,7 @@ Następnie możemy dodać do środowiska mapowanie $x$ na odpowiednio $\jnull$, 
 Powstałe środowisko jest wtedy zgodne ze środowiskiem $(\Gamma, x : C)$ na stercie $h$,
 a zatem można po prostu zastosować założenie indukcyjne.
 
-Wreszcie, najbardziej najbardziej skomplikowanym przypadkiem, spośród reguł dla klasycznych operatorów,
+Wreszcie, najbardziej skomplikowanym przypadkiem, spośród reguł dla klasycznych operatorów,
 jest poprawność reguły $\exists\mathrm{E}$, eliminującej kwantyfikator $\exists$.
 
 Kluczowym krokiem w dowodzie poprawności $\exists\mathrm{E}$ jest zauważenie, że dodanie świeżej,
@@ -2204,7 +2207,7 @@ takich jak przemienność i łączność operatora $\oplus$ oraz faktu że suma 
 Poprawność pozostałych reguł jest nieco bardziej skomplikowanym zagadnieniem.
 
 \subsection{Reguły eliminacji i wprowadzania operatorów separacji}
-Dowód poprawności eliminacji i wprowadzania operatorów separacji nie jest skompliowany,
+Dowód poprawności eliminacji i wprowadzania operatorów separacji nie jest skomplikowany,
 ale kryje się w nim kilka subtelności związanych z manipulowaniem środowiskami, tak
 żeby było możliwe skorzystanie z nich używając założeń indukcyjnych.
 Pokażę je na przykładzie reguły $*\mathrm{I}$, ale podobne rozumowanie jest też stosowane w
@@ -2219,7 +2222,7 @@ otrzymać, że spełniają one też odpowiednio $Q_1$ i $Q_2$, co zakończy dow�
 Nie możemy jednak zrobić tego używając środowiska $env$, bo nie musi ono zgadzać się z $\Gamma_1$
 ani $\Gamma_2$ -- jest na to zbyt duże. O ile oba ze środowisk typów są niepuste, to $env$ zawiera
 zarówno zmienne niebędące w $\Gamma_1$, jak i zmienne niebędące w $\Gamma_2$.
-Należy więc ostrożenie wziąc podzbiór środowiska $env$, zgodny z $\Gamma_1$ na $h_1$ i drugi,
+Należy więc ostrożnie wziąć podzbiór środowiska $env$, zgodny z $\Gamma_1$ na $h_1$ i drugi,
 zgodny z $\Gamma_2$ na $h_2$ w taki sposób, żeby zachować spełnianie termów przez sterty
 $h_1$ i $h_2$ w tych okrojonych środowiskach.
 
@@ -2235,7 +2238,7 @@ nie zmienia spełniania $P_1$ przez $h_1$. Stąd mamy więc
 $\[ P_1 \]_{h_1, env} = \[ P_1 \]_{h_1, env_1}$ i podobnie
 $\[ Q_1 \]_{h_1, env} = \[ Q_1 \]_{h_1, env_1}$.
 
-Korzystając więc z powyższych równości i z założenia indukcyjnego, dostajemy że $h_1$ spełnia $Q_1$
+Korzystając więc z powyższych równości i z założenia indukcyjnego, dostajemy, że $h_1$ spełnia $Q_1$
 w środowisku $env$. Przeprowadzenie analogicznego rozumowania dla $h_2$ kończy dowód.
 
 \subsection{Reguła osłabiania}
@@ -2257,8 +2260,8 @@ osłabiania. Bez dodatkowych założeń nie ma bowiem gwarancji, że $h_1 \oplus
 $\forall x . P$, nawet jeśli samo $h_1$ spełnia $\forall x . P$. Podczas rozszerzania sterty moglibyśmy
 dodać nowe lokacje, niespełniające $P$, i w ten sposób zepsuć poprawność tej reguły.
 
-Jednocześnie, nięzbędne jest też zadbanie, żeby nie było możliwe symulowanie kwantyfikatora ogólnego
-przy pomocy innych kontrukcji logiki. Możliwe byłoby to na przykład przez zastąpienie
+Jednocześnie, niezbędne jest też zadbanie, żeby nie było możliwe symulowanie kwantyfikatora ogólnego
+przy pomocy innych konstrukcji logiki. Możliwe byłoby to na przykład przez zastąpienie
 termu $\forall x : C . P$ przez $\neg \exists x : C . \neg P$.
 Z tego powodu kwantyfikator $\exists$ został w logice ograniczony do termów najwyższego poziomy, tak
 że niemożliwe staje się jego zanegowanie.
@@ -2269,9 +2272,11 @@ semantyki języka bez zmian.
 {\ }
 
 Wciąż jednak, pomimo tych ograniczeń, dowód poprawności reguły osłabiania nie jest trywialny.
-Wynika ona wprost z pomocniczego twierdzenia, mówiącego że jeśli pewne środowisko mapuje
-wszystkie zmienne wolne termu na lokacje na pewnej stercie, to możemy dowolnie rozszerzać zarówno
-środowisko jak i stertę bez zmiany semantyki tego termu, to znaczy jeśli
+Wynika ona wprost z pomocniczego lematu \ref{lem:fresh_var_equiv} [O równoważności środowiska
+po dodaniu świeżej zmiennej], mówiącego że jeśli pewne środowisko mapuje
+wszystkie zmienne wolne termu na lokacje na pewnej stercie,
+to możemy dowolnie rozszerzać zarówno
+środowisko, jak i stertę bez zmiany semantyki tego termu. To znaczy, jeśli
 $h_1 \subseteq h$, $env_1 \subseteq env$ i wszystkie zmienne wolne z termu $P$
 mapowane są przez $env_1$ na lokacje w $h_1$, to $\[ P \]_{h_1, env_1} = \[ P \]_{h, env}$.
 
@@ -2315,7 +2320,7 @@ są równoważne, jeśli chodzi o spełnianie danego trwałego termu.
 \section{Reguły strukturalne}
 Dzięki regule \textsc{Ht-frame} możemy w pełni docenić operator separacji $*$.
 Upraszcza ona dowodzenie faktów o trójkach Hoare'a na złożonych stertach,
-sprawiając że możliwe jest dowodzenie własności ograniczając się tylko do istotnych
+sprawiając, że możliwe jest dowodzenie własności, ograniczając się tylko do istotnych
 dla nich fragmentów sterty, a następnie rozszerzanie tych fragmentów to
 interesującej nas całości. Dzięki takiemu podejściu możliwe jest ograniczenie
 założeń w warunkach początkowych trójki Hoare'a do niezbędnego minimum.
@@ -2335,8 +2340,8 @@ założeń stwierdzić, że sterta po ewaluacji spełnia $S$.
 Skoro jednak $S$ jest trwałe i sterta przed ewaluacją spełniała $S$, więc każda inna sterta,
 w szczególności ta po ewaluacji, spełnia $S$.
 
-\section{Reguły opisujące kontrukcje języka}
-Zbiór reguł opisujących kontrukcje języka najbardziej odróżnia się od reguł logiki Iris,
+\section{Reguły opisujące konstrukcje języka}
+Zbiór reguł opisujących konstrukcje języka najbardziej odróżnia się od reguł logiki Iris,
 opisującej język $\lambda_{\mathrm{ref, conc}}$, będący nieotypowanym językiem funkcyjnym, opartym
 na rachunku lambda, z operatorami pozwalającymi na dostęp do sterty i równoległość.
 
@@ -2367,7 +2372,7 @@ W klasycznym podejściu, zastosowanym również w logice Iris, reguła dla wywo�
 wymaga udowodnienia oczekiwanych własności tylko dla wyrażenia będącego ciałem tej funkcji z
 odpowiednimi wartościami podstawionymi w miejsce argumentów.
 Jednak, z uwagi na to, że Jafun (podobnie jak Java) oferuje polimorfizm, nie można bez ewaluacji
-rozstrzygnąć jakiego dokładnie typu jest dany obiekt, a zatem nie można też rozstrzygnąć
+rozstrzygnąć, jakiego dokładnie typu jest dany obiekt, a zatem nie można też rozstrzygnąć,
 jak wygląda ciało metody o danej nazwie.
 
 Założenie, mówiące że lista niezmienników jest udowodniona, daje nam pewność, że
@@ -2379,7 +2384,7 @@ także trójka $\hoare{P}{x.m(\overline{v})}{A}{w}{Q}$.
 Podstawowymi twierdzeniami pozwalającymi nam udowodnić poprawność reguł dla wyrażeń złożonych są
 twierdzenia \ref{th:eval_join} (O łączeniu ewaluacji) oraz
 \ref{th:eval_ext_ctx} (O ewaluacji w rozszerzonym kontekście).
-Przykładem zastosowania ich obu jest dowód poprawości reguły \textsc{Ht-let}, opisującej
+Przykładem zastosowania ich obu jest dowód poprawności reguły \textsc{Ht-let}, opisującej
 wykonanie wyrażenia $\letin{C}{x}{E_1}{E_2}$ przy założeniu, że wyrażenie $E_1$ wykonuje się w sposób
 normalny, niewyjątkowy.
 
@@ -2409,7 +2414,7 @@ ona spełniać $S$, co uniemożliwiłoby zastosowanie założenia indukcyjnego.
 Ponieważ jednak $S$ jest trwałe i spełniane przez stertę początkową, jest więc również spełniane
 przez stertę po wykonaniu $E_1$.
 
-Dowód poprawności reguły dla $\jlet$ jest najbardziej skompliowanym z dowodów dla reguł złożonych.
+Dowód poprawności reguły dla $\jlet$ jest najbardziej skomplikowanym z dowodów dla reguł złożonych.
 Zastosowane są w nim wszystkie techniki używane w dowodzie pozostałych przypadków.
 Bardzo podobne rozumowanie można więc przeprowadzić dla wszystkich pozostałych reguł.
 
@@ -2434,8 +2439,8 @@ neutralny operatora $\oplus$ sumy rozłącznej stert,
 czy przechodniość relacji bycia podstertą.
 
 Największym jednak wyzwaniem było zdefiniowanie równości na stertach i jej własności.
-Ponieważ sterty zdefiniowane są jako \texttt{FMapAVL}, kolejność w której dodawane są
-elementy ma znaczenie. Oznacza to, że sterty
+Ponieważ sterty zdefiniowane są jako \texttt{FMapAVL}, kolejność, w której dodawane są
+elementy, ma znaczenie. Oznacza to, że sterty
 \texttt{Heap.add(l1, o1, Heap.add(l2, o2, Heap.empty))} oraz
 \texttt{Heap.add(l2, o2, Heap.add(l1, o1, Heap.empty))} są interpretowane przez Coq
 jako dwie różne sterty, mimo że koncepcyjnie reprezentują dokładnie tę samą stertę
@@ -2446,7 +2451,7 @@ zawierające te same lokacje i przypisujące im równe obiekty.
 \begin{verbatim}
 Definition HeapEq (h1 h2 : Heap) := forall n, Heap.find n h1 = Heap.find n h2.
 \end{verbatim}
-Oczywiście, mając taką definicję również należało udowodnić wszystkie jej pożądane własności,
+Oczywiście, mając taką definicję, również należało udowodnić wszystkie jej pożądane własności,
 takie jak symetria i zwrotność. Oprócz tego istotnym jest twierdzenie podobne
 do tych zaprezentowanych w rozdziale \ref{chap:equiv} --
 dowolne dwie równe sterty są równoważne względem semantyki dla każdego termu.
@@ -2479,7 +2484,7 @@ Inductive JFIVal : Type := | JFINull | JFIThis | JFIVar (var : string).
 Ponieważ jednak w wyrażeniach Jafun (występujących w logice w trójkach Hoare'a)
 wartości nadal reprezentowane są przez \texttt{JFVal}, nieraz zdarza się, że ta sama wartość
 jest reprezentowana zarówno przez typy \texttt{JFVal}, jak i \texttt{JFIVal}.
-Do zapewnienia, że w takich sytuacjach wartości są ze sobą zgodne służy pomocnicza
+Do zapewnienia, że w takich sytuacjach wartości są ze sobą zgodne, służy pomocnicza
 definicja \texttt{JFIValToJFVal}, zdefiniowana w naturalny sposób jako
 \begin{verbatim}
 Definition JFIValToJFVal val :=
@@ -2554,7 +2559,7 @@ Wspomniane wcześniej powiązanie między wartościami logiki (typu \texttt{JFIV
 w wyrażeniach Jafun (typu \texttt{JFVal}) jest wymagane wszędzie we wszystkich tych regułach,
 gdzie pewna wartość występuje jednocześnie w termie
 ($\cdot = \cdot$ lub $\cdot \hookrightarrow \cdot = \cdot$) i w wyrażeniu Jafun.
-Przykładem prostej reguły, która wymaga takiego powiązania jest reguła \textsc{Ht-ret},
+Przykładem prostej reguły, która wymaga takiego powiązania, jest reguła \textsc{Ht-ret},
 mówiąca że zawsze możemy udowodnić trójkę Hoare'a
 $\hoare{\mathtt{True}}{w}{\emptyset}{v}{v = w}$.
 Pierwsze $w$ jest wyrażeniem języka Jafun, składającym się tylko z wartości.
@@ -2617,7 +2622,7 @@ o poprawności logiki zapewnia, że udowodnione twierdzenia mają odzwierciedlen
 w semantyce języka.
 
 W przyszłości możliwe jest uzupełnienie logiki o kwantyfikator uniwersalny $\forall$.
-Dla zachowania poprawności logiki, wymagałoby to jednak zmianę definicji sterty,
+Dla zachowania poprawności logiki wymagałoby to jednak zmianę definicji sterty,
 a co za tym idzie również zmiany semantyki język Jafun.
 Logika bez tego kwantyfikatora jest jednak również wartościowa i umożliwia
 dowodzenie szerokiej gamy twierdzeń o zachowaniu programów napisanych w Jafun.
