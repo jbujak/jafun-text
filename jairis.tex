@@ -607,7 +607,7 @@ możemy zdefiniować następujące pomocnicze notacje:
 Semantyka małych kroków języka Jafun dla ustalonego programu $\overline{\mathbf{C}}$
 jest zdefiniowana przez relację $\rightarrow$ na rysunku \ref{fig:jafun_semantics}.
 Relacja $\rightarrow$ jest relacją binarną na parach (sterta, stos wywołań).
-W ogólności ma ona postać 
+Ma ona następującą postać ogólną:
 $$
   \begin{array}{l@{\;}l}
   \overline{\mathbf{C}},\ \ h,\,  \ctxt_1\llbracket E_1\rrbracket _{A_1}::\cdots:: & \ctxt_n\llbracket E_n\rrbracket _{A_n}\to
@@ -854,17 +854,19 @@ $\classof(h,l_o)=C$, a
 $C'\; m()\;\throws\; \npetype\; \boldsymbol\{E\boldsymbol\}$
 jest metodą nieprzyjmującą argumentów w klasie $C$.
 Metoda $m$ odpowiada funkcji \texttt{main} w zwykłej Javie.
-Dodatkowo zakładamy, że na stercie $h$, pod pewną lokacją $\npe$ istnieje obiekt klasy $\npetype$
-(``null pointer exception``).
-
+Dodatkowo zakładamy, że na stercie $h$ pod pewną lokacją $\npe$ istnieje obiekt klasy $\npetype$
+(,,null pointer exception``).
+\newpage
 \section{Ewaluacja}
 Częściową ewaluacją konfiguracji $(h, \ctxts)$ będziemy nazywać dowolny ciąg par
-$\mathit{confs} = (h_1, \ctxts_1), \ldots, (h_n, \ctxts_n)$, taki że $h_1 = h$, $\ctxts_1 = \ctxts$ oraz $(h_i, \ctxts_i) \rightarrow (h_{i+1}, \ctxts_{i+1})$ dla $1 \leq i < n$.
+$$\mathit{confs} = (h_1, \ctxts_1), \ldots, (h_n, \ctxts_n)$$
+taki że $h_1 = h$, $\ctxts_1 = \ctxts$ oraz $(h_i, \ctxts_i) \rightarrow (h_{i+1}, \ctxts_{i+1})$ dla $1 \leq i < n$.
 Częściowe ewaluacje będziemy oznaczać jako $(h_1, \ctxts_1) \eval{confs} (h_n, \ctxts_n)$.
 
 Ewaluacją wyrażenia $e$ na stercie $h$ będziemy nazywać taką ewaluację konfiguracji $(h, \[ e \]_\phi)$,
 że $\ctxts_n = \[ l \]_A$ dla pewnych $l, A$. Jeśli taka ewaluacja istnieje, będziemy to oznaczać jako
-$(h, e) \eval{confs} (h_n, A, l)$ lub
+$(h, e) \eval{confs} (h_n, A, l)$ lub po prostu $(h, e) \eval{} (h_n, A, l)$, jeśli dokładny ciąg
+konfiguracji nie jest istotny.
 
 \chapter{Składnia i semantyka}
 
@@ -976,7 +978,8 @@ Dla uproszczenia zapisu notacja $\[ \cdot \]$ została użyta do~opisu semantyki
 \end{align*}
 
 Uwaga: $E[/env]$ oznacza wyrażenie powstałe przez~podstawienie $env(x)$ w~miejsce $x$ dla~każdej zmiennej
-wolnej $x$ w~$E$.
+wolnej $x$ w~$E$, czyli $E[/env] = E[l_1/x_1, \ldots, l_n/x_n]$, gdzie $\dom{env} = \{x_1, \ldots, x_n\}$, a
+$l_i = env(x_i)$ dla $i = 1, \ldots, n$.
 
 \caption{Semantyka logiki}
 \label{fig:sematics}
@@ -1643,9 +1646,13 @@ $(h_1, \ctxts_1) \rightarrow (h_{1, n}, \ctxts_{1, n})$.
  $\ctxts_2 = \ctxts_2'::\ctxt_2\[ \newin{\mmod}{C}{l_1',\ldots,l_k'}\]_\emptyset$ \\ \\
  Redukcja $\ctxts_1$ jest postaci
  $(h_1,  \ctxts_1':: \ctxt_1\[ \newin{\mmod}{C}{l_1,\ldots,l_k}\] _\emptyset) \rightarrow (h_{1, n}, \ctxts_1' :: \ctxt_1\[ l_0\] _\emptyset)$,
-gdzie
-$ \alloc(h_1, \ctxts_1', C)=(l_0, h),\; \fields(C) = x_1, \dots, x_k,\;
-o=\emptyclass{C}\{x_1 \mapsto  l_1,\ldots,x_k~\mapsto~l_k\}, \; h_{1,n} = h\{l_0 \mapsto o\}$.
+gdzie:
+\begin{align*}
+& \alloc(h_1, \ctxts_1', C)=(l_0, h) \\
+& \fields(C) = x_1, \dots, x_k \\
+& o=\emptyclass{C}\{x_1 \mapsto  l_1,\ldots,x_k~\mapsto~l_k\} \\
+& h_{1,n} = h\{l_0 \mapsto o\}
+\end{align*}
 Nowa sterta $h_{1,n}$ jest zatem po prostu stertą $h_1$ z dodatkowym nowym obiektem $o$ pod nową lokacją $l_0$.
 Weźmy zatem $\hbase_{1,n} = \hbase_1\{l_0 \mapsto o\}$.
 Spełnia ona warunki 4 i 6, ponieważ jedyną nową lokacją na stosie jest $l_0$, które trafiło właśnie do $\hbase_{1,n}$.
@@ -1771,7 +1778,9 @@ jest zmiana trybu wykonania na wyjątkowy z wartością wyjątku $l$ i typem $D$
 Możemy więc po prostu wziąć $\ctxts_{2, n} = \ctxts_2'::\ctxt_2\[ l'\]_{D}$,
 a sterty i izomorfizm pozostawić bez zmian.
 
-\item $\ctxts_1 = \ctxts_1'::\ctxt_1\[ \tcatch{e_1}{\mmod\; C}{x}{e_2}\]_\emptyset$, \;\;
+\newpage
+
+\item $\ctxts_1 = \ctxts_1'::\ctxt_1\[ \tcatch{e_1}{\mmod\; C}{x}{e_2}\]_\emptyset$, \\
       $\ctxts_2 = \ctxts_2'::\ctxt_2\[ \tcatch{e_1'}{\mmod\; C}{x}{e_2'}\]_\emptyset$
 
 Redukcja $\ctxts_1$ jest postaci
@@ -1782,18 +1791,18 @@ wyrażenie $e_2$, a redeks zostaje zmieniony na $e_1$. Podobnie jak dla $\jlet$,
 $\ctxts_{2, n} = \ctxts_2'::\ctxt_2[\tcatch{\[ e_1'\] _\emptyset}{\mmod\; C}{x}{e_2'}])$,
 a sterty i izomorfizm pozostawić bez zmian.
 
-\item $\ctxts_1 = \ctxts_1'::\ctxt_1[\tcatch{\[ l\] _\emptyset}{\mmod\; C}{x}{e_2}]$, \;\;
+\item $\ctxts_1 = \ctxts_1'::\ctxt_1[\tcatch{\[ l\] _\emptyset}{\mmod\; C}{x}{e_2}]$, \\
       $\ctxts_2 = \ctxts_2'::\ctxt_2[\tcatch{\[ l'\] _\emptyset}{\mmod\; C}{x}{e_2'}]$
 
 Przy normalnym wykonaniu wyrażenia wewnątrz blocku $\jtry$, jest on po prostu usuwany z kontekstu.
 Redukcja $\ctxts_1$ jest wtedy postaci
-$(h_1, \ctxts_1'::\ctxt_1[\tcatch{\[ l\] _\emptyset}{\mmod\; C}{x}{e_2}]) \rightarrow
- (h_1, \ctxts_1'::\ctxt_1\[ l\]_\emptyset)$.
+$$(h_1, \ctxts_1'::\ctxt_1[\tcatch{\[ l\] _\emptyset}{\mmod\; C}{x}{e_2}]) \rightarrow
+ (h_1, \ctxts_1'::\ctxt_1\[ l\]_\emptyset)$$
  
 Wystarczy zatem wziąć $\ctxts_{2,n} = \ctxts_2'::\ctxt_2\[ l'\]_\emptyset$,
 a sterty i izomorfizm pozostawić bez zmian.
 
-\item $\ctxts_1 = \ctxts_1'::\ctxt_1[\tcatch{\[ l\] _{C'}}{\mmod\; C}{x}{e_2}]$, \;\;
+\item $\ctxts_1 = \ctxts_1'::\ctxt_1[\tcatch{\[ l\] _{C'}}{\mmod\; C}{x}{e_2}]$, \\
       $\ctxts_2 = \ctxts_2'::\ctxt_2[\tcatch{\[ l'\] _{C'}}{\mmod\; C}{x}{e_2'}]$, \;\;
       gdzie $C' \leq:  C $
       
@@ -1805,7 +1814,7 @@ $(h_1, \ctxts_1'::\ctxt_1[\tcatch{\[ l\] _{C'}}{\mmod\; C}{x}{e_2}]) \rightarrow
 Niech $e' = e_2'\{l' / x\}$. Wtedy wystarczy wziąć
 $\ctxts_{2,n} = \ctxts_2'::\ctxt_2\[ e'\]_\emptyset$, a sterty i izomorfizm pozostawić bez zmian.
 
-\item $\ctxts_1 = \ctxts_1'::\ctxt_1[\tcatch{\[ l\] _{C'}}{\mmod\; C}{x}{e_2}]$, \;\;
+\item $\ctxts_1 = \ctxts_1'::\ctxt_1[\tcatch{\[ l\] _{C'}}{\mmod\; C}{x}{e_2}]$, \\
       $\ctxts_2 = \ctxts_2'::\ctxt_2[\tcatch{\[ l'\] _{C'}}{\mmod\; C}{x}{e_2'}]$, \;\;
       gdzie $C'\not=\emptyset, C' \not\!\leq:  C $  
 
@@ -1907,11 +1916,11 @@ Przez indukcję po długości ciągu konfiguracji $\mathit{confs}_1$.
 \end{proof}
 \end{lemma}
 
-Możemy wreszcie udowodnić twierdzenie \ref{th:free_eval}
+Możemy wreszcie udowodnić twierdzenie \ref{th:free_eval}.
 \begin{proof} (twierdzenia o zależności ewaluacji od zmiennych wolnych)
     Niech $h$, $env$, $E$, $h_1$, $h_2$, $\hrest_1$, $\hrest_2$, $\mathit{confs_1}, h_{1,n}, A, l_1$
     będą jak w treści twierdzenia.
-    Pokażę, że istnieją istnieją  $\hbase_{1, n}, \hbase_{2, n}, \mathit{confs}_2, h_{2, n}, l_2, f$,
+    Pokażę, że istnieją $\hbase_{1, n}$, $\hbase_{2, n}$, $\mathit{confs}_2$, $h_{2, n}, l_2, f$,
     spełniające warunki z treści.
     
     W tym celu zastosujemy lemat \ref{lem:free_part_eval} dla
@@ -1946,7 +1955,7 @@ istnieją $h_2', l_2, f'$, takie że
 \end{enumerate}
 \begin{proof}
 Dowód przebiega przez indukcję po długości ewaluacji. W kroku indukcyjnym należy zapewnić
-zachowanie wszystkich własności z tezy lematy, co wygląda analogicznie jak w dowodzie
+zachowanie wszystkich własności z tezy lematu, co wygląda analogicznie jak w dowodzie
 lematu \ref{lem:free_red} (O zależności redukcji od zmiennych wolnych).
 \end{proof}
 \end{lemma}
@@ -2025,7 +2034,7 @@ wynika wprost z założeń indukcyjnych dla podwyrażeń.
 Kolejne twierdzenie to przeniesienie twierdzenia \ref{th:free_eval} (O zależności ewaluacji
 od zmiennych wolnych)
 z ewaluacji na semantykę termów. Mówi ono, że dla semantyki termu istotne są tylko te
-elementy sterty i środowiska, które odpowiadają zmienny, wolnym w tym termie.
+elementy sterty i środowiska, które odpowiadają zmiennym wolnym w tym termie.
 
 \begin{lemma}[Równoważność rozszerzonej sterty i środowiska] {\ } \\
 \label{lem:ext_equiv}
@@ -2099,7 +2108,7 @@ $(C, m, \hoare{P}{\cdot}{A}{w}{Q})$.
 Każdy taki niezmiennik oznaczał założenie o własności ewaluacji metody $m$ na obiektach klasy
 $C$ i jej pochodnych.
 Żeby jednak takie założenie było poprawne, należy zadbać o to, żeby każdy taki niezmiennik dał
-się wyprowadzić korzystając z reguł dowodzenia i niezmienników będących wcześniej na liście.
+się wyprowadzić przy użyciu reguł dowodzenia i niezmienników będących wcześniej na liście.
 Pozwoli to udowodnić poprawność każdego z nich przez prostą indukcję po długości listy niezmienników.
 
 Zdefiniujmy więc \textit{udowodnioną listę niezminników} indukcyjnie, w następujący sposób.
@@ -2108,13 +2117,13 @@ Niepusta lista niezmienników $\mathtt{invariants}::(C, m, \hoare{P}{\cdot}{A}{w
 programu $\overline{\mathbf{C}}$ jest
 udowodniona wtedy i tylko wtedy, gdy udowodniona jest lista $\mathtt{invariants}$ oraz osąd
 $\overline{\mathbf{C}}, \mathtt{invariants}, \Gamma | \mathtt{True} \vdash \hoare{P}{E}{A}{w}{Q}$
-jest wyprowadzalny dla każdego $E$ będącego ciałem metody $m$ w klasie $C$ lub jej pochodnej i
+jest wyprowadzalny dla każdego $E$ będącego ciałem metody $m$ w klasie $C$ lub jej podklasie i
 dla $\Gamma$ będącej środowiskiem typów przypisującym nazwom argumentów metody
 $m$ ich typy, a wartości $\jthis$ typ $C$.
 
 Zauważmy, że warunek dodania niezmiennika do listy jest bardzo silny -- należy udowodnić jego
 prawdziwość nie tylko dla metody w interesującej nas klasie, ale również dla każdego jej przeciążonego
-odpowiednika w klasach pochodnych. Z jednej strony ogranicza to zakres wnioskowania o metodach,
+odpowiednika w podklasach. Z jednej strony ogranicza to zakres wnioskowania o metodach,
 ale z drugiej wymusza pewną dyscyplinę podczas przeciążania metod.
 Definiując metodę z intencją jej przeciążenia należy bowiem zastanowić się, jakie własności
 powinna ona spełniać we wszystkich klasach pochodnych.
@@ -2174,7 +2183,7 @@ jest poprawność reguły $\exists\mathrm{E}$, eliminującej kwantyfikator $\exi
 
 Kluczowym krokiem w dowodzie poprawności $\exists\mathrm{E}$ jest zauważenie, że dodanie świeżej,
 nie będącej zmienną wolną w termie,
-zmiennej do środowiska nie zmienia spełnialności tego termu przez stertę (\ref{lem:fresh_var_equiv})
+zmiennej do środowiska nie zmienia spełnialności tego termu przez stertę (Lemat \ref{lem:fresh_var_equiv}).
 To znaczy jeśli $x \not\in FV(P)$, to $\[ P \]_{h, env} = \[ P \]_{h, env[x \mapsto l]}$.
 Intuicyjnie jest to prawda,
 ponieważ skoro $x$ nie jest wolne w $P$, więc $P$ nie ma możliwości odwoływania się do niego,
@@ -2263,7 +2272,7 @@ dodać nowe lokacje, niespełniające $P$, i w ten sposób zepsuć poprawność 
 Jednocześnie, niezbędne jest też zadbanie, żeby nie było możliwe symulowanie kwantyfikatora ogólnego
 przy pomocy innych konstrukcji logiki. Możliwe byłoby to na przykład przez zastąpienie
 termu $\forall x : C . P$ przez $\neg \exists x : C . \neg P$.
-Z tego powodu kwantyfikator $\exists$ został w logice ograniczony do termów najwyższego poziomy, tak
+Z tego powodu kwantyfikator $\exists$ został w logice ograniczony do termów najwyższego poziomu, tak
 że niemożliwe staje się jego zanegowanie.
 
 Te dwa ograniczenia wystarczają do zapewnienia poprawności reguły osłabiania przy zachowaniu
@@ -2291,7 +2300,7 @@ W przypadku trójek Hoare'a jednak musimy skorzystać z udowodnionego wcześniej
 \ref{th:free_eval} (O zależności ewaluacji od zmiennych wolnych).
 Zapewnia nam ono, że dla dowolnej ewaluacji na stercie $h_1$ będziemy mieli odpowiednią
 ewaluację na stercie $h$ i, co więcej, otrzymane na końcu sterty będą izomorficzne.
-Pozostaje więc pokazać, że dla semantyka termu dla izomorficznych stert jest taka sama.
+Pozostaje więc pokazać, że semantyka termu dla obu izomorficznych stert jest taka sama.
 Jest to prawda tylko przy założeniu, że środowiska, w których rozpatrujemy semantykę,
 również są izomorficzne, przynajmniej na zmiennych wolnych w tym termie. Na szczęście jednak
 twierdzenie \ref{th:free_eval} zapewnia nam, że otrzymany izomorfizm jest identycznością na
@@ -2321,7 +2330,7 @@ są równoważne, jeśli chodzi o spełnianie danego trwałego termu.
 Dzięki regule \textsc{Ht-frame} możemy w pełni docenić operator separacji $*$.
 Upraszcza ona dowodzenie faktów o trójkach Hoare'a na złożonych stertach,
 sprawiając, że możliwe jest dowodzenie własności, ograniczając się tylko do istotnych
-dla nich fragmentów sterty, a następnie rozszerzanie tych fragmentów to
+dla nich fragmentów sterty, a następnie rozszerzanie tych fragmentów do
 interesującej nas całości. Dzięki takiemu podejściu możliwe jest ograniczenie
 założeń w warunkach początkowych trójki Hoare'a do niezbędnego minimum.
 
@@ -2346,7 +2355,7 @@ opisującej język $\lambda_{\mathrm{ref, conc}}$, będący nieotypowanym język
 na rachunku lambda, z operatorami pozwalającymi na dostęp do sterty i równoległość.
 
 Niniejsza logika jest pod tym względem istotnie różna od logiki Iris. 
-Język jafun jest imperatywnym, silnie typowanym językiem obiektowym.
+Język Jafun jest imperatywnym, silnie typowanym językiem obiektowym.
 Jego konstrukcje różnią się zatem od konstrukcji $\lambda_{\mathrm{ref, conc}}$ zarówno pod względem
 składni, jak i semantyki.
 
@@ -2366,7 +2375,7 @@ Znów, nie dzieje się tutaj nic specjalnego, a dowód poprawności wynika w pro
 semantyki języka.
 
 Najbardziej skomplikowaną spośród reguł dla wyrażeń prostych jest reguła \textsc{Ht-invoke}.
-Opisuje ona wywołanie zachowanie ewaluacji podczas wywołania metody $m$ na obiekcie klasy $C$,
+Opisuje ona zachowanie ewaluacji podczas wywołania metody $m$ na obiekcie klasy $C$,
 lub pochodnej i stanowi główną motywację dla wprowadzenia pojęcia listy niezmienników.
 W klasycznym podejściu, zastosowanym również w logice Iris, reguła dla wywołania funkcji
 wymaga udowodnienia oczekiwanych własności tylko dla wyrażenia będącego ciałem tej funkcji z
@@ -2409,8 +2418,8 @@ $\[ \letin{C}{x}{E_1}{E_2}\]_\emptyset \eval{} \[ l' \]_A$, dla której sterta k
 
 Założenie o trwałości termu $S$ jest istotne w powyższym rozumowaniu w momencie, w którym stosujemy
 założenie indukcyjne dla drugiej przesłanki. Zauważmy, że sterta, dla której chcemy je zastosować
-to sterta powstała po ewaluacji wyrażenia $E_1$, a zatem bez założenia o trwałości nie musiałaby
-ona spełniać $S$, co uniemożliwiłoby zastosowanie założenia indukcyjnego.
+to sterta powstała po ewaluacji wyrażenia $E_1$, a zatem bez założenia o trwałości mogłaby
+ona nie spełniać $S$, co uniemożliwiłoby zastosowanie założenia indukcyjnego.
 Ponieważ jednak $S$ jest trwałe i spełniane przez stertę początkową, jest więc również spełniane
 przez stertę po wykonaniu $E_1$.
 
@@ -2449,7 +2458,8 @@ $\{l_1 \mapsto o_1, l_2 \mapsto o_2\}$.
 Wymusiło to zdefiniowanie własnej relacji równoważności stert, utożsamiającej sterty
 zawierające te same lokacje i przypisujące im równe obiekty.
 \begin{verbatim}
-Definition HeapEq (h1 h2 : Heap) := forall n, Heap.find n h1 = Heap.find n h2.
+Definition HeapEq (h1 h2 : Heap) :=
+     forall n, Heap.find n h1 = Heap.find n h2.
 \end{verbatim}
 Oczywiście, mając taką definicję, również należało udowodnić wszystkie jej pożądane własności,
 takie jak symetria i zwrotność. Oprócz tego istotnym jest twierdzenie podobne
@@ -2510,7 +2520,7 @@ Inductive JFIProvesOuter : JFIDeclsType -> JFITypeEnv -> JFIOuterTerm ->
                            JFIOuterTerm -> Prop
 \end{verbatim}
 Typ \texttt{JFIDeclsType} to rekord zawierający program $\overline{\mathbb{C}}$,
-o którym wnioskujemy oraz listę niezmienników metod \texttt{invariants}.
+o którym wnioskujemy, oraz listę niezmienników metod \texttt{invariants}.
 Jest on wspólny dla wszystkich reguł, a zatem żadna z nich go nie modyfikuje.
 Typ \texttt{JFITypeEnv} natomiast to środowisko typowe $\Gamma$,
 czyli słownik przypisujący nazwom zmiennych ich typy. Może on być modyfikowany przez
@@ -2525,7 +2535,7 @@ skonstruować obiekt danego typu to dowód musi być poprawny -- oraz możliwoś
 dowodzenia przez indukcję po budowie dowodu.
 
 Przykładem prostej reguły wnioskowania jest reguła przechodniości \textsc{Trans}, mówiąca
-o że jeśli z \texttt{p} można udowodnić \texttt{q}, a z \texttt{q} można udowodnić
+o tym, że jeśli z \texttt{p} można udowodnić \texttt{q}, a z \texttt{q} można udowodnić
 \texttt{r}, to również z \texttt{p} można udowodnić \texttt{r}:
 \begin{verbatim}
 ...
@@ -2574,41 +2584,40 @@ to nowa zmienna związana z wartością wyrażenia).
 Powiązanie wartości Jafun z wartością logiki jest realizowane przez założenie
 \texttt{FreeVarsInValAreInGamma w gamma}.
 \begin{verbatim}
-...
 | JFIHTRetRule :
     forall decls gamma s v w w_expr,
+      FreeVarsInValAreInGamma w gamma ->
       w_expr = JFIValToJFVal w ->
       (*----------------------------------------------------------------*)
       JFIProves decls gamma s
         (JFIHoare JFITrue (JFVal1 w_expr) None v (JFIEq (JFIVar v) w))
-...
 \end{verbatim}
 
 \section{Dowód poprawności}
 Najważniejszym pojęciem, użytym w sformułowaniu twierdzenia o poprawności
 jest semantyczne wynikanie. Powiemy, że przy ustalonym programie
-i środowisku typów $\Gamma$ term $P$ wynika semantycznie z termu $S$, jeśli
+i środowisku typów $\Gamma$ term $S$ wynika semantycznie z termu $P$, jeśli
 dla dowolnej sterty $h$ i środowiska $env$, takich że $env$ zgadza się z $\Gamma$ na $h$,
-jeśli $h$ spełnia $S$ w $env$, to $h$ spełnia również $P$ w $env$:
+jeśli $h$ spełnia $P$ w $env$, to $h$ spełnia również $S$ w $env$:
 \begin{verbatim}
-Definition JFISemanticallyImplies gamma s p (CC : JFProgram) :=
+Definition JFISemanticallyImplies gamma P S (CC : JFProgram) :=
   forall env this h,
     JFIGammaMatchEnv h gamma env ->
-    JFIHeapSatisfiesInEnv h s env this CC ->
-    JFIHeapSatisfiesInEnv h p env this CC. 
+    JFIHeapSatisfiesInEnv h P env this CC ->
+    JFIHeapSatisfiesInEnv h S env this CC. 
 \end{verbatim}
 
 Kiedy mamy taką definicję, twierdzenie o poprawności może być sformułowane
-przez powiedzenie, że jeśli $\Gamma | P \vdash T$, to $T$ wynika semantycznie z $P$
+przez powiedzenie, że jeśli $\Gamma | P \vdash S$, to $S$ wynika semantycznie z $P$
 w środowisku $\Gamma$ :
 \begin{verbatim}
-Theorem JFISoundness : forall gamma decls p t,
-  JFIProves decls gamma p t ->
-  JFISemanticallyImplies gamma p t (JFIDeclsProg decls). 
+Theorem JFISoundness : forall gamma decls P S,
+  JFIProves decls gamma P S ->
+  JFISemanticallyImplies gamma P S (JFIDeclsProg decls). 
 \end{verbatim}
 
 Twierdzenie to jest następnie dowodzone przez indukcję po budowie drzewa dowodu
-dla \texttt{JFIProves decls gamma p t} zgodnie z opisem w rozdziale \ref{chap:soundness}.
+dla \texttt{JFIProves decls gamma P S} zgodnie z opisem w rozdziale \ref{chap:soundness}.
 
 \chapter{Podsumowanie}
 Przedstawiona w niniejszej pracy logika separacyjna dla języka Jafun pozwala
